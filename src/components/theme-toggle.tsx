@@ -1,12 +1,18 @@
 "use client";
 
+import { MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
 import { useSyncExternalStore } from "react";
 import { navPillOutline } from "@/components/nav-pill";
 import { cnCopy } from "@/lib/i18n/cn";
+import type { CopyDefinition } from "@/lib/i18n";
 
 const storageKey = "bdr-theme";
 
-const options = [{ value: "light" }, { value: "system" }, { value: "dark" }] as const;
+const options = [
+  { value: "light", Icon: SunIcon },
+  { value: "system", Icon: MonitorIcon },
+  { value: "dark", Icon: MoonIcon },
+] as const;
 
 type ThemePreference = (typeof options)[number]["value"];
 
@@ -81,41 +87,45 @@ function subscribeThemePreference(listener: () => void) {
   };
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ copy = cnCopy }: { copy?: CopyDefinition }) {
   const theme = useSyncExternalStore(
     subscribeThemePreference,
     getThemePreferenceSnapshot,
     () => fallbackTheme,
   );
-  const localeCopy = cnCopy;
   const labels: Record<ThemePreference, string> = {
-    light: localeCopy.themeLight,
-    system: localeCopy.themeSystem,
-    dark: localeCopy.themeDark,
+    light: copy.themeLight,
+    system: copy.themeSystem,
+    dark: copy.themeDark,
   };
 
   return (
     <div
       className={`${navPillOutline} p-0.5`}
-      role="group"
-      aria-label={localeCopy.themeToggleAria}
+      role="radiogroup"
+      aria-label={copy.themeToggleAria}
     >
       {options.map((option) => {
         const active = theme === option.value;
+        const label = labels[option.value];
+        const Icon = option.Icon;
 
         return (
           <button
             key={option.value}
             type="button"
-            className={`flex h-full items-center rounded-full px-2 @[28rem]/nav-bar:px-2.5 ${
-              active ? "bg-foreground text-background shadow-sm" : "text-ink-soft hover:text-foreground"
-            }`}
+            role="radio"
+            aria-checked={active}
+            aria-label={label}
+            title={label}
+            data-theme-option={option.value}
+            className="theme-option flex h-7 w-7 items-center justify-center rounded-full text-ink-soft hover:text-foreground"
             onClick={() => {
               applyTheme(option.value);
               notifyThemeListeners();
             }}
           >
-            {labels[option.value]}
+            <Icon className="h-4 w-4" aria-hidden="true" />
           </button>
         );
       })}

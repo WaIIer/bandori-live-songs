@@ -202,13 +202,12 @@ export async function getBandoriEventIndexUpdatedAt(
   return row?.updatedAt ?? null;
 }
 
-export async function listRankingEventsFromIndex(now = new Date(), db: ReturnType<typeof getDb> = getDb()) {
-  const { filteredThrough } = getRankingEventDateWindow(now);
+export async function listRankingEventsFromIndex(db: ReturnType<typeof getDb> = getDb()) {
   const [events, updatedAt] = await Promise.all([
-    listBandoriEventIndex({ through: filteredThrough, order: "ranking" }, db),
+    listBandoriEventIndex({ order: "ranking" }, db),
     getBandoriEventIndexUpdatedAt(db),
   ]);
-  return { events, filteredThrough, updatedAt };
+  return { events, updatedAt };
 }
 
 export async function listRecentEventsFromIndex(now = new Date(), db: ReturnType<typeof getDb> = getDb()) {

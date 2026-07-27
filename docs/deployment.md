@@ -32,7 +32,8 @@ DEMO_USER_ID=
 - `DATABASE_URL`：应用运行时连接，推荐使用连接池。
 - `DIRECT_URL`：执行 `db:migrate` / `db:seed` 时使用；本地开发可与 `DATABASE_URL` 相同。
 - `SETLIST_IMPORT_KEY`：管理后台登录密钥，自行生成足够长的随机字符串。
-- `CRON_SECRET`：调用 `/api/cron/event-ranking` 时需在 `Authorization: Bearer <secret>` 中携带。
+- `CRON_SECRET`：调用 `/api/cron/event-ranking` 与 `/api/cron/songs-sync` 时需在
+  `Authorization: Bearer <secret>` 中携带。
 - `DEMO_USER_ID`：可选；设置后首页展示该用户的示例数据，未设置时仅显示搜索框。
 
 ## 3. 初始化数据库
@@ -65,19 +66,29 @@ npm run start
 
 ## 6. 定时任务
 
-`/api/cron/event-ranking` 用于刷新 `bandori_event_index`（各乐队演员页活动索引）。使用系统 cron、GitHub Actions 或云平台调度器定期请求：
+项目包含两条每日定时任务：
+
+| 接口 | 用途 | Vercel 示例时间（UTC） |
+|---|---|---|
+| `/api/cron/event-ranking` | 刷新各乐队演员页活动索引 | `16:00` |
+| `/api/cron/songs-sync` | 从 MusicBrainz 补充新歌并修正更早发售日 | `17:00` |
+
+使用系统 cron、GitHub Actions 或云平台调度器请求：
 
 ```bash
 curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain/api/cron/event-ranking
+curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain/api/cron/songs-sync
 ```
 
-建议每天执行一次。未配置 `CRON_SECRET` 时，该接口在非生产环境可匿名访问。
+建议每天各执行一次，并错开调用时间。未配置 `CRON_SECRET` 时，两条接口仅在非生产环境允许匿名访问。
+仓库内的 `vercel.json` 已提供上述调度配置；在其他平台部署时请配置等效任务。
 
 ## 7. 后续维护
 
 ### 更新曲目库
 
-通过管理页 `/admin/songs-import` 手动添加新曲，或重新执行 `npm run db:seed`（会 upsert 内置 catalog 中的歌曲）。
+通过管理页 `/admin/songs-import` 手动添加新曲，重新执行 `npm run db:seed`
+（会 upsert 内置 catalog 中的歌曲），或启用 `/api/cron/songs-sync` 增量同步最近歌曲。
 
 ### Schema 变更
 

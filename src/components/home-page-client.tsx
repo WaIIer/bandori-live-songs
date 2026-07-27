@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Loader2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type MouseEvent } from "react";
+import { GithubNavLink } from "@/components/github-nav-link";
+import { LocaleToggle } from "@/components/locale-toggle";
 import { navPillLabel } from "@/components/nav-pill";
 import { RefreshWhileWarming } from "@/components/refresh-while-warming";
 import { ResultsClient } from "@/components/results-client";
@@ -16,12 +18,14 @@ import {
   LAST_SUCCESSFUL_USER_ID_STORAGE_KEY,
   readStoredSuccessfulUserId,
 } from "@/lib/eventernote/user-id";
-import { cnCopy } from "@/lib/i18n/cn";
+import { getCopy, type Locale } from "@/lib/i18n";
+import type { CopyDefinition } from "@/lib/i18n";
 import { navigateToDemoHome } from "@/lib/navigate-demo-home";
 import { clearAwaitFreshAfterCookie } from "@/lib/manual-refresh-navigation";
 import type { UserSongStatsResult } from "@/lib/stats/get-user-song-stats";
 
 type HomePageClientProps = {
+  locale: Locale;
   defaultUserId: string;
   demoUserId: string;
   invalidUserId: boolean;
@@ -41,24 +45,25 @@ function loadDefaultUserStats(signal?: AbortSignal) {
   );
 }
 
-function getWarmingMessage(copy: typeof cnCopy, result: UserSongStatsResult | null) {
+function getWarmingMessage(copy: CopyDefinition, result: UserSongStatsResult | null) {
   if (result?.state !== "warming") {
     return copy.warmingDescription;
   }
 
-  return result.message.includes("初期化") ? copy.warmingCacheInit : copy.warmingCacheRefresh;
+  return result.reason === "initializing" ? copy.warmingCacheInit : copy.warmingCacheRefresh;
 }
 
-function WarmingTitle() {
+function WarmingTitle({ copy }: { copy: CopyDefinition }) {
   return (
     <h2 className="mt-2 inline-flex items-center gap-2 font-heading text-2xl font-semibold tracking-[-0.04em]">
-      <span>{cnCopy.warmingTitle}</span>
+      <span>{copy.warmingTitle}</span>
       <Loader2Icon className="h-5 w-5 animate-spin text-foreground" aria-hidden="true" />
     </h2>
   );
 }
 
 export function HomePageClient({
+  locale,
   defaultUserId,
   demoUserId,
   invalidUserId,
@@ -71,7 +76,8 @@ export function HomePageClient({
 }: HomePageClientProps) {
   const router = useRouter();
   const trimmedUserId = defaultUserId.trim();
-  const localeCopy = cnCopy;
+  const [activeLocale, setActiveLocale] = useState(locale);
+  const localeCopy = getCopy(activeLocale);
   const hasDemoUser = demoUserId.length > 0;
   const shouldLoadDefaultUser = hasDemoUser && !trimmedUserId && !result;
   const [isRestoringStoredUser] = useState(
@@ -125,25 +131,33 @@ export function HomePageClient({
     }
   }, [displayResult, trimmedUserId]);
 
+  useEffect(() => {
+    document.title = localeCopy.metadataTitle;
+  }, [localeCopy.metadataTitle]);
+
   return (
     <>
       <nav id="page-top" className="sticky top-0 z-50 border-b border-border-soft bg-background/85 backdrop-blur-xl">
         <div className="@container/nav-bar mx-auto flex max-w-5xl items-center justify-between gap-2 px-4 py-4 sm:px-8">
-          <Link
-            href="/"
-            onClick={resetToDemoHome}
-            className="min-w-0 truncate font-heading text-lg font-semibold tracking-[-0.04em] hover:text-accent"
-          >
-            <span className="sm:hidden">{localeCopy.navTitleMobile}</span>
-            <span className="hidden sm:inline">{localeCopy.navTitleDesktop}</span>
-          </Link>
+          <div className="flex min-w-0 items-center gap-2">
+            <Link
+              href="/"
+              onClick={resetToDemoHome}
+              className="min-w-0 truncate font-heading text-lg font-semibold tracking-[-0.04em] hover:text-accent"
+            >
+              <span className="sm:hidden">{localeCopy.navTitleMobile}</span>
+              <span className="hidden sm:inline">{localeCopy.navTitleDesktop}</span>
+            </Link>
+            <GithubNavLink copy={localeCopy} />
+          </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             {isAdminAuthenticated ? (
               <Link href="/admin" className={navPillLabel}>
-                管理
+                {localeCopy.adminNav}
               </Link>
             ) : null}
-            <ThemeToggle />
+            <LocaleToggle locale={activeLocale} onLocaleChange={setActiveLocale} />
+            <ThemeToggle copy={localeCopy} />
           </div>
         </div>
       </nav>
@@ -165,22 +179,22 @@ export function HomePageClient({
                 </h1>
               </div>
             </div>
-            <SearchForm key={defaultUserId} defaultUserId={defaultUserId} />
+            <SearchForm key={defaultUserId} defaultUserId={defaultUserId} copy={localeCopy} />
           </div>
         </section>
 
         {!trimmedUserId && hasDemoUser && displayResult ? (
           <p className="mt-4 text-center text-sm text-ink-soft">
-            以下展示的是
+            {localeCopy.demoPrefix}
             <a
               href={`https://www.eventernote.com/bd/user/${encodeURIComponent(demoUserId)}`}
               target="_blank"
               rel="noreferrer"
               className="font-medium text-foreground transition hover:text-accent"
             >
-              示例用户
+              {localeCopy.demoLinkLabel}
             </a>
-            的数据。
+            {localeCopy.demoSuffix}
           </p>
         ) : null}
 
@@ -197,7 +211,7 @@ export function HomePageClient({
             </section>
           ) : !trimmedUserId && defaultUserLoading ? (
             <section className="rounded-[1.15rem] border border-border-soft bg-panel px-5 py-6 sm:px-6">
-              <WarmingTitle />
+              <WarmingTitle copy={localeCopy} />
               <p className="mt-3 max-w-3xl text-base leading-8 text-ink-soft">
                 {isRestoringStoredUser
                   ? localeCopy.restoringUserDescription
@@ -215,6 +229,7 @@ export function HomePageClient({
                 defaultHideVirtualBands={defaultHideVirtualBands}
                 defaultHideSonglessActivities={defaultHideSonglessActivities}
                 eventVisibilityRules={eventVisibilityRules}
+                copy={localeCopy}
               />
               {displayResult.staleCacheUsed ? (
                 <RefreshWhileWarming
@@ -228,7 +243,7 @@ export function HomePageClient({
           ) : displayResult.state === "warming" ? (
             <>
               <section className="rounded-[1.15rem] border border-border-soft bg-panel px-5 py-6 sm:px-6">
-                <WarmingTitle />
+                <WarmingTitle copy={localeCopy} />
                 <p className="mt-3 max-w-3xl text-base leading-8 text-ink-soft">
                   {getWarmingMessage(localeCopy, displayResult)}
                 </p>

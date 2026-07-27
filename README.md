@@ -1,45 +1,40 @@
-# BanG Dream! 现场听歌统计站
+# BanG Dream! 现场听歌统计
 
-输入 [Eventernote](https://www.eventernote.com) 用户 ID，对照本地 BanG Dream! 曲库与歌单数据，统计「听过哪些原创曲、哪些还没在现场听到」，并展示各场活动的歌单收录情况。
+输入 [Eventernote](https://www.eventernote.com/) 用户名，即可查看自己参加过的
+BanG Dream! 现场、各乐队原创曲听歌进度，以及尚未在现场听到的歌曲。
 
-欢迎在本仓库用 [Issue](https://github.com/calcxx/bandori-live-songs/issues) 提交网站使用反馈。维护者会看到并回复；线上站点的修改可能不会立刻同步回这份开源代码。
+> 本仓库是项目的开源分支。
+> 欢迎通过 [Issue](https://github.com/calcxx/bandori-live-songs/issues) 反馈问题。线上站点的改动可能不会立即同步至此。
 
-更完整的模块说明见 [ARCHITECTURE.md](ARCHITECTURE.md)，部署步骤见 [docs/deployment.md](docs/deployment.md)。
+## 功能亮点
 
-## 功能
+- 按乐队统计原创曲覆盖率，筛选未听歌曲、虚拟团与无歌曲活动
+- 展示每场活动的 Setlist 收录状态、首次听到的歌曲与单曲演唱次数
+- 通过 Eventernote 演员页活动索引识别活动归属，减少列表页出演者错位影响
+- 支持简体中文、繁体中文和日语
+- 支持浅色、深色及跟随系统主题，并可将统计结果导出为 JPEG
+- Eventernote 用户数据使用数据库缓存，并在过期时后台静默刷新
+- 管理后台支持活动浏览、Setlist/歌曲导入、屏蔽规则及用户缓存查看
+- 可选的每日 MusicBrainz 同步会补充新歌并修正更早的发售日期
 
-**首页**
-
-- 按 Eventernote 用户名查询参加过的现场活动
-- 按乐队汇总覆盖率（已听 / 曲库总数），支持筛选未演奏曲等
-- 展示活动卡片与歌单收录状态；可查看单曲在哪些现场演奏过
-- 手动刷新 Eventernote 数据、导出统计图片、浅色/深色主题
-- 可选配置 `DEMO_USER_ID` 作为未登录时的示例用户
-
-**管理后台**（`/admin`，需 `SETLIST_IMPORT_KEY`）
-
-- 近期活动 / 活动列表：来自演员页索引的活动浏览；列表支持年份与乐队复选筛选
-- 歌单导入：按活动 ID 或链接录入或整场替换 setlist；支持 Spotify 播放列表辅助
-- 歌曲导入：向曲库批量添加新曲
-- 活动屏蔽规则：隐藏见面会、上映会等非演唱类活动
-- 用户缓存：只读浏览 `eventernote_user_cache` 抓取状态与活动数
-
-## 设计概要
+## 工作原理
 
 ```mermaid
 flowchart LR
-  EN[Eventernote<br/>用户活动] --> App[本应用]
-  DB[(PostgreSQL<br/>曲库 + 歌单)] --> App
-  App --> UI[覆盖率 / 活动列表]
+  EN["Eventernote<br/>用户活动"] --> App["Next.js 应用"]
+  Index["演员页活动索引"] --> App
+  DB[("PostgreSQL<br/>曲库 + Setlist")] --> App
+  MB["MusicBrainz<br/>可选定时同步"] --> DB
+  App --> UI["歌曲进度 / 活动列表 / 图片导出"]
 ```
 
-- **Eventernote** 提供用户参加了哪些活动；通过 HTML 解析抓取。
-- **本地数据库** 维护原创曲曲库（种子数据来自 `discography-catalog.json`）与人工录入的 setlist。只有歌单已录入的活动才计入「听过」。
-- 用户活动页只提供参加过的 eventId；是否邦邦、属于哪支乐队由 `bandori_event_index`（演员页权威索引）判定，规避列表页出演者错位。
-- 曲名导入时做规范化后与曲库匹配。
-- 用户活动缓存在 Postgres：以远程活动总数变化为主失效条件；总数未变但距上次抓取超过 1 天时也会静默后台刷新。详见 [ARCHITECTURE.md](ARCHITECTURE.md)。
+Eventernote 提供用户参加过的活动；本地数据库维护 BanG Dream! 原创曲曲库与人工录入的
+Setlist。只有已收录 Setlist 的活动才会计入「听过」。详细设计见
+[ARCHITECTURE.md](ARCHITECTURE.md)。
 
-## 开发
+## 快速开始
+
+需要 Node.js 20+ 与 PostgreSQL：
 
 ```bash
 cp .env.example .env.local
@@ -49,23 +44,39 @@ npm run db:seed
 npm run dev
 ```
 
-常用命令：`npm run lint` · `npm run test` · `npm run db:generate`
+打开 `http://localhost:3000`。完整的首次部署、定时任务和故障排查说明见
+[docs/deployment.md](docs/deployment.md)。
 
-## 环境变量
+## 配置
 
-| 变量 | 说明 |
-|------|------|
-| `DATABASE_URL` | 数据库连接 |
-| `DIRECT_URL` | 迁移用直连（可与上相同） |
-| `SETLIST_IMPORT_KEY` | 管理后台密钥 |
-| `CRON_SECRET` | 保护定时刷新接口 |
-| `DEMO_USER_ID` | 可选，首页示例用户 |
+| 环境变量               | 用途                       |     必需     |
+| ---------------------- | -------------------------- | :----------: |
+| `DATABASE_URL`       | 应用运行时数据库连接       |      是      |
+| `DIRECT_URL`         | 迁移与数据脚本使用的直连   |      是      |
+| `SETLIST_IMPORT_KEY` | 管理后台密钥               |      是      |
+| `CRON_SECRET`        | 保护两条定时任务接口       | 生产环境建议 |
+| `DEMO_USER_ID`       | 首页未查询时展示的示例用户 |      否      |
 
-## 友链
+常用检查：
 
-- [Eventernote 年度总结](https://receipt.gyuni.space/) — 本项目的灵感来源
-- [日本 live 远征攻略导航](https://genchi.top/)（Sallyn）
-- [邦多利资料库 bandori.fans](https://github.com/bangdream-NA/bandori-fans)（北美炸梦同好会）
+```bash
+npm run lint
+npm run typecheck
+npm run test
+npm run build
+```
+
+## 你也许感兴趣的项目
+
+### Eventernote 相关
+
+- [Eventernote 年度总结](https://receipt.gyuni.space/)
+- [Eventernote Analyzer](https://en-analyzer.2ak1.com/)
+
+### BanG Dream! 相关
+
+- [日本 live 远征攻略导航](https://genchi.top/)
+- [邦多利资料库](https://bandori.fans/)
 
 ## 许可证
 

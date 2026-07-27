@@ -1,12 +1,16 @@
+import type { CopyDefinition } from "./types";
+
 export const cnCopy = {
   metadataTitle: "BanG Dream! 现场听歌统计",
   metadataDescription: "输入 Eventernote ID，统计你在 BanG Dream! 现场听过的歌曲。",
   navTitleMobile: "邦多利现场听歌统计",
   navTitleDesktop: "BanG Dream! 现场听歌统计",
+  languageToggleAria: "切换显示语言",
   themeToggleAria: "主题切换",
-  themeLight: "浅",
-  themeSystem: "系统",
-  themeDark: "深",
+  githubRepoAria: "GitHub 开源仓库",
+  themeLight: "浅色",
+  themeSystem: "跟随系统",
+  themeDark: "深色",
   searchSectionTitle: "Eventernote ID",
   searchInputLabel: "Eventernote 用户名",
   searchPlaceholder: "输入 Eventernote 用户名（不是昵称）",
@@ -48,9 +52,9 @@ export const cnCopy = {
     "※下方内容显示的是该用户参加过的活动。",
   eventUnlockSongsLabel: "本场新解锁",
   eventUnlockSongsSuffix: "首",
-  eventSetlistLabel: "本场演奏歌曲",
-  expandEventUnlocksAria: "展开本场演奏歌曲",
-  collapseEventUnlocksAria: "收起本场演奏歌曲",
+  eventSetlistLabel: "本场演唱歌曲",
+  expandEventUnlocksAria: "展开本场演唱歌曲",
+  collapseEventUnlocksAria: "收起本场演唱歌曲",
   venueMissing: "场地未收录",
   matchedBands: "乐队",
   collectedSetlistBadge: "已收录歌单",
@@ -59,4 +63,8 @@ export const cnCopy = {
   saveImageButtonCapturing: "正在生成图片...",
   saveImageButtonSuccess: "已保存！",
   manualRefresh: "手动刷新",
-} as const;
+  adminNav: "管理",
+  demoPrefix: "以下展示的是",
+  demoLinkLabel: "示例用户",
+  demoSuffix: "的数据。",
+} as const satisfies CopyDefinition;

@@ -60,6 +60,7 @@ export type UserSongStatsResult =
       state: "warming";
       userId: string;
       message: string;
+      reason: "initializing" | "refreshing";
     }
   | {
       state: "not-found";
@@ -486,6 +487,7 @@ export async function getUserSongStats(
       state: "warming",
       userId: displayUserId,
       message: "正在刷新 Eventernote 缓存，请稍候。",
+      reason: "refreshing",
     };
   }
 
@@ -524,6 +526,7 @@ export async function getUserSongStats(
       state: "warming",
       userId: displayUserId,
       message: "正在刷新 Eventernote 缓存，请稍候。",
+      reason: "refreshing",
     };
   }
 
@@ -538,6 +541,7 @@ export async function getUserSongStats(
       state: "warming",
       userId: displayUserId,
       message: "正在初始化该用户的 Eventernote 缓存，请稍候。",
+      reason: "initializing",
     };
   }
 
@@ -586,6 +590,7 @@ export async function getUserSongStats(
       state: "warming",
       userId: displayUserId,
       message: "正在刷新 Eventernote 缓存，请稍候。",
+      reason: "refreshing",
     };
   }
 

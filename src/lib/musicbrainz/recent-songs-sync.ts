@@ -1,0 +1,503 @@
+import { updateTag } from "next/cache";
+import { setTimeout as sleep } from "node:timers/promises";
+import { eq } from "drizzle-orm";
+import { BAND_SEEDS } from "@/lib/constants/bands";
+import { getDb } from "@/lib/db/core";
+import { songs } from "@/lib/db/schema";
+import {
+  canonicalizeSongTitle,
+  isExcludedTrackTitle,
+  normalizeSongTitle,
+} from "@/lib/music/title-utils";
+
+const MUSICBRAINZ_API = "https://musicbrainz.org/ws/2";
+const USER_AGENT = "bandori-live-songs/1.0 (https://github.com/calcxx/bandori-live-songs)";
+const REQUEST_DELAY_MS = 1100;
+const MAX_RETRIES = 3;
+const RETRY_BASE_DELAY_MS = 2000;
+const FETCH_TIMEOUT_MS = 15000;
+const LOOKBACK_DAYS = 7;
+
+export type MusicBrainzRecordingHit = {
+  title: string;
+  firstReleaseDate?: string;
+  video?: boolean;
+};
+
+export type ExistingSongRef = {
+  title: string;
+  firstReleaseDate: string;
+};
+
+export type SongInsertCandidate = {
+  bandSlug: string;
+  title: string;
+  firstReleaseDate: string;
+  rawTitle: string;
+};
+
+export type SongDateUpdateCandidate = {
+  title: string;
+  previousDate: string;
+  firstReleaseDate: string;
+  rawTitle: string;
+  bandSlug: string;
+};
+
+export type FilteredRecording =
+  | {
+      action: "insert";
+      bandSlug: string;
+      rawTitle: string;
+      title: string;
+      firstReleaseDate: string;
+    }
+  | {
+      action: "update-date";
+      bandSlug: string;
+      rawTitle: string;
+      title: string;
+      previousDate: string;
+      firstReleaseDate: string;
+    }
+  | {
+      action: "skip";
+      bandSlug: string;
+      rawTitle: string;
+      reason: "video" | "incomplete-date" | "outside-window" | "excluded" | "existing" | "empty-title";
+      detail?: string;
+    };
+
+export type RecentSongsSyncResult = {
+  sinceDate: string;
+  scannedBands: number;
+  skippedBandsWithoutMbid: string[];
+  candidates: number;
+  inserted: number;
+  updated: number;
+  skippedExisting: number;
+  skippedExcluded: number;
+  insertedTitles: string[];
+  updatedTitles: string[];
+  decisions: FilteredRecording[];
+  errors: string[];
+  dryRun: boolean;
+};
+
+/** Calendar YYYY-MM-DD for `now` minus `days` in UTC. */
+export function lookbackSinceDate(now: Date = new Date(), days = LOOKBACK_DAYS): string {
+  const d = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  d.setUTCDate(d.getUTCDate() - days);
+  return d.toISOString().slice(0, 10);
+}
+
+export function isFullReleaseDate(value: string | undefined): value is string {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+export function isReleaseDateInWindow(date: string, sinceDate: string): boolean {
+  return date >= sinceDate;
+}
+
+/** Pure filter: MB hits → insert / earlier-date update / skip decisions. */
+export function filterMusicBrainzRecordingsForBand(
+  bandSlug: string,
+  recordings: MusicBrainzRecordingHit[],
+  sinceDate: string,
+  existingByNormalized: Map<string, ExistingSongRef>,
+): {
+  toInsert: SongInsertCandidate[];
+  toUpdate: SongDateUpdateCandidate[];
+  skippedExcluded: number;
+  skippedExisting: number;
+  decisions: FilteredRecording[];
+} {
+  let skippedExcluded = 0;
+  let skippedExisting = 0;
+  const toInsert: SongInsertCandidate[] = [];
+  const toUpdate: SongDateUpdateCandidate[] = [];
+  const decisions: FilteredRecording[] = [];
+  const batchInsertByNormalized = new Map<string, SongInsertCandidate>();
+  const batchUpdateByNormalized = new Map<string, SongDateUpdateCandidate>();
+
+  for (const recording of recordings) {
+    if (recording.video) {
+      decisions.push({
+        action: "skip",
+        bandSlug,
+        rawTitle: recording.title,
+        reason: "video",
+      });
+      continue;
+    }
+
+    if (!isFullReleaseDate(recording.firstReleaseDate)) {
+      decisions.push({
+        action: "skip",
+        bandSlug,
+        rawTitle: recording.title,
+        reason: "incomplete-date",
+        detail: recording.firstReleaseDate ?? "(missing)",
+      });
+      continue;
+    }
+
+    if (!isReleaseDateInWindow(recording.firstReleaseDate, sinceDate)) {
+      decisions.push({
+        action: "skip",
+        bandSlug,
+        rawTitle: recording.title,
+        reason: "outside-window",
+        detail: recording.firstReleaseDate,
+      });
+      continue;
+    }
+
+    if (isExcludedTrackTitle(recording.title)) {
+      skippedExcluded += 1;
+      decisions.push({
+        action: "skip",
+        bandSlug,
+        rawTitle: recording.title,
+        reason: "excluded",
+        detail: recording.firstReleaseDate,
+      });
+      continue;
+    }
+
+    const title = canonicalizeSongTitle(recording.title);
+    if (!title) {
+      skippedExcluded += 1;
+      decisions.push({
+        action: "skip",
+        bandSlug,
+        rawTitle: recording.title,
+        reason: "empty-title",
+      });
+      continue;
+    }
+
+    const normalized = normalizeSongTitle(title);
+    const existing = existingByNormalized.get(normalized);
+    const pendingInsert = batchInsertByNormalized.get(normalized);
+
+    if (existing) {
+      if (recording.firstReleaseDate < existing.firstReleaseDate) {
+        const priorBatch = batchUpdateByNormalized.get(normalized);
+        const update: SongDateUpdateCandidate = {
+          bandSlug,
+          title: existing.title,
+          previousDate: priorBatch?.previousDate ?? existing.firstReleaseDate,
+          firstReleaseDate: recording.firstReleaseDate,
+          rawTitle: recording.title,
+        };
+        batchUpdateByNormalized.set(normalized, update);
+        existingByNormalized.set(normalized, {
+          title: existing.title,
+          firstReleaseDate: recording.firstReleaseDate,
+        });
+        const index = toUpdate.findIndex((row) => normalizeSongTitle(row.title) === normalized);
+        if (index >= 0) toUpdate[index] = update;
+        else toUpdate.push(update);
+        decisions.push({
+          action: "update-date",
+          bandSlug,
+          rawTitle: recording.title,
+          title: existing.title,
+          previousDate: update.previousDate,
+          firstReleaseDate: recording.firstReleaseDate,
+        });
+      } else {
+        skippedExisting += 1;
+        decisions.push({
+          action: "skip",
+          bandSlug,
+          rawTitle: recording.title,
+          reason: "existing",
+          detail:
+            title === recording.title
+              ? `${existing.firstReleaseDate}`
+              : `→ ${title} @ ${existing.firstReleaseDate}`,
+        });
+      }
+      continue;
+    }
+
+    if (pendingInsert) {
+      if (recording.firstReleaseDate < pendingInsert.firstReleaseDate) {
+        pendingInsert.firstReleaseDate = recording.firstReleaseDate;
+        pendingInsert.rawTitle = recording.title;
+        decisions.push({
+          action: "insert",
+          bandSlug,
+          rawTitle: recording.title,
+          title: pendingInsert.title,
+          firstReleaseDate: recording.firstReleaseDate,
+        });
+      } else {
+        skippedExisting += 1;
+        decisions.push({
+          action: "skip",
+          bandSlug,
+          rawTitle: recording.title,
+          reason: "existing",
+          detail: title === recording.title ? undefined : `→ ${title}`,
+        });
+      }
+      continue;
+    }
+
+    const insert: SongInsertCandidate = {
+      bandSlug,
+      title,
+      firstReleaseDate: recording.firstReleaseDate,
+      rawTitle: recording.title,
+    };
+    batchInsertByNormalized.set(normalized, insert);
+    toInsert.push(insert);
+    decisions.push({
+      action: "insert",
+      bandSlug,
+      rawTitle: recording.title,
+      title,
+      firstReleaseDate: recording.firstReleaseDate,
+    });
+  }
+
+  return { toInsert, toUpdate, skippedExcluded, skippedExisting, decisions };
+}
+
+type MusicBrainzSearchResponse = {
+  recordings?: Array<{
+    title: string;
+    "first-release-date"?: string;
+    video?: boolean;
+  }>;
+};
+
+async function searchRecentRecordingsByArtist(
+  mbid: string,
+  sinceDate: string,
+): Promise<MusicBrainzRecordingHit[]> {
+  const query = `arid:${mbid} AND firstreleasedate:[${sinceDate} TO *]`;
+  const url = `${MUSICBRAINZ_API}/recording/?query=${encodeURIComponent(query)}&fmt=json&limit=100`;
+
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    const response = await fetch(url, {
+      headers: { "User-Agent": USER_AGENT },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
+
+    if (response.status === 503) {
+      await sleep(RETRY_BASE_DELAY_MS * attempt);
+      continue;
+    }
+
+    if (!response.ok) {
+      throw new Error(`MusicBrainz HTTP ${response.status}`);
+    }
+
+    const data = (await response.json()) as MusicBrainzSearchResponse;
+    return (data.recordings ?? []).map((recording) => ({
+      title: recording.title,
+      firstReleaseDate: recording["first-release-date"],
+      video: recording.video,
+    }));
+  }
+
+  throw new Error("MusicBrainz rate-limited after retries");
+}
+
+export type SyncRecentMusicBrainzSongsOptions = {
+  now?: Date;
+  dryRun?: boolean;
+  onBand?: (message: string) => void;
+};
+
+export async function syncRecentMusicBrainzSongs(
+  options: SyncRecentMusicBrainzSongsOptions = {},
+): Promise<RecentSongsSyncResult> {
+  const now = options.now ?? new Date();
+  const dryRun = options.dryRun ?? false;
+  const log = options.onBand ?? (() => {});
+
+  const sinceDate = lookbackSinceDate(now);
+  const bands = BAND_SEEDS.filter((band) => band.groupType === "band");
+  const skippedBandsWithoutMbid = bands
+    .filter((band) => !band.musicbrainzArtistMbid)
+    .map((band) => band.slug);
+
+  const db = getDb();
+  const existingRows = await db
+    .select({ title: songs.title, firstReleaseDate: songs.firstReleaseDate })
+    .from(songs);
+  const existingByNormalized = new Map<string, ExistingSongRef>();
+  for (const row of existingRows) {
+    existingByNormalized.set(normalizeSongTitle(row.title), {
+      title: row.title,
+      firstReleaseDate: row.firstReleaseDate,
+    });
+  }
+
+  log(`since=${sinceDate} bands=${bands.length} existingSongs=${existingRows.length} dryRun=${dryRun}`);
+
+  const errors: string[] = [];
+  const insertedTitles: string[] = [];
+  const updatedTitles: string[] = [];
+  const decisions: FilteredRecording[] = [];
+  let candidates = 0;
+  let skippedExcluded = 0;
+  let skippedExisting = 0;
+  let scannedBands = 0;
+  const pendingInserts: SongInsertCandidate[] = [];
+  const pendingUpdates = new Map<string, SongDateUpdateCandidate>();
+
+  for (const band of bands) {
+    const mbid = band.musicbrainzArtistMbid;
+    if (!mbid) {
+      log(`skip band ${band.slug}: no MusicBrainz MBID`);
+      continue;
+    }
+
+    scannedBands += 1;
+    try {
+      const recordings = await searchRecentRecordingsByArtist(mbid, sinceDate);
+      const filtered = filterMusicBrainzRecordingsForBand(
+        band.slug,
+        recordings,
+        sinceDate,
+        existingByNormalized,
+      );
+
+      candidates += recordings.length;
+      skippedExcluded += filtered.skippedExcluded;
+      skippedExisting += filtered.skippedExisting;
+      decisions.push(...filtered.decisions);
+
+      log(
+        `${band.slug}: fetched=${recordings.length} insert=${filtered.toInsert.length} update=${filtered.toUpdate.length} existing=${filtered.skippedExisting} excluded=${filtered.skippedExcluded}`,
+      );
+      for (const decision of filtered.decisions) {
+        if (decision.action === "insert") {
+          log(
+            `  + ${decision.title} (${decision.firstReleaseDate})${decision.rawTitle === decision.title ? "" : ` ← ${decision.rawTitle}`}`,
+          );
+        } else if (decision.action === "update-date") {
+          log(
+            `  ~ ${decision.title} ${decision.previousDate} → ${decision.firstReleaseDate}${decision.rawTitle === decision.title ? "" : ` ← ${decision.rawTitle}`}`,
+          );
+        } else {
+          log(
+            `  - [${decision.reason}] ${decision.rawTitle}${decision.detail ? ` (${decision.detail})` : ""}`,
+          );
+        }
+      }
+
+      for (const song of filtered.toInsert) {
+        existingByNormalized.set(normalizeSongTitle(song.title), {
+          title: song.title,
+          firstReleaseDate: song.firstReleaseDate,
+        });
+        pendingInserts.push(song);
+      }
+      for (const song of filtered.toUpdate) {
+        const key = normalizeSongTitle(song.title);
+        const prior = pendingUpdates.get(key);
+        if (!prior || song.firstReleaseDate < prior.firstReleaseDate) {
+          pendingUpdates.set(key, song);
+        }
+      }
+    } catch (error) {
+      const message = `${band.slug}: ${error instanceof Error ? error.message : String(error)}`;
+      errors.push(message);
+      log(`ERROR ${message}`);
+    }
+
+    await sleep(REQUEST_DELAY_MS);
+  }
+
+  let inserted = 0;
+  let updated = 0;
+  const updateList = [...pendingUpdates.values()];
+
+  if (pendingInserts.length === 0 && updateList.length === 0) {
+    log("nothing to insert or update");
+  }
+
+  if (pendingInserts.length > 0) {
+    if (dryRun) {
+      insertedTitles.push(...pendingInserts.map((song) => song.title));
+      log(`dryRun: would insert ${pendingInserts.length} song(s)`);
+    } else {
+      const values = pendingInserts.map(({ bandSlug, title, firstReleaseDate }) => ({
+        bandSlug,
+        title,
+        firstReleaseDate,
+      }));
+      try {
+        await db.insert(songs).values(values);
+        inserted = values.length;
+        insertedTitles.push(...values.map((song) => song.title));
+      } catch (error) {
+        for (const song of values) {
+          try {
+            await db.insert(songs).values(song);
+            inserted += 1;
+            insertedTitles.push(song.title);
+          } catch {
+            skippedExisting += 1;
+          }
+        }
+        if (inserted === 0) {
+          errors.push(error instanceof Error ? error.message : String(error));
+        }
+      }
+    }
+  }
+
+  if (updateList.length > 0) {
+    if (dryRun) {
+      updatedTitles.push(...updateList.map((song) => `${song.title}:${song.previousDate}→${song.firstReleaseDate}`));
+      log(`dryRun: would update ${updateList.length} release date(s)`);
+    } else {
+      for (const song of updateList) {
+        try {
+          await db
+            .update(songs)
+            .set({
+              firstReleaseDate: song.firstReleaseDate,
+              updatedAt: new Date(),
+            })
+            .where(eq(songs.title, song.title));
+          updated += 1;
+          updatedTitles.push(`${song.title}:${song.previousDate}→${song.firstReleaseDate}`);
+        } catch (error) {
+          errors.push(
+            `update ${song.title}: ${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      }
+      log(`updated ${updated} release date(s)`);
+    }
+  }
+
+  if (!dryRun && (inserted > 0 || updated > 0)) {
+    updateTag("song-catalog");
+  }
+
+  return {
+    sinceDate,
+    scannedBands,
+    skippedBandsWithoutMbid,
+    candidates,
+    inserted,
+    updated: dryRun ? 0 : updated,
+    skippedExisting,
+    skippedExcluded,
+    insertedTitles,
+    updatedTitles,
+    decisions,
+    errors,
+    dryRun,
+  };
+}

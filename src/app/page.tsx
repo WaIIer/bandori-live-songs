@@ -8,6 +8,7 @@ import {
 } from "@/lib/eventernote/user-id";
 import { awaitFreshAfterCookieName, decodeAwaitFreshAfterCookie } from "@/lib/manual-refresh-navigation";
 import { readEventVisibilityRules } from "@/lib/events/event-visibility-rules-store";
+import { getRequestLocale } from "@/lib/request-locale";
 import { getUserSongStats } from "@/lib/stats/get-user-song-stats";
 
 export const runtime = "nodejs";
@@ -49,11 +50,13 @@ export default async function Home({ searchParams }: PageProps) {
   const defaultHideSonglessActivities = cookieBool("bdr-hide-songless-activities", true);
   const isAdminAuthenticated = await verifyAdminAuthToken(cookieStore.get(adminAuthCookieName)?.value);
   const eventVisibilityRules = await readEventVisibilityRules();
+  const locale = await getRequestLocale();
 
   const demoUserId = getDefaultUserId();
 
   return (
     <HomePageClient
+      locale={locale}
       defaultUserId={normalizedUserId}
       demoUserId={demoUserId}
       invalidUserId={invalidUserId}

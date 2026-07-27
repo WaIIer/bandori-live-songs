@@ -3,12 +3,11 @@
 import { toCanvas } from "html-to-image";
 import { CameraIcon, CheckIcon, Loader2Icon } from "lucide-react";
 import { useRef, useState } from "react";
-import { cnCopy } from "@/lib/i18n/cn";
+import type { CopyDefinition } from "@/lib/i18n";
 
-export function SaveImageButton({ userId }: { userId: string }) {
+export function SaveImageButton({ userId, copy: localeCopy }: { userId: string; copy: CopyDefinition }) {
   const [state, setState] = useState<"idle" | "capturing" | "success" | "error">("idle");
   const shareFilesSupportRef = useRef<boolean | null>(null);
-  const localeCopy = cnCopy;
 
   const waitForDomSettled = async () => {
     // Let pending state updates and layout flush before capture.
@@ -21,7 +20,7 @@ export function SaveImageButton({ userId }: { userId: string }) {
 
   const canvasToBlob = async (canvas: HTMLCanvasElement) => {
     const blob = await new Promise<Blob | null>((resolve) => {
-      canvas.toBlob(resolve, "image/webp", 0.9);
+      canvas.toBlob(resolve, "image/jpeg", 0.9);
     });
 
     if (!blob) {
@@ -187,7 +186,7 @@ export function SaveImageButton({ userId }: { userId: string }) {
 
       const finalBlob = await canvasToBlob(canvas);
       const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-      const filename = `bdrsongs-${userId}-${dateStr}.webp`;
+      const filename = `bdrsongs-${userId}-${dateStr}.jpg`;
 
       // On mobile devices, prefer Web Share API for better UX
       // On desktop, always download directly
@@ -199,7 +198,7 @@ export function SaveImageButton({ userId }: { userId: string }) {
           const supportsShareFiles = await checkShareFilesSupport();
           
           if (supportsShareFiles) {
-            const file = new File([finalBlob], filename, { type: "image/webp" });
+            const file = new File([finalBlob], filename, { type: "image/jpeg" });
 
             await navigator.share({
               files: [file],

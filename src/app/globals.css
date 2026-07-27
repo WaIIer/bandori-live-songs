@@ -2,6 +2,7 @@
 
 :root {
   color-scheme: light;
+  --font-body: var(--font-body-sc);
   --background: #f4f0e8;
   --foreground: #1f2430;
   --panel: rgba(255, 252, 247, 0.88);
@@ -14,6 +15,14 @@
   --hello-happy-highlight: #DDBB00;
   --ink-soft: rgba(31, 36, 48, 0.72);
   --shadow-soft: 0 24px 60px rgba(115, 91, 73, 0.14);
+}
+
+html[data-locale="zh-tw"] {
+  --font-body: var(--font-body-tc);
+}
+
+html[data-locale="ja"] {
+  --font-body: var(--font-body-jp);
 }
 
 @theme inline {
@@ -44,6 +53,19 @@ html[data-theme="dark"] {
   --hello-happy-highlight: #FFDD00;
   --ink-soft: rgba(245, 240, 232, 0.72);
   --shadow-soft: 0 24px 60px rgba(8, 10, 17, 0.36);
+}
+
+.theme-option {
+  background: transparent;
+  box-shadow: none;
+}
+
+html[data-theme-preference="light"] .theme-option[data-theme-option="light"],
+html[data-theme-preference="system"] .theme-option[data-theme-option="system"],
+html[data-theme-preference="dark"] .theme-option[data-theme-option="dark"] {
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 body {

@@ -5,23 +5,26 @@
 **BanG Dream! Events to Songs** 是一个 Web 应用，用于查询用户在 [Eventernote](https://www.eventernote.com) 上参加过的 BanG Dream! 演出现场活动，并统计用户听过的歌曲覆盖情况。
 
 核心功能：
+
 - 输入 Eventernote 用户 ID，抓取该用户参加过的所有活动
 - 匹配活动与 BanG Dream! 乐队，关联官方曲目库
 - 统计每支乐队的歌曲听取覆盖率，展示已收录/缺失的 Setlist
-- 支持深色/浅色主题切换
+- 支持简体中文、繁体中文和日语
+- 支持浅色、深色、跟随系统主题以及 JPEG 统计图导出
+- 可通过 MusicBrainz 定时补充新曲并修正更早的发售日期
 
 ## 2. 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 框架 | Next.js 16 (App Router, RSC) |
-| 语言 | TypeScript 5 |
-| UI | React 19 + Tailwind CSS 4 |
-| 数据库 | Supabase Postgres (via Drizzle ORM) |
-| 爬虫解析 | Cheerio |
-| 数据校验 | Zod 4 |
-| 测试 | Vitest (单元) + Playwright (E2E) |
-| 部署 | 任意 Node.js 托管平台 |
+| 层级     | 技术                                |
+| -------- | ----------------------------------- |
+| 框架     | Next.js 16 (App Router, RSC)        |
+| 语言     | TypeScript 5                        |
+| UI       | React 19 + Tailwind CSS 4           |
+| 数据库   | Supabase Postgres (via Drizzle ORM) |
+| 爬虫解析 | Cheerio                             |
+| 数据校验 | Zod 4                               |
+| 测试     | Vitest (单元) + Playwright (E2E)    |
+| 部署     | 任意 Node.js 托管平台               |
 
 ## 3. 顶层目录结构
 
@@ -136,7 +139,9 @@ app/
 │   ├── song-events/route.ts          # 歌曲关联的活动列表 API
 │   ├── user-refresh-status/route.ts  # 用户缓存刷新状态查询
 │   ├── setlist-export/route.ts       # Setlist 导出 API
-│   └── cron/event-ranking/route.ts   # 定时任务：刷新 bandori_event_index
+│   └── cron/
+│       ├── event-ranking/route.ts    # 刷新 bandori_event_index
+│       └── songs-sync/route.ts       # 同步 MusicBrainz 最近歌曲
 └── admin/
     ├── list/                         # 管理后台 — 活动列表（查 index，年份/乐队复选）
     ├── recent/                       # 管理后台 — 近期活动（查 index）
@@ -160,12 +165,14 @@ components/
 │   ├── event-card.tsx                # 活动卡片
 │   └── utils.ts                      # 共享工具函数
 ├── search-form.tsx                   # 搜索表单
+├── locale-toggle.tsx                 # 语言切换
 ├── theme-toggle.tsx                  # 主题切换
-├── save-image-button.tsx             # 导出图片按钮
+├── save-image-button.tsx             # 导出 JPEG 图片
 └── refresh-while-warming.tsx         # 缓存预热中的刷新组件
 ```
 
 组件拆分策略：
+
 - `results-client.tsx` 负责布局组合，从 `use-results-state` Hook 获取所有派生状态
 - `BandSummaryCard` 和 `EventCard` 是纯展示组件，通过 props 接收数据
 - 状态管理集中在 `use-results-state.ts`，包含筛选、展开、歌曲事件加载等逻辑
@@ -186,6 +193,7 @@ stats/
 ```
 
 **`get-user-song-stats.ts`** 是整个应用的核心编排函数，职责：
+
 1. 并行获取曲目库和用户缓存
 2. 判断缓存状态（缺失 / 远程活动数变化 / 距上次抓取超 1 天 / 解析器版本过旧 / 手动刷新）
 3. 决定是否触发后台刷新（`after()` 调度）
@@ -221,6 +229,7 @@ eventernote/
 ```
 
 数据流：
+
 ```
 用户活动页 HTML → parser/client → eventIds
 演员活动页（定时刷新）→ merge → bandori_event_index
@@ -232,6 +241,7 @@ eventIds ∩ index → bandori-user-events.ts（未命中丢弃；不用列表�
 - `client.ts`：负责 HTTP 请求、分页调度、指数退避重试（最多 3 次）、超时控制（单页 10s / 总计 30s）
 - `bandori-user-events.ts`：用 `bandori_event_index`（演员页权威）按 eventId 匹配乐队；用户列表页的 `actorIds` 不参与匹配（规避 Eventernote 列表错位）
 - `bandori-event-index.ts` / cron：抓取各乐队演员页并 upsert 索引；admin 页直接按日期筛选查询该表
+
 #### 6.3.3 `bandori/` — 曲目库
 
 ```
@@ -252,16 +262,33 @@ music/
 └── song-match-suggestions.ts # 歌曲匹配建议
 ```
 
-#### 6.3.5 `i18n/` — 中文文案
+#### 6.3.5 `i18n/` — 公开界面多语言
 
 ```
 i18n/
-└── cn.ts       # 中文文案
+├── index.ts    # 语言解析与文案入口
+├── types.ts    # 文案类型
+├── cn.ts       # 简体中文
+├── tw.ts       # 繁体中文（台湾用语）
+└── jp.ts       # 日语
 ```
 
-界面语言固定为中文。
+公开界面根据显式语言 Cookie 或浏览器 `Accept-Language` 选择语言；管理后台及 API
+响应保持简体中文。语言切换仅更新 Cookie 和客户端状态，不触发整页服务端刷新。
 
-#### 6.3.6 `db/` — 数据库
+#### 6.3.6 `musicbrainz/` — 最近歌曲同步
+
+`recent-songs-sync.ts` 按乐队 MusicBrainz ID 查询最近 7 天的 recording：
+
+- 过滤视频、不完整日期、排除曲目与重复标题
+- 插入尚不存在的新歌
+- 仅当远端日期更早时更新已有歌曲发售日
+- 每次请求之间限速，并对超时和临时错误进行重试
+- 写入后失效曲库缓存，使新数据无需重启即可生效
+
+`GET /api/cron/songs-sync` 使用与活动索引定时任务相同的 `CRON_SECRET` 鉴权。
+
+#### 6.3.7 `db/` — 数据库
 
 ```
 db/
@@ -366,12 +393,15 @@ tests/
 ├── eventernote-user-id.test.ts          # 用户 ID 校验
 ├── eventernote.test.ts                  # Eventernote 页面解析
 ├── manual-refresh-navigation.test.ts    # 手动刷新导航
+├── i18n.test.ts                         # 语言解析与文案完整性
+├── musicbrainz-recent-songs-sync.test.ts # 最近歌曲过滤与同步
 ├── setlist-status-filter.test.ts        # Setlist 状态过滤
 ├── song-match-suggestions.test.ts       # 歌曲匹配建议
 └── title-utils.test.ts                  # 标题工具函数
 ```
 
 测试覆盖核心业务逻辑，重点测试：
+
 - HTML 解析（传入真实 HTML 片段，无需 mock HTTP）
 - 数据聚合（纯函数，输入输出确定性）
 - 缓存策略（活动数比对、租约机制）
@@ -408,6 +438,7 @@ graph LR
 ### 8.3 Parser 与 I/O 分离
 
 `eventernote/parser.ts` 是纯函数模块，只接收 HTML 字符串，返回结构化数据。这使得：
+
 - 单元测试只需传入 HTML 片段，无需 mock HTTP
 - `client.ts` 专注于 HTTP 逻辑（分页、重试、超时）
 - 解析器升级时只需 bump `parserVersion`，触发缓存自动刷新
@@ -445,13 +476,16 @@ graph TB
 
     subgraph "外部服务"
         EN2["eventernote.com"]
+        MB["musicbrainz.org"]
     end
 
     App --> Postgres
     Scheduler --> App
     App --> EN2
+    App --> MB
 ```
 
 - API 路由和页面使用 `runtime = "nodejs"`（Cheerio 需要 Node 环境）
-- 通过外部调度器定期调用 `/api/cron/event-ranking` 刷新 `bandori_event_index`
+- 通过外部调度器每日调用 `/api/cron/event-ranking` 刷新活动索引
+- 可每日调用 `/api/cron/songs-sync` 同步 MusicBrainz 最近歌曲
 - 静态数据（`src/data/`）随代码部署，需通过脚本手动更新

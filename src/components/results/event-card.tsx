@@ -1,7 +1,7 @@
 "use client";
 
 import { getBandSupportColor, getBandTextColor } from "@/lib/constants/bands";
-import type { cnCopy } from "@/lib/i18n/cn";
+import type { CopyDefinition } from "@/lib/i18n";
 import { formatSongTitleForDisplay } from "@/lib/music/title-utils";
 import type { MatchedEventEntry } from "@/lib/stats/aggregate";
 import type { useResultsState } from "./use-results-state";
@@ -15,7 +15,7 @@ type EventSong = {
 
 type EventCardProps = {
   event: MatchedEventEntry;
-  localeCopy: typeof cnCopy;
+  localeCopy: CopyDefinition;
   isExpanded: boolean;
   newlyHeardSongs: EventSong[];
   performedSongs: EventSong[];

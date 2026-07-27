@@ -3,7 +3,7 @@
 import type { CSSProperties } from "react";
 import { getBandSupportColor, getBandTextColor } from "@/lib/constants/bands";
 import { filterEventsByVisibilityRules, type EventVisibilityRules } from "@/lib/events/event-visibility";
-import type { cnCopy } from "@/lib/i18n/cn";
+import type { CopyDefinition } from "@/lib/i18n";
 import { formatSongTitleForDisplay } from "@/lib/music/title-utils";
 import type { SongEventReference } from "@/lib/stats/aggregate";
 import type { useResultsState } from "./use-results-state";
@@ -11,7 +11,7 @@ import { percentLabel, withAlpha } from "./utils";
 
 type BandSummaryCardProps = {
   summary: { slug: string; nameJa: string; heardCount: number; totalCount: number; percentage: number; songs: { id: number; title: string; heard: boolean }[] };
-  localeCopy: typeof cnCopy;
+  localeCopy: CopyDefinition;
   activeSongId: number | null;
   expandedBands: Record<string, boolean>;
   songEventsBySongId: Record<number, SongEventReference[]>;

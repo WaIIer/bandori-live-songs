@@ -3,15 +3,15 @@
 import { useState, type FormEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isValidEventernoteUserId, normalizeEventernoteUserId } from "@/lib/eventernote/user-id";
-import { cnCopy } from "@/lib/i18n/cn";
+import type { CopyDefinition } from "@/lib/i18n";
 import { buildAwaitFreshAfterCookie } from "@/lib/manual-refresh-navigation";
 
 type SearchFormProps = {
   defaultUserId?: string;
+  copy: CopyDefinition;
 };
 
-export function SearchForm({ defaultUserId = "" }: SearchFormProps) {
-  const localeCopy = cnCopy;
+export function SearchForm({ defaultUserId = "", copy: localeCopy }: SearchFormProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [userIdValue, setUserIdValue] = useState(defaultUserId);

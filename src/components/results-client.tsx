@@ -2,7 +2,7 @@
 
 import { SaveImageButton } from "@/components/save-image-button";
 import type { EventVisibilityRules } from "@/lib/events/event-visibility";
-import { cnCopy } from "@/lib/i18n/cn";
+import type { CopyDefinition } from "@/lib/i18n";
 import type { MatchedEventEntry, SongPoolItem } from "@/lib/stats/aggregate";
 import { useResultsState } from "./results/use-results-state";
 import { percentLabel } from "./results/utils";
@@ -18,6 +18,7 @@ type ResultsClientProps = {
   defaultHideVirtualBands: boolean;
   defaultHideSonglessActivities: boolean;
   eventVisibilityRules: EventVisibilityRules;
+  copy: CopyDefinition;
 };
 
 export function ResultsClient({
@@ -29,8 +30,8 @@ export function ResultsClient({
   defaultHideVirtualBands,
   defaultHideSonglessActivities,
   eventVisibilityRules,
+  copy: localeCopy,
 }: ResultsClientProps) {
-  const localeCopy = cnCopy;
   const state = useResultsState({
     songs,
     matchedEvents,
@@ -203,7 +204,7 @@ export function ResultsClient({
       </div>
 
       <div className="pt-2">
-        <SaveImageButton userId={userId} />
+        <SaveImageButton userId={userId} copy={localeCopy} />
       </div>
 
       {/* Events section */}
