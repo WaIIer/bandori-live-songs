@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="58 38 396 396">
+  <defs>
+    <polygon
+      id="star"
+      points="256,66 310,177 433,195 344,282 365,405 256,347 147,405 168,282 79,195 202,177"
+    />
+    <g id="note">
+      <ellipse cx="318" cy="274" rx="48" ry="34" transform="rotate(-18 318 274)" />
+      <path
+        d="M352 110c0-10 10-17 19-12 49 22 78 59 70 113-3 17-10 31-20 43 3-38-17-65-55-80v95c0 9-7 16-16 16s-16-7-16-16V126c0-9 7-16 16-16h2Z"
+      />
+    </g>
+    <mask id="star-note-gap" maskUnits="userSpaceOnUse" x="0" y="0" width="512" height="512">
+      <rect width="512" height="512" fill="#fff" />
+      <use
+        href="#note"
+        fill="#000"
+        stroke="#000"
+        stroke-linejoin="round"
+        stroke-width="96"
+        transform="translate(35 25) scale(.94)"
+      />
+    </mask>
+  </defs>
+  <use
+    href="#star"
+    fill="#f50057"
+    stroke="#f50057"
+    stroke-linejoin="round"
+    stroke-width="22"
+    mask="url(#star-note-gap)"
+  />
+  <use
+    href="#note"
+    fill="#f50057"
+    stroke="#f50057"
+    stroke-linejoin="round"
+    stroke-width="4"
+    transform="translate(35 25) scale(.94)"
+  />
+</svg>
