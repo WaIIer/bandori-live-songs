@@ -23,6 +23,10 @@
     "data:backfill:eventernote-users": "tsx scripts/backfill-eventernote-user-profiles.ts",
     "data:cleanup:event-titles": "tsx scripts/cleanup-event-title-tags.ts",
     "data:import:songs": "tsx scripts/import-discography.ts",
+    "data:lookup:spotify": "tsx scripts/lookup-spotify-tracks.ts",
+    "data:refresh:ranking-reference": "python scripts/ranking-data/refresh-reference.py",
+    "data:refresh:ranking-attendance": "python scripts/ranking-data/refresh-attendance.py",
+    "data:refresh:ranking": "npm run data:refresh:ranking-reference && npm run data:refresh:ranking-attendance",
     "db:seed": "tsx scripts/seed-all.ts"
   },
   "dependencies": {
@@ -34,6 +38,7 @@
     "postgres": "^3.4.7",
     "react": "19.2.4",
     "react-dom": "19.2.4",
+    "react-icons": "^5.7.0",
     "server-only": "^0.0.1",
     "zod": "^4.3.6"
   },

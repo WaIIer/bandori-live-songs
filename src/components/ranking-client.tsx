@@ -3,17 +3,20 @@
 import Link from "next/link";
 import {
   BarChart3Icon,
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   ExternalLinkIcon,
   Loader2Icon,
   SearchIcon,
   XIcon,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { SiSpotify } from "react-icons/si";
 import { navPillLabel } from "@/components/nav-pill";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { BAND_SEEDS, getBandSupportColor } from "@/lib/constants/bands";
+import { BAND_SEEDS, getBandSupportColor, PROJECT_COMMON_SLUG } from "@/lib/constants/bands";
 
 type RankingRow = {
   user: string;
@@ -80,10 +83,21 @@ type AttendanceSnapshot = {
   events?: Record<string, string[]>;
 };
 
+type SpotifyTrack = {
+  url?: string;
+};
+
+type SpotifyLookup = {
+  tracks?: Record<string, SpotifyTrack>;
+};
+
 type CompletionPool = "no-cover" | "cover" | "all";
 type ActiveView = "rankings" | "events" | "catalog";
 type CatalogCategory = "all" | "original" | "cover";
-type CatalogSort = "title" | "first" | "last" | "performances";
+type CatalogSort = "title" | "category" | "first" | "last" | "performances";
+type RankingSort = "rank" | "eventer" | "events" | "completion" | "songs";
+type EventSort = "event" | "date" | "bands" | "attendees" | "setlist";
+type SortDirection = "asc" | "desc";
 
 type Completion = {
   listened: number;
@@ -103,10 +117,21 @@ type EventWithAttendance = RankingEvent & {
   attendeeCount: number;
 };
 
+type SongEventPerformance = {
+  id: number;
+  title: string;
+  date: string | null;
+  venue: string | null;
+  eventUrl: string;
+};
+
 type SongPerformance = {
   playCount: number;
   firstPlayed: string | null;
   lastPlayed: string | null;
+  firstEventUrl: string | null;
+  lastEventUrl: string | null;
+  events: SongEventPerformance[];
 };
 
 const pageSize = 25;
@@ -114,6 +139,10 @@ const compactNumber = new Intl.NumberFormat();
 const bandNames = new Map(BAND_SEEDS.map((band) => [band.slug, band.nameEn]));
 const bandOrder = new Map(BAND_SEEDS.map((band) => [band.slug, band.displayOrder]));
 const emptySongs: RankingSong[] = [];
+
+function displayBandName(slug: string, name?: string) {
+  return slug === PROJECT_COMMON_SLUG ? "Collab" : name || bandNames.get(slug) || slug;
+}
 
 function parseRankingRows(csv: string): RankingRow[] {
   return csv
@@ -144,12 +173,12 @@ function dateLabel(value: string | null | undefined) {
 
 function songBandEntries(song: RankingSong) {
   if (song.bandSlug) {
-    return [{ slug: song.bandSlug, name: song.bandName || bandNames.get(song.bandSlug) || song.bandSlug }];
+    return [{ slug: song.bandSlug, name: displayBandName(song.bandSlug, song.bandName) }];
   }
 
   return (song.performedBandSlugs || []).map((slug, index) => ({
     slug,
-    name: song.performedBandNames?.[index] || bandNames.get(slug) || slug,
+    name: displayBandName(slug, song.performedBandNames?.[index]),
   }));
 }
 
@@ -166,23 +195,130 @@ function poolLabel(pool: CompletionPool) {
   return "No covers";
 }
 
+function compareText(left: string, right: string) {
+  return left.localeCompare(right, undefined, { sensitivity: "base" });
+}
+
+function eventernoteEventUrl(event: RankingEvent, eventId: number) {
+  return event.sourceUrl || `https://www.eventernote.com/events/${event.eventernoteEventId || eventId}`;
+}
+
+function eventBandLabel(event: RankingEvent) {
+  return (event.performingBandSlugs || [])
+    .map((slug, index) => displayBandName(slug, event.performingBandNames?.[index]))
+    .join(" / ") || "-";
+}
+
+function SortableHeader({
+  label,
+  active,
+  direction,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  direction: SortDirection;
+  onClick: () => void;
+}) {
+  const Icon = direction === "asc" ? ChevronUpIcon : ChevronDownIcon;
+
+  return (
+    <th className="py-3 pr-4 font-medium" aria-sort={active ? (direction === "asc" ? "ascending" : "descending") : "none"}>
+      <button type="button" className="inline-flex items-center gap-1 hover:text-foreground" onClick={onClick}>
+        {label}
+        {active ? <Icon className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+      </button>
+    </th>
+  );
+}
+
+function TablePagination({
+  page,
+  pageCount,
+  onPrevious,
+  onNext,
+  label,
+}: {
+  page: number;
+  pageCount: number;
+  onPrevious: () => void;
+  onNext: () => void;
+  label: string;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        type="button"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+        disabled={page === 1}
+        onClick={onPrevious}
+        aria-label={`Previous ${label} page`}
+        title="Previous page"
+      >
+        <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
+      </button>
+      <span className="min-w-16 text-center text-sm text-ink-soft">{page} / {pageCount}</span>
+      <button
+        type="button"
+        className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
+        disabled={page === pageCount}
+        onClick={onNext}
+        aria-label={`Next ${label} page`}
+        title="Next page"
+      >
+        <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function EventDateLink({ value, eventUrl }: { value: string | null | undefined; eventUrl: string | null | undefined }) {
+  if (!value || !eventUrl) return <span>{dateLabel(value)}</span>;
+
+  return (
+    <a href={eventUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-accent" title="Open event on Eventernote">
+      {value}
+      <ExternalLinkIcon className="h-3 w-3" aria-hidden="true" />
+    </a>
+  );
+}
+
+function SpotifySongLink({ title, url }: { title: string; url: string | undefined }) {
+  if (!url) return null;
+
+  return (
+    <a href={url} target="_blank" rel="noreferrer" className="inline-flex shrink-0 text-[#1DB954] hover:text-[#1ed760]" aria-label={`Open ${title} on Spotify`} title="Open on Spotify">
+      <SiSpotify className="h-4 w-4" aria-hidden="true" />
+    </a>
+  );
+}
+
 export function RankingClient() {
   const [rows, setRows] = useState<RankingRow[]>([]);
   const [snapshot, setSnapshot] = useState<RankingSnapshot | null>(null);
   const [attendance, setAttendance] = useState<AttendanceSnapshot | null>(null);
+  const [spotifyTracks, setSpotifyTracks] = useState<Record<string, SpotifyTrack>>({});
   const [error, setError] = useState("");
   const [activeView, setActiveView] = useState<ActiveView>("rankings");
   const [pool, setPool] = useState<CompletionPool>("no-cover");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [rankingSort, setRankingSort] = useState<RankingSort>("rank");
+  const [rankingSortDirection, setRankingSortDirection] = useState<SortDirection>("desc");
   const [selectedUser, setSelectedUser] = useState("");
+  const [expandedEventer, setExpandedEventer] = useState("");
   const [eventQuery, setEventQuery] = useState("");
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
+  const [eventPage, setEventPage] = useState(1);
+  const [eventSort, setEventSort] = useState<EventSort>("attendees");
+  const [eventSortDirection, setEventSortDirection] = useState<SortDirection>("desc");
   const [catalogQuery, setCatalogQuery] = useState("");
   const [catalogCategory, setCatalogCategory] = useState<CatalogCategory>("all");
   const [catalogBand, setCatalogBand] = useState("");
   const [catalogSort, setCatalogSort] = useState<CatalogSort>("last");
+  const [catalogSortDirection, setCatalogSortDirection] = useState<SortDirection>("desc");
   const [catalogPage, setCatalogPage] = useState(1);
+  const [selectedCatalogSong, setSelectedCatalogSong] = useState<number | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -190,16 +326,19 @@ export function RankingClient() {
     async function loadSnapshot() {
       try {
         const csvResponse = await fetch("/ranking-data/all-bandori-results.csv");
-        if (!csvResponse.ok) throw new Error("The listener ranking snapshot could not be loaded.");
+        if (!csvResponse.ok) throw new Error("The eventer ranking snapshot could not be loaded.");
         const csv = await csvResponse.text();
         if (active) setRows(parseRankingRows(csv));
 
-        const [detailResponse, attendanceResponse] = await Promise.all([
+        const [detailResponse, attendanceResponse, spotifyLookup] = await Promise.all([
           fetch("/ranking-data/profile-details.json"),
           fetch("/ranking-data/event-attendance.json"),
+          fetch("/ranking-data/spotify-tracks.json")
+            .then((response) => response.ok ? response.json() as Promise<SpotifyLookup> : null)
+            .catch(() => null),
         ]);
         if (!detailResponse.ok || !attendanceResponse.ok) {
-          throw new Error("The detailed listener snapshot could not be loaded.");
+          throw new Error("The detailed eventer snapshot could not be loaded.");
         }
         const [detail, eventAttendance] = await Promise.all([
           detailResponse.json() as Promise<RankingSnapshot>,
@@ -208,10 +347,11 @@ export function RankingClient() {
         if (active) {
           setSnapshot(detail);
           setAttendance(eventAttendance);
+          setSpotifyTracks(spotifyLookup?.tracks || {});
         }
       } catch (loadError) {
         if (active) {
-          setError(loadError instanceof Error ? loadError.message : "The ranking snapshot could not be loaded.");
+          setError(loadError instanceof Error ? loadError.message : "The eventer ranking snapshot could not be loaded.");
         }
       }
     }
@@ -285,7 +425,7 @@ export function RankingClient() {
       .sort((left, right) => (bandOrder.get(left.slug) || 99) - (bandOrder.get(right.slug) || 99))
       .map((band) => ({
         id: `original-${band.slug}`,
-        label: `${band.name} ${band.listened}/${band.total}`,
+        label: `${displayBandName(band.slug, band.name)} ${band.listened}/${band.total}`,
         width: (band.listened / completion.total) * 100,
         color: getBandSupportColor(band.slug) || "var(--accent)",
       }));
@@ -312,6 +452,36 @@ export function RankingClient() {
     return originalSegments;
   }
 
+  function toggleRankingSort(nextSort: RankingSort) {
+    setPage(1);
+    if (rankingSort === nextSort) {
+      setRankingSortDirection((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setRankingSort(nextSort);
+    setRankingSortDirection(nextSort === "eventer" ? "asc" : "desc");
+  }
+
+  function toggleEventSort(nextSort: EventSort) {
+    setEventPage(1);
+    if (eventSort === nextSort) {
+      setEventSortDirection((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setEventSort(nextSort);
+    setEventSortDirection(nextSort === "event" || nextSort === "bands" ? "asc" : "desc");
+  }
+
+  function toggleCatalogSort(nextSort: CatalogSort) {
+    setCatalogPage(1);
+    if (catalogSort === nextSort) {
+      setCatalogSortDirection((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setCatalogSort(nextSort);
+    setCatalogSortDirection(nextSort === "title" || nextSort === "category" || nextSort === "first" ? "asc" : "desc");
+  }
+
   const rankedRows = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
     const completionForRanking = (row: RankingRow): Completion => {
@@ -335,16 +505,29 @@ export function RankingClient() {
       return { listened: row.listened, total: row.total, percentage: row.percentage };
     };
 
+    const defaultCompare = (left: { row: RankingRow; completion: Completion }, right: { row: RankingRow; completion: Completion }) =>
+      right.row.hits - left.row.hits ||
+      right.completion.percentage - left.completion.percentage ||
+      compareText(left.row.user, right.row.user);
+
     return rows
       .filter((row) => row.status === "ok" && row.user.toLowerCase().includes(normalizedQuery))
       .map((row) => ({ row, completion: completionForRanking(row) }))
-      .sort(
-        (left, right) =>
-          right.row.hits - left.row.hits ||
-          right.completion.percentage - left.completion.percentage ||
-          left.row.user.localeCompare(right.row.user),
-      );
-  }, [coverIdsByUser, coverSongs.length, pool, query, rows]);
+      .sort((left, right) => {
+        if (rankingSort === "rank") {
+          const comparison = defaultCompare(left, right);
+          return rankingSortDirection === "asc" ? -comparison : comparison;
+        }
+        const comparison = rankingSort === "eventer"
+          ? compareText(left.row.user, right.row.user)
+          : rankingSort === "events"
+            ? left.row.hits - right.row.hits
+            : rankingSort === "completion"
+              ? left.completion.percentage - right.completion.percentage
+              : left.completion.listened - right.completion.listened;
+        return (rankingSortDirection === "asc" ? comparison : -comparison) || defaultCompare(left, right);
+      });
+  }, [coverIdsByUser, coverSongs.length, pool, query, rankingSort, rankingSortDirection, rows]);
 
   const pageCount = Math.max(1, Math.ceil(rankedRows.length / pageSize));
   const safePage = Math.min(page, pageCount);
@@ -367,22 +550,62 @@ export function RankingClient() {
       .sort((left, right) => right.attendeeCount - left.attendeeCount || (right.eventDate || "").localeCompare(left.eventDate || ""));
   }, [attendance, snapshot]);
 
-  const matchingEvents = indexedEvents.filter((event) => {
+  const matchingEvents = useMemo(() => {
     const search = eventQuery.trim().toLowerCase();
-    return !search || `${event.title} ${event.venue || ""} ${(event.performingBandNames || []).join(" ")}`.toLowerCase().includes(search);
-  });
+    return indexedEvents
+      .filter((event) => !search || `${event.title} ${event.venue || ""} ${eventBandLabel(event)}`.toLowerCase().includes(search))
+      .sort((left, right) => {
+        const comparison = eventSort === "event"
+          ? compareText(left.title, right.title)
+          : eventSort === "date"
+            ? (left.eventDate || "").localeCompare(right.eventDate || "")
+            : eventSort === "bands"
+              ? compareText(eventBandLabel(left), eventBandLabel(right))
+              : eventSort === "attendees"
+                ? left.attendeeCount - right.attendeeCount
+                : (left.heardSongIds || []).length - (right.heardSongIds || []).length;
+        return (eventSortDirection === "asc" ? comparison : -comparison) || left.id - right.id;
+      });
+  }, [eventQuery, eventSort, eventSortDirection, indexedEvents]);
+  const eventPageCount = Math.max(1, Math.ceil(matchingEvents.length / pageSize));
+  const safeEventPage = Math.min(eventPage, eventPageCount);
+  const visibleEvents = matchingEvents.slice((safeEventPage - 1) * pageSize, safeEventPage * pageSize);
 
   const performanceBySong = useMemo(() => {
     const values = new Map<number, SongPerformance>();
-    Object.values(snapshot?.events || {}).forEach((event) => {
+    Object.entries(snapshot?.events || {}).forEach(([eventId, event]) => {
       new Set(event.heardSongIds || []).forEach((songId) => {
-        const current = values.get(Number(songId)) || { playCount: 0, firstPlayed: null, lastPlayed: null };
+        const current = values.get(Number(songId)) || {
+          playCount: 0,
+          firstPlayed: null,
+          lastPlayed: null,
+          firstEventUrl: null,
+          lastEventUrl: null,
+          events: [],
+        };
         current.playCount += 1;
         const date = event.eventDate || null;
-        if (date && (!current.firstPlayed || date < current.firstPlayed)) current.firstPlayed = date;
-        if (date && (!current.lastPlayed || date > current.lastPlayed)) current.lastPlayed = date;
+        const eventUrl = eventernoteEventUrl(event, Number(event.eventernoteEventId || eventId));
+        current.events.push({
+          id: Number(event.eventernoteEventId || eventId),
+          title: event.title,
+          date,
+          venue: event.venue || null,
+          eventUrl,
+        });
+        if (date && (!current.firstPlayed || date < current.firstPlayed)) {
+          current.firstPlayed = date;
+          current.firstEventUrl = eventUrl;
+        }
+        if (date && (!current.lastPlayed || date > current.lastPlayed)) {
+          current.lastPlayed = date;
+          current.lastEventUrl = eventUrl;
+        }
         values.set(Number(songId), current);
       });
+    });
+    values.forEach((performance) => {
+      performance.events.sort((left, right) => (right.date || "").localeCompare(left.date || "") || right.id - left.id);
     });
     return values;
   }, [snapshot]);
@@ -407,12 +630,18 @@ export function RankingClient() {
       .sort((left, right) => {
         const leftStats = performanceBySong.get(Number(left.id)) || { playCount: 0, firstPlayed: null, lastPlayed: null };
         const rightStats = performanceBySong.get(Number(right.id)) || { playCount: 0, firstPlayed: null, lastPlayed: null };
-        if (catalogSort === "performances") return rightStats.playCount - leftStats.playCount || left.title.localeCompare(right.title);
-        if (catalogSort === "first") return (leftStats.firstPlayed || "9999").localeCompare(rightStats.firstPlayed || "9999") || left.title.localeCompare(right.title);
-        if (catalogSort === "last") return (rightStats.lastPlayed || "").localeCompare(leftStats.lastPlayed || "") || left.title.localeCompare(right.title);
-        return left.title.localeCompare(right.title);
+        const comparison = catalogSort === "performances"
+          ? leftStats.playCount - rightStats.playCount
+          : catalogSort === "category"
+            ? compareText(left.category || "", right.category || "")
+          : catalogSort === "first"
+            ? (leftStats.firstPlayed || "9999").localeCompare(rightStats.firstPlayed || "9999")
+            : catalogSort === "last"
+              ? (leftStats.lastPlayed || "").localeCompare(rightStats.lastPlayed || "")
+              : compareText(left.title, right.title);
+        return (catalogSortDirection === "asc" ? comparison : -comparison) || compareText(left.title, right.title);
       });
-  }, [catalogBand, catalogCategory, catalogQuery, catalogSort, catalogSongs, performanceBySong]);
+  }, [catalogBand, catalogCategory, catalogQuery, catalogSort, catalogSortDirection, catalogSongs, performanceBySong]);
 
   const catalogPageCount = Math.max(1, Math.ceil(filteredSongs.length / pageSize));
   const safeCatalogPage = Math.min(catalogPage, catalogPageCount);
@@ -426,7 +655,6 @@ export function RankingClient() {
     .map((eventId) => ({ id: Number(eventId), event: snapshot?.events?.[String(eventId)] }))
     .filter((item): item is { id: number; event: RankingEvent } => Boolean(item.event))
     .sort((left, right) => (right.event.eventDate || "").localeCompare(left.event.eventDate || ""));
-  const expandedEvent = selectedEvent ? snapshot?.events?.[String(selectedEvent)] : undefined;
 
   const isLoadingRows = !rows.length && !error;
   const isLoadingDetails = !snapshot && !error;
@@ -448,8 +676,8 @@ export function RankingClient() {
             </Link>
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <Link href="/ranking" className={navPillLabel} aria-current="page">
-              Rankings
+            <Link href="/" className={navPillLabel}>
+              Songs
             </Link>
             <ThemeToggle labels={{ ariaLabel: "Color theme", light: "Light", system: "System", dark: "Dark" }} />
           </div>
@@ -464,13 +692,9 @@ export function RankingClient() {
                 <BarChart3Icon className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
-                <p className="text-sm font-medium text-ink-soft">Eventernote community snapshot</p>
-                <h1 className="mt-1 font-heading text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
-                  Listener Rankings
+                <h1 className="font-heading text-3xl font-semibold tracking-[-0.04em] sm:text-4xl">
+                  Eventer Rankings
                 </h1>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-ink-soft">
-                  Attendance and setlist coverage from {compactNumber.format(snapshot?.coverage?.indexedEvents || 397)} indexed BanG Dream! events.
-                </p>
               </div>
             </div>
             <div className="flex rounded-full border border-border-soft bg-panel-strong p-1" role="tablist" aria-label="Ranking views">
@@ -496,9 +720,9 @@ export function RankingClient() {
 
           <div className="mt-6 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              ["Listeners", compactNumber.format(rows.length || snapshot?.coverage?.uniqueUsers || 0)],
+              ["Eventers", compactNumber.format(rows.length || snapshot?.coverage?.uniqueUsers || 0)],
               ["Indexed events", compactNumber.format(snapshot?.coverage?.indexedEvents || 397)],
-              ["Live catalog", compactNumber.format(catalogSongs.length || snapshot?.coverage?.liveCatalogSongs || 424)],
+              ["Song catalog", compactNumber.format(catalogSongs.length || snapshot?.coverage?.liveCatalogSongs || 424)],
               ["Average completion", rankedRows.length ? percent(averageCompletion) : "-"],
             ].map(([label, value]) => (
               <div key={label} className="border-t border-border-soft pt-3 sm:border-l sm:border-t-0 sm:pl-4">
@@ -520,10 +744,7 @@ export function RankingClient() {
             <section className="rounded-[1.15rem] border border-border-soft bg-panel px-5 py-5 sm:px-6">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <h2 className="font-heading text-2xl font-semibold tracking-[-0.04em]">Listener leaderboard</h2>
-                  <p className="mt-1 text-sm leading-6 text-ink-soft">
-                    Ranked by indexed event attendance, then by {poolLabel(pool).toLowerCase()} completion.
-                  </p>
+                  <h2 className="font-heading text-2xl font-semibold tracking-[-0.04em]">Eventer leaderboard</h2>
                 </div>
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <div className="flex rounded-full border border-border-soft bg-panel-strong p-1" aria-label="Song pool">
@@ -555,7 +776,7 @@ export function RankingClient() {
                         setQuery(event.target.value);
                         setPage(1);
                       }}
-                      placeholder="Find listener"
+                      placeholder="Find eventer"
                       className="h-10 w-full rounded-full border border-border-soft bg-panel-strong py-2 pr-4 pl-9 text-sm outline-none placeholder:text-ink-soft focus:border-accent sm:w-52"
                     />
                   </label>
@@ -565,106 +786,141 @@ export function RankingClient() {
               {isLoadingRows ? (
                 <div className="flex items-center gap-2 py-12 text-sm text-ink-soft">
                   <Loader2Icon className="h-4 w-4 animate-spin" aria-hidden="true" />
-                  Loading listener rankings
+                  Loading eventer rankings
                 </div>
               ) : (
                 <>
+                  <div className="mt-5 flex items-center justify-between gap-4">
+                    <p className="text-sm text-ink-soft">{compactNumber.format(rankedRows.length)} eventers</p>
+                    <TablePagination
+                      page={safePage}
+                      pageCount={pageCount}
+                      label="eventer"
+                      onPrevious={() => setPage((current) => Math.max(1, current - 1))}
+                      onNext={() => setPage((current) => Math.min(pageCount, current + 1))}
+                    />
+                  </div>
                   <div className="mt-5 overflow-x-auto">
-                    <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+                    <table id="eventerTable" className="w-full min-w-[720px] border-collapse text-left text-sm">
                       <thead className="border-y border-border-soft text-xs uppercase tracking-[0.08em] text-ink-soft">
                         <tr>
-                          <th className="py-3 pr-3 font-medium">Rank</th>
-                          <th className="py-3 pr-4 font-medium">Listener</th>
-                          <th className="py-3 pr-4 font-medium">Events</th>
-                          <th className="py-3 pr-4 font-medium">Completion</th>
-                          <th className="py-3 font-medium">Songs</th>
+                          <SortableHeader label="Rank" active={rankingSort === "rank"} direction={rankingSortDirection} onClick={() => toggleRankingSort("rank")} />
+                          <SortableHeader label="Eventer" active={rankingSort === "eventer"} direction={rankingSortDirection} onClick={() => toggleRankingSort("eventer")} />
+                          <SortableHeader label="Events" active={rankingSort === "events"} direction={rankingSortDirection} onClick={() => toggleRankingSort("events")} />
+                          <SortableHeader label="Completion" active={rankingSort === "completion"} direction={rankingSortDirection} onClick={() => toggleRankingSort("completion")} />
+                          <SortableHeader label="Songs" active={rankingSort === "songs"} direction={rankingSortDirection} onClick={() => toggleRankingSort("songs")} />
                         </tr>
                       </thead>
                       <tbody>
                         {visibleRows.map(({ row, completion }, index) => {
                           const segments = completionSegments(row, completion);
+                          const attendedEvents = (snapshot?.profiles?.[row.user]?.matchedEventIds || [])
+                            .map((eventId) => ({ id: Number(eventId), event: snapshot?.events?.[String(eventId)] }))
+                            .filter((item): item is { id: number; event: RankingEvent } => Boolean(item.event))
+                            .sort((left, right) => (right.event.eventDate || "").localeCompare(left.event.eventDate || ""));
+                          const isEventerExpanded = expandedEventer === row.user;
                           return (
-                            <tr key={row.user} className="border-b border-border-soft/80 last:border-b-0">
-                              <td className="py-3 pr-3 font-heading font-semibold">{(safePage - 1) * pageSize + index + 1}</td>
-                              <td className="py-3 pr-4">
-                                <button
-                                  type="button"
-                                  className="font-medium text-foreground hover:text-accent"
-                                  onClick={() => setSelectedUser(row.user)}
-                                >
-                                  {row.user}
-                                </button>
-                                <a
-                                  href={`https://www.eventernote.com/bd/user/${encodeURIComponent(row.user)}`}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="ml-1 inline-flex text-ink-soft hover:text-accent"
-                                  aria-label={`Open ${row.user} on Eventernote`}
-                                >
-                                  <ExternalLinkIcon className="h-3.5 w-3.5" aria-hidden="true" />
-                                </a>
-                              </td>
-                              <td className="py-3 pr-4 font-heading font-semibold">{compactNumber.format(row.hits)}</td>
-                              <td className="py-3 pr-4">
-                                <div className="flex min-w-[190px] items-center gap-3">
-                                  <span className="w-12 shrink-0 font-heading font-semibold">{percent(completion.percentage)}</span>
-                                  <div className="flex h-2.5 flex-1 overflow-hidden rounded-full bg-border-soft" title={`${completion.listened}/${completion.total}`}>
-                                    {segments.map((segment) => (
-                                      <span
-                                        key={segment.id}
-                                        className="h-full shrink-0"
-                                        style={{ width: `${segment.width}%`, backgroundColor: segment.color }}
-                                        title={segment.label}
-                                      />
-                                    ))}
+                            <Fragment key={row.user}>
+                              <tr className="border-b border-border-soft/80">
+                                <td className="py-3 pr-3 font-heading font-semibold">{(safePage - 1) * pageSize + index + 1}</td>
+                                <td className="py-3 pr-4">
+                                  <button
+                                    type="button"
+                                    className="font-medium text-foreground hover:text-accent"
+                                    onClick={() => setSelectedUser(row.user)}
+                                  >
+                                    {row.user}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="ml-1 inline-flex h-5 w-5 items-center justify-center align-middle text-ink-soft hover:text-accent"
+                                    onClick={() => setExpandedEventer((current) => current === row.user ? "" : row.user)}
+                                    aria-label={`${isEventerExpanded ? "Hide" : "Show"} events attended by ${row.user}`}
+                                    aria-expanded={isEventerExpanded}
+                                    title={isEventerExpanded ? "Hide attended events" : "Show attended events"}
+                                  >
+                                    {isEventerExpanded ? <ChevronUpIcon className="h-3.5 w-3.5" aria-hidden="true" /> : <ChevronDownIcon className="h-3.5 w-3.5" aria-hidden="true" />}
+                                  </button>
+                                  <a
+                                    href={`https://www.eventernote.com/bd/user/${encodeURIComponent(row.user)}`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="ml-1 inline-flex text-ink-soft hover:text-accent"
+                                    aria-label={`Open ${row.user} on Eventernote`}
+                                  >
+                                    <ExternalLinkIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                                  </a>
+                                </td>
+                                <td className="py-3 pr-4 font-heading font-semibold">{compactNumber.format(row.hits)}</td>
+                                <td className="py-3 pr-4">
+                                  <div className="flex min-w-[190px] items-center gap-3">
+                                    <span className="w-12 shrink-0 font-heading font-semibold">{percent(completion.percentage)}</span>
+                                    <div className="flex h-2.5 flex-1 overflow-hidden rounded-full bg-border-soft" title={`${completion.listened}/${completion.total}`}>
+                                      {segments.map((segment) => (
+                                        <span
+                                          key={segment.id}
+                                          className="h-full shrink-0"
+                                          style={{ width: `${segment.width}%`, backgroundColor: segment.color }}
+                                          title={segment.label}
+                                        />
+                                      ))}
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td className="py-3 font-heading font-semibold">
-                                {compactNumber.format(completion.listened)} <span className="font-normal text-ink-soft">/ {compactNumber.format(completion.total)}</span>
-                              </td>
-                            </tr>
+                                </td>
+                                <td className="py-3 font-heading font-semibold">
+                                  {compactNumber.format(completion.listened)} <span className="font-normal text-ink-soft">/ {compactNumber.format(completion.total)}</span>
+                                </td>
+                              </tr>
+                              {isEventerExpanded ? (
+                                <tr className="border-b border-border-soft/80">
+                                  <td colSpan={5} className="p-0">
+                                    <div className="bg-panel-strong/60 px-4 py-3">
+                                      <div className="flex items-center justify-between gap-4">
+                                        <p className="text-sm font-medium">Events <span className="font-normal text-ink-soft">{compactNumber.format(attendedEvents.length)}</span></p>
+                                        <button type="button" className="flex h-7 w-7 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent" onClick={() => setExpandedEventer("")} aria-label={`Close events attended by ${row.user}`} title="Close events">
+                                          <XIcon className="h-3.5 w-3.5" aria-hidden="true" />
+                                        </button>
+                                      </div>
+                                      {attendedEvents.length ? (
+                                        <ol className="mt-2 grid max-h-72 gap-x-5 gap-y-1 overflow-y-auto text-xs sm:grid-cols-2 lg:grid-cols-3">
+                                          {attendedEvents.map(({ id, event }) => (
+                                            <li key={id} className="flex min-w-0 items-baseline gap-2">
+                                              <span className="shrink-0"><EventDateLink value={event.eventDate} eventUrl={eventernoteEventUrl(event, id)} /></span>
+                                              <a href={eventernoteEventUrl(event, id)} target="_blank" rel="noreferrer" className="truncate hover:text-accent" title={event.title}>{event.title}</a>
+                                            </li>
+                                          ))}
+                                        </ol>
+                                      ) : <p className="mt-2 text-xs text-ink-soft">No indexed events.</p>}
+                                    </div>
+                                  </td>
+                                </tr>
+                              ) : null}
+                            </Fragment>
                           );
                         })}
                       </tbody>
                     </table>
                   </div>
-                  {!visibleRows.length ? <p className="py-10 text-center text-sm text-ink-soft">No listeners match this search.</p> : null}
+                  {!visibleRows.length ? <p className="py-10 text-center text-sm text-ink-soft">No eventers match this search.</p> : null}
                   <div className="mt-5 flex items-center justify-between gap-4 border-t border-border-soft pt-4">
-                    <p className="text-sm text-ink-soft">{compactNumber.format(rankedRows.length)} listeners</p>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
-                        disabled={safePage === 1}
-                        onClick={() => setPage((current) => Math.max(1, current - 1))}
-                        aria-label="Previous ranking page"
-                        title="Previous page"
-                      >
-                        <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
-                      </button>
-                      <span className="min-w-16 text-center text-sm text-ink-soft">{safePage} / {pageCount}</span>
-                      <button
-                        type="button"
-                        className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40"
-                        disabled={safePage === pageCount}
-                        onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
-                        aria-label="Next ranking page"
-                        title="Next page"
-                      >
-                        <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
-                      </button>
-                    </div>
+                    <p className="text-sm text-ink-soft">{compactNumber.format(rankedRows.length)} eventers</p>
+                    <TablePagination
+                      page={safePage}
+                      pageCount={pageCount}
+                      label="eventer"
+                      onPrevious={() => setPage((current) => Math.max(1, current - 1))}
+                      onNext={() => setPage((current) => Math.min(pageCount, current + 1))}
+                    />
                   </div>
                 </>
               )}
             </section>
 
             {selectedProfile && selectedRow && selectedCompletion ? (
-              <section className="rounded-[1.15rem] border border-border-soft bg-panel px-5 py-5 sm:px-6" id="listener-profile">
+              <section className="rounded-[1.15rem] border border-border-soft bg-panel px-5 py-5 sm:px-6" id="eventer-profile">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm text-ink-soft">Listener profile</p>
+                    <p className="text-sm text-ink-soft">Eventer profile</p>
                     <h2 className="mt-1 font-heading text-2xl font-semibold tracking-[-0.04em]">{selectedUser}</h2>
                     <p className="mt-1 text-sm text-ink-soft">{compactNumber.format(selectedProfileEvents.length)} matched events</p>
                   </div>
@@ -672,7 +928,7 @@ export function RankingClient() {
                     type="button"
                     className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent"
                     onClick={() => setSelectedUser("")}
-                    aria-label="Close listener profile"
+                    aria-label="Close eventer profile"
                     title="Close profile"
                   >
                     <XIcon className="h-4 w-4" aria-hidden="true" />
@@ -695,7 +951,7 @@ export function RankingClient() {
                       {(selectedProfile.bands || []).map((band) => (
                         <div key={band.slug} className="border-t border-border-soft pt-2">
                           <div className="flex items-center justify-between gap-2 text-sm">
-                            <span className="truncate font-medium">{band.name}</span>
+                            <span className="truncate font-medium">{displayBandName(band.slug, band.name)}</span>
                             <span className="shrink-0 text-ink-soft">{band.listened}/{band.total}</span>
                           </div>
                           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-border-soft">
@@ -719,14 +975,14 @@ export function RankingClient() {
                         .slice()
                         .sort((left, right) => Number(selectedCoverIds.has(Number(right.id))) - Number(selectedCoverIds.has(Number(left.id))) || left.title.localeCompare(right.title))
                         .map((song) => {
-                          const performance = performanceBySong.get(Number(song.id)) || { playCount: 0, firstPlayed: null, lastPlayed: null };
+                          const performance = performanceBySong.get(Number(song.id)) || { playCount: 0, firstPlayed: null, lastPlayed: null, firstEventUrl: null, lastEventUrl: null };
                           const heard = selectedCoverIds.has(Number(song.id));
                           return (
                             <li key={song.id} className="flex items-start justify-between gap-3 py-2 text-sm">
                               <span className="min-w-0">
                                 <span className="font-medium">{song.title}</span>
                                 <span className="mt-0.5 block text-xs leading-5 text-ink-soft">
-                                  {songBandLabel(song)} · {performance.playCount} performances · {dateLabel(performance.firstPlayed)} - {dateLabel(performance.lastPlayed)}
+                                  {songBandLabel(song)} · {performance.playCount} performances · <EventDateLink value={performance.firstPlayed} eventUrl={performance.firstEventUrl} /> - <EventDateLink value={performance.lastPlayed} eventUrl={performance.lastEventUrl} />
                                 </span>
                               </span>
                               <span className={heard ? "shrink-0 text-xs font-medium text-[var(--accent-strong)]" : "shrink-0 text-xs text-ink-soft"}>{heard ? "heard" : "not heard"}</span>
@@ -755,7 +1011,7 @@ export function RankingClient() {
             ) : isLoadingDetails && rows.length ? (
               <div className="flex items-center gap-2 text-sm text-ink-soft">
                 <Loader2Icon className="h-4 w-4 animate-spin" aria-hidden="true" />
-                Loading full listener, setlist, and cover detail
+                Loading full eventer, setlist, and cover detail
               </div>
             ) : null}
           </>
@@ -766,74 +1022,101 @@ export function RankingClient() {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <h2 className="font-heading text-2xl font-semibold tracking-[-0.04em]">Indexed events</h2>
-                <p className="mt-1 text-sm leading-6 text-ink-soft">Attendance totals use the cached Eventernote attendee snapshot.</p>
               </div>
               <label className="relative block">
                 <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" aria-hidden="true" />
                 <input
                   value={eventQuery}
-                  onChange={(event) => setEventQuery(event.target.value)}
+                  onChange={(event) => {
+                    setEventQuery(event.target.value);
+                    setEventPage(1);
+                  }}
                   placeholder="Find event, venue, or band"
                   className="h-10 w-full rounded-full border border-border-soft bg-panel-strong py-2 pr-4 pl-9 text-sm outline-none placeholder:text-ink-soft focus:border-accent lg:w-72"
                 />
               </label>
             </div>
+            <div className="mt-5 flex items-center justify-between gap-4">
+              <p className="text-sm text-ink-soft">{compactNumber.format(matchingEvents.length)} events</p>
+              <TablePagination
+                page={safeEventPage}
+                pageCount={eventPageCount}
+                label="event"
+                onPrevious={() => setEventPage((current) => Math.max(1, current - 1))}
+                onNext={() => setEventPage((current) => Math.min(eventPageCount, current + 1))}
+              />
+            </div>
             <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+              <table id="eventTable" className="w-full min-w-[720px] border-collapse text-left text-sm">
                 <thead className="border-y border-border-soft text-xs uppercase tracking-[0.08em] text-ink-soft">
                   <tr>
-                    <th className="py-3 pr-4 font-medium">Event</th>
-                    <th className="py-3 pr-4 font-medium">Date</th>
-                    <th className="py-3 pr-4 font-medium">Bands</th>
-                    <th className="py-3 pr-4 font-medium">Attendees</th>
-                    <th className="py-3 font-medium">Setlist</th>
+                    <SortableHeader label="Event" active={eventSort === "event"} direction={eventSortDirection} onClick={() => toggleEventSort("event")} />
+                    <SortableHeader label="Date" active={eventSort === "date"} direction={eventSortDirection} onClick={() => toggleEventSort("date")} />
+                    <SortableHeader label="Bands" active={eventSort === "bands"} direction={eventSortDirection} onClick={() => toggleEventSort("bands")} />
+                    <SortableHeader label="Attendees" active={eventSort === "attendees"} direction={eventSortDirection} onClick={() => toggleEventSort("attendees")} />
+                    <SortableHeader label="Songs" active={eventSort === "setlist"} direction={eventSortDirection} onClick={() => toggleEventSort("setlist")} />
                   </tr>
                 </thead>
                 <tbody>
-                  {matchingEvents.map((event) => (
-                    <tr key={event.id} className="border-b border-border-soft/80">
-                      <td className="py-3 pr-4">
-                        <button type="button" className="font-medium hover:text-accent" onClick={() => setSelectedEvent(event.id)}>{event.title}</button>
-                        <span className="mt-0.5 block text-xs text-ink-soft">{event.venue || "Venue unavailable"}</span>
-                      </td>
-                      <td className="py-3 pr-4 text-ink-soft">{dateLabel(event.eventDate)}</td>
-                      <td className="py-3 pr-4 text-ink-soft">{(event.performingBandNames || []).join(" / ") || "-"}</td>
-                      <td className="py-3 pr-4 font-heading font-semibold">{compactNumber.format(event.attendeeCount)}</td>
-                      <td className="py-3 text-ink-soft">{(event.heardSongIds || []).length}</td>
-                    </tr>
+                  {visibleEvents.map((event) => (
+                    <Fragment key={event.id}>
+                      <tr className="border-b border-border-soft/80">
+                        <td className="py-3 pr-4">
+                          <button type="button" className="font-medium hover:text-accent" onClick={() => setSelectedEvent((current) => current === event.id ? null : event.id)}>{event.title}</button>
+                          <span className="mt-0.5 block text-xs text-ink-soft">{event.venue || "Venue unavailable"}</span>
+                        </td>
+                        <td className="py-3 pr-4 text-ink-soft">{dateLabel(event.eventDate)}</td>
+                        <td className="py-3 pr-4 text-ink-soft">{eventBandLabel(event)}</td>
+                        <td className="py-3 pr-4 font-heading font-semibold">{compactNumber.format(event.attendeeCount)}</td>
+                        <td className="py-3 text-ink-soft">{(event.heardSongIds || []).length}</td>
+                      </tr>
+                      {selectedEvent === event.id ? (
+                        <tr className="border-b border-border-soft/80">
+                          <td colSpan={5} className="p-0">
+                            <div className="bg-panel-strong/60 px-4 py-4">
+                              <div className="flex items-start justify-between gap-4">
+                                <div>
+                                  <p className="text-sm font-medium">Songs</p>
+                                  <p className="mt-0.5 text-xs text-ink-soft">{(event.heardSongIds || []).length} songs{event.setlistStatus ? ` · ${event.setlistStatus}` : ""}</p>
+                                </div>
+                                <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent" onClick={() => setSelectedEvent(null)} aria-label="Close event songs" title="Close songs">
+                                  <XIcon className="h-4 w-4" aria-hidden="true" />
+                                </button>
+                              </div>
+                              <ol className="mt-3 grid gap-2 lg:grid-cols-2">
+                                {(event.heardSongIds || []).map((songId, index) => {
+                                  const song = songById.get(Number(songId));
+                                  return (
+                                    <li key={`${songId}-${index}`} className="flex gap-3 border-b border-border-soft pb-2 text-sm">
+                                      <span className="font-heading text-ink-soft">{index + 1}</span>
+                                      <span>
+                                        <span className="font-medium">{song?.title || `Song ${songId}`}</span>
+                                        <span className="block text-xs leading-5 text-ink-soft">{songBandLabel(song)}</span>
+                                      </span>
+                                    </li>
+                                  );
+                                })}
+                              </ol>
+                            </div>
+                          </td>
+                        </tr>
+                      ) : null}
+                    </Fragment>
                   ))}
                 </tbody>
               </table>
             </div>
             {!matchingEvents.length ? <p className="py-10 text-center text-sm text-ink-soft">No indexed events match this search.</p> : null}
-
-            {expandedEvent ? (
-              <div className="mt-6 border-t border-border-soft pt-5">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="text-sm text-ink-soft">Event setlist</p>
-                    <h3 className="mt-1 font-heading text-xl font-semibold">{expandedEvent.title}</h3>
-                  </div>
-                  <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent" onClick={() => setSelectedEvent(null)} aria-label="Close event setlist" title="Close setlist">
-                    <XIcon className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                </div>
-                <ol className="mt-4 grid gap-2 lg:grid-cols-2">
-                  {(expandedEvent.heardSongIds || []).map((songId, index) => {
-                    const song = songById.get(Number(songId));
-                    return (
-                      <li key={`${songId}-${index}`} className="flex gap-3 border-b border-border-soft pb-2 text-sm">
-                        <span className="font-heading text-ink-soft">{index + 1}</span>
-                        <span>
-                          <span className="font-medium">{song?.title || `Song ${songId}`}</span>
-                          <span className="block text-xs leading-5 text-ink-soft">{songBandLabel(song)}</span>
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </div>
-            ) : null}
+            <div className="mt-5 flex items-center justify-between gap-4 border-t border-border-soft pt-4">
+              <p className="text-sm text-ink-soft">{compactNumber.format(matchingEvents.length)} events</p>
+              <TablePagination
+                page={safeEventPage}
+                pageCount={eventPageCount}
+                label="event"
+                onPrevious={() => setEventPage((current) => Math.max(1, current - 1))}
+                onNext={() => setEventPage((current) => Math.min(eventPageCount, current + 1))}
+              />
+            </div>
           </section>
         ) : null}
 
@@ -841,8 +1124,7 @@ export function RankingClient() {
           <section className="rounded-[1.15rem] border border-border-soft bg-panel px-5 py-5 sm:px-6">
             <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
               <div>
-                <h2 className="font-heading text-2xl font-semibold tracking-[-0.04em]">Live catalog</h2>
-                <p className="mt-1 text-sm leading-6 text-ink-soft">Originals and covers performed in the indexed event snapshot.</p>
+                <h2 className="font-heading text-2xl font-semibold tracking-[-0.04em]">Song catalog</h2>
               </div>
               <div className="grid gap-2 sm:grid-cols-2 xl:flex xl:items-center">
                 <label className="relative block sm:col-span-2 xl:w-56">
@@ -867,42 +1149,92 @@ export function RankingClient() {
                   <option value="">All bands</option>
                   {catalogBandOptions.map((band) => <option key={band.slug} value={band.slug}>{band.name}</option>)}
                 </select>
-                <select value={catalogSort} onChange={(event) => {
-                  setCatalogSort(event.target.value as CatalogSort);
-                  setCatalogPage(1);
-                }} className="h-10 rounded-full border border-border-soft bg-panel-strong px-3 text-sm outline-none focus:border-accent">
-                  <option value="last">Last performed</option>
-                  <option value="first">First performed</option>
-                  <option value="performances">Performance count</option>
-                  <option value="title">Title</option>
-                </select>
               </div>
             </div>
+            <div className="mt-5 flex items-center justify-between gap-4">
+              <p className="text-sm text-ink-soft">{compactNumber.format(filteredSongs.length)} songs</p>
+              <TablePagination
+                page={safeCatalogPage}
+                pageCount={catalogPageCount}
+                label="catalog"
+                onPrevious={() => setCatalogPage((current) => Math.max(1, current - 1))}
+                onNext={() => setCatalogPage((current) => Math.min(catalogPageCount, current + 1))}
+              />
+            </div>
             <div className="mt-5 overflow-x-auto">
-              <table className="w-full min-w-[700px] border-collapse text-left text-sm">
+              <table id="catalogTable" className="w-full min-w-[700px] border-collapse text-left text-sm">
                 <thead className="border-y border-border-soft text-xs uppercase tracking-[0.08em] text-ink-soft">
                   <tr>
-                    <th className="py-3 pr-4 font-medium">Song</th>
-                    <th className="py-3 pr-4 font-medium">Category</th>
-                    <th className="py-3 pr-4 font-medium">Performances</th>
-                    <th className="py-3 pr-4 font-medium">First played</th>
-                    <th className="py-3 font-medium">Last played</th>
+                    <SortableHeader label="Song" active={catalogSort === "title"} direction={catalogSortDirection} onClick={() => toggleCatalogSort("title")} />
+                    <SortableHeader label="Category" active={catalogSort === "category"} direction={catalogSortDirection} onClick={() => toggleCatalogSort("category")} />
+                    <SortableHeader label="Performances" active={catalogSort === "performances"} direction={catalogSortDirection} onClick={() => toggleCatalogSort("performances")} />
+                    <SortableHeader label="First played" active={catalogSort === "first"} direction={catalogSortDirection} onClick={() => toggleCatalogSort("first")} />
+                    <SortableHeader label="Last played" active={catalogSort === "last"} direction={catalogSortDirection} onClick={() => toggleCatalogSort("last")} />
                   </tr>
                 </thead>
                 <tbody>
                   {visibleSongs.map((song) => {
-                    const performance = performanceBySong.get(Number(song.id)) || { playCount: 0, firstPlayed: null, lastPlayed: null };
+                    const performance = performanceBySong.get(Number(song.id)) || {
+                      playCount: 0,
+                      firstPlayed: null,
+                      lastPlayed: null,
+                      firstEventUrl: null,
+                      lastEventUrl: null,
+                      events: [],
+                    };
                     return (
-                      <tr key={song.id} className="border-b border-border-soft/80">
-                        <td className="py-3 pr-4">
-                          <span className="block font-medium">{song.title}</span>
-                          <span className="mt-0.5 block text-xs text-ink-soft">{songBandLabel(song)}</span>
-                        </td>
-                        <td className="py-3 pr-4 text-ink-soft">{song.category === "cover" ? "Cover" : song.category === "original" ? "Original" : "Project common"}</td>
-                        <td className="py-3 pr-4 font-heading font-semibold">{performance.playCount}</td>
-                        <td className="py-3 pr-4 text-ink-soft">{dateLabel(performance.firstPlayed)}</td>
-                        <td className="py-3 text-ink-soft">{dateLabel(performance.lastPlayed)}</td>
-                      </tr>
+                      <Fragment key={song.id}>
+                        <tr className="border-b border-border-soft/80">
+                          <td className="py-3 pr-4">
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                className="min-w-0 text-left font-medium hover:text-accent"
+                                onClick={() => setSelectedCatalogSong((current) => current === Number(song.id) ? null : Number(song.id))}
+                                aria-expanded={selectedCatalogSong === Number(song.id)}
+                              >
+                                {song.title}
+                              </button>
+                              <SpotifySongLink title={song.title} url={spotifyTracks[String(song.id)]?.url} />
+                            </div>
+                            <span className="mt-0.5 block text-xs text-ink-soft">{songBandLabel(song)}</span>
+                          </td>
+                          <td className="py-3 pr-4 text-ink-soft">{song.category === "cover" ? "Cover" : song.category === "original" ? "Original" : "Collab"}</td>
+                          <td className="py-3 pr-4 font-heading font-semibold">{performance.playCount}</td>
+                          <td className="py-3 pr-4 text-ink-soft"><EventDateLink value={performance.firstPlayed} eventUrl={performance.firstEventUrl} /></td>
+                          <td className="py-3 text-ink-soft"><EventDateLink value={performance.lastPlayed} eventUrl={performance.lastEventUrl} /></td>
+                        </tr>
+                        {selectedCatalogSong === Number(song.id) ? (
+                          <tr className="border-b border-border-soft/80">
+                            <td colSpan={5} className="p-0">
+                              <div className="bg-panel-strong/60 px-4 py-4">
+                                <div className="flex items-start justify-between gap-4">
+                                  <div>
+                                    <p className="text-sm font-medium">Events</p>
+                                    <p className="mt-0.5 text-xs text-ink-soft">{performance.playCount} performances</p>
+                                  </div>
+                                  <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent" onClick={() => setSelectedCatalogSong(null)} aria-label="Close song events" title="Close events">
+                                    <XIcon className="h-4 w-4" aria-hidden="true" />
+                                  </button>
+                                </div>
+                                <ol className="mt-3 grid gap-2 lg:grid-cols-2">
+                                  {performance.events.map((event) => (
+                                    <li key={event.id} className="border-b border-border-soft pb-2 text-sm">
+                                      <div className="flex items-start gap-3">
+                                        <EventDateLink value={event.date} eventUrl={event.eventUrl} />
+                                        <span className="min-w-0">
+                                          <a href={event.eventUrl} target="_blank" rel="noreferrer" className="font-medium hover:text-accent">{event.title}</a>
+                                          {event.venue ? <span className="mt-0.5 block text-xs text-ink-soft">{event.venue}</span> : null}
+                                        </span>
+                                      </div>
+                                    </li>
+                                  ))}
+                                </ol>
+                              </div>
+                            </td>
+                          </tr>
+                        ) : null}
+                      </Fragment>
                     );
                   })}
                 </tbody>
@@ -911,15 +1243,13 @@ export function RankingClient() {
             {!visibleSongs.length ? <p className="py-10 text-center text-sm text-ink-soft">No catalog songs match these filters.</p> : null}
             <div className="mt-5 flex items-center justify-between gap-4 border-t border-border-soft pt-4">
               <p className="text-sm text-ink-soft">{compactNumber.format(filteredSongs.length)} songs</p>
-              <div className="flex items-center gap-2">
-                <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40" disabled={safeCatalogPage === 1} onClick={() => setCatalogPage((current) => Math.max(1, current - 1))} aria-label="Previous catalog page" title="Previous page">
-                  <ChevronLeftIcon className="h-4 w-4" aria-hidden="true" />
-                </button>
-                <span className="min-w-16 text-center text-sm text-ink-soft">{safeCatalogPage} / {catalogPageCount}</span>
-                <button type="button" className="flex h-8 w-8 items-center justify-center rounded-full border border-border-soft text-ink-soft hover:border-accent hover:text-accent disabled:cursor-not-allowed disabled:opacity-40" disabled={safeCatalogPage === catalogPageCount} onClick={() => setCatalogPage((current) => Math.min(catalogPageCount, current + 1))} aria-label="Next catalog page" title="Next page">
-                  <ChevronRightIcon className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
+              <TablePagination
+                page={safeCatalogPage}
+                pageCount={catalogPageCount}
+                label="catalog"
+                onPrevious={() => setCatalogPage((current) => Math.max(1, current - 1))}
+                onNext={() => setCatalogPage((current) => Math.min(catalogPageCount, current + 1))}
+              />
             </div>
           </section>
         ) : null}

@@ -1,0 +1,3544 @@
+{
+  "version": 1,
+  "generatedAt": "2026-07-31T17:27:55.624Z",
+  "market": "JP",
+  "tracks": {
+    "14712": {
+      "spotifyId": "6aE9nNsuqr4TgGJ4vPNtIi",
+      "url": "https://open.spotify.com/track/6aE9nNsuqr4TgGJ4vPNtIi",
+      "name": "Yes! BanG_Dream!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14713": {
+      "spotifyId": "0Mm4R3TSoydqHM8FZg4MLp",
+      "url": "https://open.spotify.com/track/0Mm4R3TSoydqHM8FZg4MLp",
+      "name": "ぽっぴん’しゃっふる",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Yes! BanG_Dream!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14714": {
+      "spotifyId": "0cvKr5hsDQV5DxKgmxWtZm",
+      "url": "https://open.spotify.com/track/0cvKr5hsDQV5DxKgmxWtZm",
+      "name": "STAR BEAT!～ホシノコドウ～",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14715": {
+      "spotifyId": "0uGOwPZdJvWcIIMqxffLJ1",
+      "url": "https://open.spotify.com/track/0uGOwPZdJvWcIIMqxffLJ1",
+      "name": "夏空 SUN! SUN! SEVEN!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "STAR BEAT!～ホシノコドウ～",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14716": {
+      "spotifyId": "5EWaCMZArQnPo2NX8ut93W",
+      "url": "https://open.spotify.com/track/5EWaCMZArQnPo2NX8ut93W",
+      "name": "ティアドロップス",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14717": {
+      "spotifyId": "6b01oN42izCLgs7BU7UQWT",
+      "url": "https://open.spotify.com/track/6b01oN42izCLgs7BU7UQWT",
+      "name": "走り始めたばかりのキミに",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14718": {
+      "spotifyId": "1rAhdS02fQDk4luGa6IbBJ",
+      "url": "https://open.spotify.com/track/1rAhdS02fQDk4luGa6IbBJ",
+      "name": "1000回潤んだ空",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "ときめきエクスペリエンス！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14719": {
+      "spotifyId": "5Lcl4lqTR9p1I91LEqisbd",
+      "url": "https://open.spotify.com/track/5Lcl4lqTR9p1I91LEqisbd",
+      "name": "ときめきエクスペリエンス！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14720": {
+      "spotifyId": "5D3zXLF52fYYMbmqT3lY4J",
+      "url": "https://open.spotify.com/track/5D3zXLF52fYYMbmqT3lY4J",
+      "name": "Happy Happy Party!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "キラキラだとか夢だとか ～Sing Girls～",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14721": {
+      "spotifyId": "0WaOQy3YvVsMa3UuDGW9d7",
+      "url": "https://open.spotify.com/track/0WaOQy3YvVsMa3UuDGW9d7",
+      "name": "キラキラだとか夢だとか ～Sing Girls～",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14722": {
+      "spotifyId": "49fItmms7twKQiboPZlqIX",
+      "url": "https://open.spotify.com/track/49fItmms7twKQiboPZlqIX",
+      "name": "BLACK SHOUT",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14723": {
+      "spotifyId": "3l44Dmif5PXKtkeiHj2Lst",
+      "url": "https://open.spotify.com/track/3l44Dmif5PXKtkeiHj2Lst",
+      "name": "LOUDER",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14724": {
+      "spotifyId": "2GP0PeV4rJ5Llgm5u4Qi1j",
+      "url": "https://open.spotify.com/track/2GP0PeV4rJ5Llgm5u4Qi1j",
+      "name": "前へススメ！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14725": {
+      "spotifyId": "22gNpFMGtvph36givDKCHy",
+      "url": "https://open.spotify.com/track/22gNpFMGtvph36givDKCHy",
+      "name": "夢みるSunflower",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14726": {
+      "spotifyId": "63hoJgdLkBCEyvT9TOSHjq",
+      "url": "https://open.spotify.com/track/63hoJgdLkBCEyvT9TOSHjq",
+      "name": "Re:birth day",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14727": {
+      "spotifyId": "3AZt0Kw4LzCOANkpNDZScz",
+      "url": "https://open.spotify.com/track/3AZt0Kw4LzCOANkpNDZScz",
+      "name": "陽だまりロードナイト",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14728": {
+      "spotifyId": "5e7GMH5PpLn2naPEeAddkX",
+      "url": "https://open.spotify.com/track/5e7GMH5PpLn2naPEeAddkX",
+      "name": "しゅわりん☆どり〜みん",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14729": {
+      "spotifyId": "1lrJuKZ9QRgVe9eJMCnCsJ",
+      "url": "https://open.spotify.com/track/1lrJuKZ9QRgVe9eJMCnCsJ",
+      "name": "パスパレボリューションず☆",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "Pastel à la mode",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14730": {
+      "spotifyId": "2afnAxLonvpNTTrITbHyD5",
+      "url": "https://open.spotify.com/track/2afnAxLonvpNTTrITbHyD5",
+      "name": "－HEROIC ADVENT－",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14731": {
+      "spotifyId": "1o6js86mBhqvLVKKraBaYr",
+      "url": "https://open.spotify.com/track/1o6js86mBhqvLVKKraBaYr",
+      "name": "That Is How I Roll!",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "ONE OF US",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14733": {
+      "spotifyId": "1rn1EBRMYNbDUubWE63wmC",
+      "url": "https://open.spotify.com/track/1rn1EBRMYNbDUubWE63wmC",
+      "name": "Time Lapse",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14734": {
+      "spotifyId": "6OKvbhEAa8EZjMxeH22byb",
+      "url": "https://open.spotify.com/track/6OKvbhEAa8EZjMxeH22byb",
+      "name": "夏のドーン！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Time Lapse",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14735": {
+      "spotifyId": "7HRvD5In6ZjnOzFOD40TYO",
+      "url": "https://open.spotify.com/track/7HRvD5In6ZjnOzFOD40TYO",
+      "name": "八月のif",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14736": {
+      "spotifyId": "2hduNupSCQWcSRWzxNTAem",
+      "url": "https://open.spotify.com/track/2hduNupSCQWcSRWzxNTAem",
+      "name": "Determination Symphony",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14737": {
+      "spotifyId": "6teW16QoOCEwp7ChitcXRI",
+      "url": "https://open.spotify.com/track/6teW16QoOCEwp7ChitcXRI",
+      "name": "B.O.F",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14738": {
+      "spotifyId": "2Y91XoFkmUyfVtQGFhTc1P",
+      "url": "https://open.spotify.com/track/2Y91XoFkmUyfVtQGFhTc1P",
+      "name": "キミにもらったもの",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "クリスマスのうた",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14739": {
+      "spotifyId": "1fNUhoPeprZwz20VsyiMbI",
+      "url": "https://open.spotify.com/track/1fNUhoPeprZwz20VsyiMbI",
+      "name": "クリスマスのうた",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14740": {
+      "spotifyId": "2gdijFx3yt6QDXPOrmUjup",
+      "url": "https://open.spotify.com/track/2gdijFx3yt6QDXPOrmUjup",
+      "name": "はなまる◎アンダンテ",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "Pastel à la mode",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14741": {
+      "spotifyId": "38W1txySVs64MEluGQjBfy",
+      "url": "https://open.spotify.com/track/38W1txySVs64MEluGQjBfy",
+      "name": "Scarlet Sky",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "STAY GLOW",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14742": {
+      "spotifyId": "48SXLkk7Af6UtE1GGUu261",
+      "url": "https://open.spotify.com/track/48SXLkk7Af6UtE1GGUu261",
+      "name": "CiRCLING",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14743": {
+      "spotifyId": "1mtWmZzqAbekBMkeeU0Hnw",
+      "url": "https://open.spotify.com/track/1mtWmZzqAbekBMkeeU0Hnw",
+      "name": "Light Delight",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "CiRCLING",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14744": {
+      "spotifyId": "4d2MjGdc6I2japm0E25YLc",
+      "url": "https://open.spotify.com/track/4d2MjGdc6I2japm0E25YLc",
+      "name": "Opera of the wasteland",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14745": {
+      "spotifyId": "2abb1LnnH2S10dknazDbW4",
+      "url": "https://open.spotify.com/track/2abb1LnnH2S10dknazDbW4",
+      "name": "軌跡",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14746": {
+      "spotifyId": "2ea3tldzlH2d506LDufj0g",
+      "url": "https://open.spotify.com/track/2ea3tldzlH2d506LDufj0g",
+      "name": "私の心はチョココロネ",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14747": {
+      "spotifyId": "3o0gNgloKgGMjAnK3kHVCN",
+      "url": "https://open.spotify.com/track/3o0gNgloKgGMjAnK3kHVCN",
+      "name": "Legendary",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14748": {
+      "spotifyId": "15wynxwM2wIh5viZ6BNVld",
+      "url": "https://open.spotify.com/track/15wynxwM2wIh5viZ6BNVld",
+      "name": "最高(さあ行こう)！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14749": {
+      "spotifyId": "36J79OtdcigO2X514gAkYt",
+      "url": "https://open.spotify.com/track/36J79OtdcigO2X514gAkYt",
+      "name": "二重の虹(ダブル レインボウ)",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14750": {
+      "spotifyId": "5QjebeWvnqfjPwL80Nu1Ci",
+      "url": "https://open.spotify.com/track/5QjebeWvnqfjPwL80Nu1Ci",
+      "name": "SURVIVOR ねばーぎぶあっぷ！",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "Pastel à la mode",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14751": {
+      "spotifyId": "0MYYsZfZx6ECK5kefHUHJs",
+      "url": "https://open.spotify.com/track/0MYYsZfZx6ECK5kefHUHJs",
+      "name": "もういちど ルミナス",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14752": {
+      "spotifyId": "0eVr5Vl1numNcSQRFAUKu0",
+      "url": "https://open.spotify.com/track/0eVr5Vl1numNcSQRFAUKu0",
+      "name": "ガールズコード",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin’on!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14753": {
+      "spotifyId": "6nfo3jV7iJrBNBdSB3QDk9",
+      "url": "https://open.spotify.com/track/6nfo3jV7iJrBNBdSB3QDk9",
+      "name": "切ないSandglass",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "ガールズコード",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14755": {
+      "spotifyId": "7CJnuYzf9mVxbvwwQH09OJ",
+      "url": "https://open.spotify.com/track/7CJnuYzf9mVxbvwwQH09OJ",
+      "name": "ツナグ、ソラモヨウ",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "ONE OF US",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14756": {
+      "spotifyId": "4VEL6WYtulopS1j9m1EHU5",
+      "url": "https://open.spotify.com/track/4VEL6WYtulopS1j9m1EHU5",
+      "name": "キミがいなくちゃっ！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14757": {
+      "spotifyId": "6FXgrbD1kkp0sTP6S5nNNX",
+      "url": "https://open.spotify.com/track/6FXgrbD1kkp0sTP6S5nNNX",
+      "name": "わちゃ・もちゃ・ぺったん行進曲",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "SMILE ON PARADE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14758": {
+      "spotifyId": "5vcQssUaCMTHTFKQXuTITt",
+      "url": "https://open.spotify.com/track/5vcQssUaCMTHTFKQXuTITt",
+      "name": "BRAVE JEWEL",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14759": {
+      "spotifyId": "2i0fUaui7MUJJHQGaB5U56",
+      "url": "https://open.spotify.com/track/2i0fUaui7MUJJHQGaB5U56",
+      "name": "Home Street",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "キズナミュージック♪",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14760": {
+      "spotifyId": "6SKZeTl2Qrw9SrpQ5FVyVv",
+      "url": "https://open.spotify.com/track/6SKZeTl2Qrw9SrpQ5FVyVv",
+      "name": "R·I·O·T",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14761": {
+      "spotifyId": "3pxM8e9Dm2Nh87uSsvoWjc",
+      "url": "https://open.spotify.com/track/3pxM8e9Dm2Nh87uSsvoWjc",
+      "name": "Sanctuary",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "BRAVE JEWEL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14762": {
+      "spotifyId": "2KMfzgcvbYaHAPI2XHhReA",
+      "url": "https://open.spotify.com/track/2KMfzgcvbYaHAPI2XHhReA",
+      "name": "UNSTOPPABLE",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14763": {
+      "spotifyId": "5JJcEhn73YFF1O3KqFdgrb",
+      "url": "https://open.spotify.com/track/5JJcEhn73YFF1O3KqFdgrb",
+      "name": "キズナミュージック♪",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14764": {
+      "spotifyId": "2wpn33CvkbKyGgUXPeaQT7",
+      "url": "https://open.spotify.com/track/2wpn33CvkbKyGgUXPeaQT7",
+      "name": "A DECLARATION OF ×××",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14766": {
+      "spotifyId": "4Xh1NGYmFOGDww3NN7iLXg",
+      "url": "https://open.spotify.com/track/4Xh1NGYmFOGDww3NN7iLXg",
+      "name": "Jumpin'",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14767": {
+      "spotifyId": "1500AmV840OOc0hJnTQGrL",
+      "url": "https://open.spotify.com/track/1500AmV840OOc0hJnTQGrL",
+      "name": "PASSIONATE ANTHEM",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Safe and Sound",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14768": {
+      "spotifyId": "5YUSc1pF9DNPxeB4Q7PO6r",
+      "url": "https://open.spotify.com/track/5YUSc1pF9DNPxeB4Q7PO6r",
+      "name": "Safe and Sound",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14769": {
+      "spotifyId": "50nRYeiTbC3QpKYFdAR6HJ",
+      "url": "https://open.spotify.com/track/50nRYeiTbC3QpKYFdAR6HJ",
+      "name": "What’s the POPIPA!?",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Jumpin'",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14770": {
+      "spotifyId": "51jEtiwqu41FfCT3aeqkQh",
+      "url": "https://open.spotify.com/track/51jEtiwqu41FfCT3aeqkQh",
+      "name": "Wonderland Girl",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "Pastel à la mode",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14771": {
+      "spotifyId": "1SAFQsp5wveMqQm016F9tx",
+      "url": "https://open.spotify.com/track/1SAFQsp5wveMqQm016F9tx",
+      "name": "Y.O.L.O！！！！！",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "ONE OF US",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14772": {
+      "spotifyId": "4ZIoayZ1LBHX7v8AFd2Uqu",
+      "url": "https://open.spotify.com/track/4ZIoayZ1LBHX7v8AFd2Uqu",
+      "name": "ハイファイブ∞あどべんちゃっ",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14775": {
+      "spotifyId": "6e52UPBDkKRJpnRdASIk4M",
+      "url": "https://open.spotify.com/track/6e52UPBDkKRJpnRdASIk4M",
+      "name": "NO GIRL NO CRY (instrumental)",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Poppin'Party Instrumental Collection 1",
+      "score": 70,
+      "matchType": "exact"
+    },
+    "14776": {
+      "spotifyId": "69J1cW4m6I78mUzn8axwEA",
+      "url": "https://open.spotify.com/track/69J1cW4m6I78mUzn8axwEA",
+      "name": "Dreamers Go!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14777": {
+      "spotifyId": "0zXV2Mo9oVjkea110ErsQY",
+      "url": "https://open.spotify.com/track/0zXV2Mo9oVjkea110ErsQY",
+      "name": "Returns",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14778": {
+      "spotifyId": "1zbwCTA2SMHXjtm1a4RpsI",
+      "url": "https://open.spotify.com/track/1zbwCTA2SMHXjtm1a4RpsI",
+      "name": "Invincible Fighter",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14779": {
+      "spotifyId": "4Ad14uh7yvANfg2yLpzwyX",
+      "url": "https://open.spotify.com/track/4Ad14uh7yvANfg2yLpzwyX",
+      "name": "Takin’ my Heart",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14780": {
+      "spotifyId": "76pHbSshNeYjnoYOtZejo9",
+      "url": "https://open.spotify.com/track/76pHbSshNeYjnoYOtZejo9",
+      "name": "Ringing Bloom",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "FIRE BIRD",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14781": {
+      "spotifyId": "1aHUkxPyM1ECZwondt7IlH",
+      "url": "https://open.spotify.com/track/1aHUkxPyM1ECZwondt7IlH",
+      "name": "きゅ〜まい＊flower",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14782": {
+      "spotifyId": "2aIqOgzj8z66aYQDrl7Byd",
+      "url": "https://open.spotify.com/track/2aIqOgzj8z66aYQDrl7Byd",
+      "name": "ゼッタイ宣言～Recital～",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "Pastel à la mode",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14787": {
+      "spotifyId": "4hhSvnzowg58DKvjik5nYF",
+      "url": "https://open.spotify.com/track/4hhSvnzowg58DKvjik5nYF",
+      "name": "アニバーサリー",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "イニシャル／夢を撃ち抜く瞬間に！Special Edition",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14788": {
+      "spotifyId": "1CYznYPoNOmDX8laxr5SCh",
+      "url": "https://open.spotify.com/track/1CYznYPoNOmDX8laxr5SCh",
+      "name": "イニシャル",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14789": {
+      "spotifyId": "734cyaTXP3BEcmcEkBo2aS",
+      "url": "https://open.spotify.com/track/734cyaTXP3BEcmcEkBo2aS",
+      "name": "夢を撃ち抜く瞬間に！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14790": {
+      "spotifyId": "7KIPsvQQtxa8bzdxfA2eKB",
+      "url": "https://open.spotify.com/track/7KIPsvQQtxa8bzdxfA2eKB",
+      "name": "“UNIONS” Road",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14791": {
+      "spotifyId": "3WgxDyXxjeLFZ0rC5gEt88",
+      "url": "https://open.spotify.com/track/3WgxDyXxjeLFZ0rC5gEt88",
+      "name": "約束",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14792": {
+      "spotifyId": "0XKe6ptxwy1yjusyER0ZTi",
+      "url": "https://open.spotify.com/track/0XKe6ptxwy1yjusyER0ZTi",
+      "name": "DRIVE US CRAZY",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14793": {
+      "spotifyId": "408vxBzcZxn9FwCQIOGZTb",
+      "url": "https://open.spotify.com/track/408vxBzcZxn9FwCQIOGZTb",
+      "name": "HELL! or HELL?",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14794": {
+      "spotifyId": "3zXEhM5UgDijlBEmkaJMaM",
+      "url": "https://open.spotify.com/track/3zXEhM5UgDijlBEmkaJMaM",
+      "name": "ぎゅっDAYS♪",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "Pastel à la mode",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14795": {
+      "spotifyId": "7js93ZnnKnDafMbLD0MJR2",
+      "url": "https://open.spotify.com/track/7js93ZnnKnDafMbLD0MJR2",
+      "name": "ワクワクmeetsトリップ",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14796": {
+      "spotifyId": "244YTDFCVzek36fVCqLMcN",
+      "url": "https://open.spotify.com/track/244YTDFCVzek36fVCqLMcN",
+      "name": "Easy come, Easy go！",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "ONE OF US",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14799": {
+      "spotifyId": "5Otdo3c5RdZzzfUooZQmn9",
+      "url": "https://open.spotify.com/track/5Otdo3c5RdZzzfUooZQmn9",
+      "name": "にこ×にこ=ハイパースマイルパワー！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14801": {
+      "spotifyId": "3NVvqoErAZ4pb67SHzBTzd",
+      "url": "https://open.spotify.com/track/3NVvqoErAZ4pb67SHzBTzd",
+      "name": "うぃーきゃん☆フレフレっ！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14802": {
+      "spotifyId": "1Vy23eMapdGocwOUov5wVm",
+      "url": "https://open.spotify.com/track/1Vy23eMapdGocwOUov5wVm",
+      "name": "ゆめゆめグラデーション",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14803": {
+      "spotifyId": "7c7Mi8PKULCCvhWkpgyM2t",
+      "url": "https://open.spotify.com/track/7c7Mi8PKULCCvhWkpgyM2t",
+      "name": "Daylight -デイライト-",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14804": {
+      "spotifyId": "3yhz0g7DgegbRCVQD8dUcA",
+      "url": "https://open.spotify.com/track/3yhz0g7DgegbRCVQD8dUcA",
+      "name": "金色へのプレリュード",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14805": {
+      "spotifyId": "0LKEPoaka7gU2UF2yXciic",
+      "url": "https://open.spotify.com/track/0LKEPoaka7gU2UF2yXciic",
+      "name": "Breakthrough!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14806": {
+      "spotifyId": "1qPPV10QXtCTguXr0QFCn1",
+      "url": "https://open.spotify.com/track/1qPPV10QXtCTguXr0QFCn1",
+      "name": "Hello! Wink!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14807": {
+      "spotifyId": "4MLhwIDQMhxGbEwDPeGuCF",
+      "url": "https://open.spotify.com/track/4MLhwIDQMhxGbEwDPeGuCF",
+      "name": "Step×Step！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14809": {
+      "spotifyId": "6wYmtT1hl79exkVkluxQid",
+      "url": "https://open.spotify.com/track/6wYmtT1hl79exkVkluxQid",
+      "name": "ミライトレイン",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Breakthrough!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14810": {
+      "spotifyId": "1eV5LUtHRTwrsBkpU8CbGT",
+      "url": "https://open.spotify.com/track/1eV5LUtHRTwrsBkpU8CbGT",
+      "name": "Avant-garde HISTORY",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14811": {
+      "spotifyId": "6BkJNgkS6J7GqhZW3V8NT7",
+      "url": "https://open.spotify.com/track/6BkJNgkS6J7GqhZW3V8NT7",
+      "name": "Break your desire",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14812": {
+      "spotifyId": "0qMpU4VmLf6aMNc7CUErzV",
+      "url": "https://open.spotify.com/track/0qMpU4VmLf6aMNc7CUErzV",
+      "name": "FIRE BIRD",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14813": {
+      "spotifyId": "6GIi8LrBsHmhFSp9eDXCUf",
+      "url": "https://open.spotify.com/track/6GIi8LrBsHmhFSp9eDXCUf",
+      "name": "Neo-Aspect",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14814": {
+      "spotifyId": "69o1iViHxS7xudIPmm1G5Y",
+      "url": "https://open.spotify.com/track/69o1iViHxS7xudIPmm1G5Y",
+      "name": "ONENESS",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14815": {
+      "spotifyId": "6Z8J1wZFilJmJ7vsBuAARY",
+      "url": "https://open.spotify.com/track/6Z8J1wZFilJmJ7vsBuAARY",
+      "name": "R",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14816": {
+      "spotifyId": "5BZpy13fGkwbWbR2BEGzzn",
+      "url": "https://open.spotify.com/track/5BZpy13fGkwbWbR2BEGzzn",
+      "name": "Song I am.",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Wahl",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14817": {
+      "spotifyId": "0fBJVSI0i28i2yPqF9qWXi",
+      "url": "https://open.spotify.com/track/0fBJVSI0i28i2yPqF9qWXi",
+      "name": "熱色スターマイン",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Anfang",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14818": {
+      "spotifyId": "44xIUjjL8EOPzJRjaZbETP",
+      "url": "https://open.spotify.com/track/44xIUjjL8EOPzJRjaZbETP",
+      "name": "!NVADE SHOW!",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14819": {
+      "spotifyId": "068DEcK4vTUehdCaZXCmE8",
+      "url": "https://open.spotify.com/track/068DEcK4vTUehdCaZXCmE8",
+      "name": "Beautiful Birthday",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14820": {
+      "spotifyId": "0lFr2qZU3DH3yoOq0cZjBL",
+      "url": "https://open.spotify.com/track/0lFr2qZU3DH3yoOq0cZjBL",
+      "name": "EXPOSE ‘Burn out!!!’",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14821": {
+      "spotifyId": "7IEndd638hozKGLIOOgyhw",
+      "url": "https://open.spotify.com/track/7IEndd638hozKGLIOOgyhw",
+      "name": "REIGNING",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14822": {
+      "spotifyId": "6Bjy6hq3ODvm3nRTPTl9QB",
+      "url": "https://open.spotify.com/track/6Bjy6hq3ODvm3nRTPTl9QB",
+      "name": "SOUL SOLDIER",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "ERA",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14824": {
+      "spotifyId": "0WpDulmFSKKXr0Qfk5PDZD",
+      "url": "https://open.spotify.com/track/0WpDulmFSKKXr0Qfk5PDZD",
+      "name": "Sacred world",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14828": {
+      "spotifyId": "6wlqByH8uLsJTka2LjmkSQ",
+      "url": "https://open.spotify.com/track/6wlqByH8uLsJTka2LjmkSQ",
+      "name": "開けたらDream!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Photograph",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14829": {
+      "spotifyId": "7yI8V4BwL75RCVvgmnum59",
+      "url": "https://open.spotify.com/track/7yI8V4BwL75RCVvgmnum59",
+      "name": "flame of hope",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14830": {
+      "spotifyId": "49XQWc1rErFjX4IOZE7vjP",
+      "url": "https://open.spotify.com/track/49XQWc1rErFjX4IOZE7vjP",
+      "name": "ブルームブルーム",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14831": {
+      "spotifyId": "5x4Txx7HwPFvj9SNLBNvQQ",
+      "url": "https://open.spotify.com/track/5x4Txx7HwPFvj9SNLBNvQQ",
+      "name": "Blessing Chord",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "ZEAL of proud",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14832": {
+      "spotifyId": "0g6Kyry7t1eRhHDJR7wVF5",
+      "url": "https://open.spotify.com/track/0g6Kyry7t1eRhHDJR7wVF5",
+      "name": "ZEAL of proud",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "ZEAL of proud",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14833": {
+      "spotifyId": "2YJX5ahjDsCaFy00h32JHJ",
+      "url": "https://open.spotify.com/track/2YJX5ahjDsCaFy00h32JHJ",
+      "name": "JUST THE WAY I AM",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "mind of Prominence",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14834": {
+      "spotifyId": "1ZdayE5RgPAuBbCAkGqJ6d",
+      "url": "https://open.spotify.com/track/1ZdayE5RgPAuBbCAkGqJ6d",
+      "name": "mind of Prominence",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14835": {
+      "spotifyId": "0Y48sMfXqttI0dJJ3NsuXJ",
+      "url": "https://open.spotify.com/track/0Y48sMfXqttI0dJJ3NsuXJ",
+      "name": "Hey-day狂騒曲(カプリチオ)",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "ONE OF US",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14840": {
+      "spotifyId": "3bfrTbaT34vmg87cAemUY7",
+      "url": "https://open.spotify.com/track/3bfrTbaT34vmg87cAemUY7",
+      "name": "Embrace of light",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "EXIST",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14841": {
+      "spotifyId": "6NRhuaH2Cfc3Tk8Vdbjb3m",
+      "url": "https://open.spotify.com/track/6NRhuaH2Cfc3Tk8Vdbjb3m",
+      "name": "EXIST",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14842": {
+      "spotifyId": "2JcDzgcWVqOtGGl9bE66r4",
+      "url": "https://open.spotify.com/track/2JcDzgcWVqOtGGl9bE66r4",
+      "name": "OUTSIDER RODEO",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "EXIST",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14843": {
+      "spotifyId": "2lTTUaOv8OQAucFoFJrouC",
+      "url": "https://open.spotify.com/track/2lTTUaOv8OQAucFoFJrouC",
+      "name": "Power of LOVE!!!",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14844": {
+      "spotifyId": "4tTfKPjzxibtueDLiYr5Yb",
+      "url": "https://open.spotify.com/track/4tTfKPjzxibtueDLiYr5Yb",
+      "name": "TITLE IDOL",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14845": {
+      "spotifyId": "06QOLIzmSeOYTqXw6f5Apy",
+      "url": "https://open.spotify.com/track/06QOLIzmSeOYTqXw6f5Apy",
+      "name": "Winking☆Cheer",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14846": {
+      "spotifyId": "0am5UeTeztkvTfw4AhnhWR",
+      "url": "https://open.spotify.com/track/0am5UeTeztkvTfw4AhnhWR",
+      "name": "あっつあつ 常夏 らぶ☆サマー！",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14847": {
+      "spotifyId": "1Mbb8RPxyWSm1Zgxt2acAW",
+      "url": "https://open.spotify.com/track/1Mbb8RPxyWSm1Zgxt2acAW",
+      "name": "ゆら・ゆらRing-Dong-Dance",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "TITLE IDOL",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14848": {
+      "spotifyId": "2LoXQxf8uj3nRCNZMbmvxr",
+      "url": "https://open.spotify.com/track/2LoXQxf8uj3nRCNZMbmvxr",
+      "name": "overtuRe",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "劇場版「BanG Dream! Episode of Roselia」Theme Songs Collection",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14849": {
+      "spotifyId": "3PBnIdWHnIICtieiKWmDTJ",
+      "url": "https://open.spotify.com/track/3PBnIdWHnIICtieiKWmDTJ",
+      "name": "Proud of oneself",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "劇場版「BanG Dream! Episode of Roselia」Theme Songs Collection",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14850": {
+      "spotifyId": "0js0DKykeOIT37jcmpwOpd",
+      "url": "https://open.spotify.com/track/0js0DKykeOIT37jcmpwOpd",
+      "name": "Sing Alive",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "劇場版「BanG Dream! Episode of Roselia」Theme Songs Collection",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14851": {
+      "spotifyId": "4ntOuRSZH1wACvCdwuEAkh",
+      "url": "https://open.spotify.com/track/4ntOuRSZH1wACvCdwuEAkh",
+      "name": "Singing “OURS”",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "劇場版「BanG Dream! Episode of Roselia」Theme Songs Collection",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14853": {
+      "spotifyId": "2Ri8s9bm2kpFSn6RD1WZsO",
+      "url": "https://open.spotify.com/track/2Ri8s9bm2kpFSn6RD1WZsO",
+      "name": "えがお･シング･あ･ソング",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14854": {
+      "spotifyId": "7iIp2v0Jr9E7ZCpYwP7oZs",
+      "url": "https://open.spotify.com/track/7iIp2v0Jr9E7ZCpYwP7oZs",
+      "name": "えがおのオーケストラっ！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14855": {
+      "spotifyId": "1OZloGtqs3sX7Yb4QknVXZ",
+      "url": "https://open.spotify.com/track/1OZloGtqs3sX7Yb4QknVXZ",
+      "name": "ゴーカ！ごーかい！？ファントムシーフ！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "にこにこねくと！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14859": {
+      "spotifyId": "3tlJf8X30y1Cx79rOo5Wuz",
+      "url": "https://open.spotify.com/track/3tlJf8X30y1Cx79rOo5Wuz",
+      "name": "Live Beyond!!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Live Beyond!!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14860": {
+      "spotifyId": "051mWNvF51N86GHvAJa7f0",
+      "url": "https://open.spotify.com/track/051mWNvF51N86GHvAJa7f0",
+      "name": "Moonlight Walk",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Live Beyond!!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14863": {
+      "spotifyId": "3ykrUvyLAEPDtoDomlRYeX",
+      "url": "https://open.spotify.com/track/3ykrUvyLAEPDtoDomlRYeX",
+      "name": "ここから先は歌にならない",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Live Beyond!!",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14864": {
+      "spotifyId": "5CeKcrBHcDeUjvH0PfxNgJ",
+      "url": "https://open.spotify.com/track/5CeKcrBHcDeUjvH0PfxNgJ",
+      "name": "Domination to world",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14865": {
+      "spotifyId": "2ukeL3H1H6cI3M5UWlmunF",
+      "url": "https://open.spotify.com/track/2ukeL3H1H6cI3M5UWlmunF",
+      "name": "灼熱 Bonfire!",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14866": {
+      "spotifyId": "66XhzTTqwLD8xT0F8dePsk",
+      "url": "https://open.spotify.com/track/66XhzTTqwLD8xT0F8dePsk",
+      "name": "Fateful...",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "ハーモニー・デイ",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14867": {
+      "spotifyId": "6s9s4nySDJVfetQrPkpZot",
+      "url": "https://open.spotify.com/track/6s9s4nySDJVfetQrPkpZot",
+      "name": "Sonorous",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14868": {
+      "spotifyId": "3QykvhsrfBZVtD7VaMDXPg",
+      "url": "https://open.spotify.com/track/3QykvhsrfBZVtD7VaMDXPg",
+      "name": "ハーモニー・デイ",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14869": {
+      "spotifyId": "6XWdcMK2pfSjDkFbRtiwIk",
+      "url": "https://open.spotify.com/track/6XWdcMK2pfSjDkFbRtiwIk",
+      "name": "イントロダクション",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14870": {
+      "spotifyId": "1xr0X4wGu0kHe1RzXxPirk",
+      "url": "https://open.spotify.com/track/1xr0X4wGu0kHe1RzXxPirk",
+      "name": "Keep Heart",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Für immer",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14872": {
+      "spotifyId": "0XeIF0B93rJBlwcoYcLgnX",
+      "url": "https://open.spotify.com/track/0XeIF0B93rJBlwcoYcLgnX",
+      "name": "Sprechchor",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "ROZEN HORIZON",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14873": {
+      "spotifyId": "5339nA0dO3UqGj0TXGxC6J",
+      "url": "https://open.spotify.com/track/5339nA0dO3UqGj0TXGxC6J",
+      "name": "ぽっぴん'どりーむ！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14874": {
+      "spotifyId": "6F8xnT2B7MuImmA6VS7Bw2",
+      "url": "https://open.spotify.com/track/6F8xnT2B7MuImmA6VS7Bw2",
+      "name": "星の約束",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14875": {
+      "spotifyId": "6r8ut2cqkdD2QJhE3PrxP0",
+      "url": "https://open.spotify.com/track/6r8ut2cqkdD2QJhE3PrxP0",
+      "name": "Repaint",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14877": {
+      "spotifyId": "0RPCbococVWraUhBEle1Fr",
+      "url": "https://open.spotify.com/track/0RPCbococVWraUhBEle1Fr",
+      "name": "fly with the night",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14878": {
+      "spotifyId": "7JRsi75LZ26chhM0pRErz7",
+      "url": "https://open.spotify.com/track/7JRsi75LZ26chhM0pRErz7",
+      "name": "Secret Dawn",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14879": {
+      "spotifyId": "7uvdV63O5LAaxjvCLMzNyI",
+      "url": "https://open.spotify.com/track/7uvdV63O5LAaxjvCLMzNyI",
+      "name": "CORUSCATE -DNA-",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14880": {
+      "spotifyId": "1N11GDjVghYV3V9Ah4BWXq",
+      "url": "https://open.spotify.com/track/1N11GDjVghYV3V9Ah4BWXq",
+      "name": "Light a fire",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "CORUSCATE -DNA-",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14881": {
+      "spotifyId": "7CKog95ty3gEj60M488SOn",
+      "url": "https://open.spotify.com/track/7CKog95ty3gEj60M488SOn",
+      "name": "ROZEN HORIZON",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "ROZEN HORIZON",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14882": {
+      "spotifyId": "27GcIuaU3bEDPOU2qAUVwH",
+      "url": "https://open.spotify.com/track/27GcIuaU3bEDPOU2qAUVwH",
+      "name": "THE HISTORIC...",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "ROZEN HORIZON",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14883": {
+      "spotifyId": "6nVpUxtxvM739eLDBqud9c",
+      "url": "https://open.spotify.com/track/6nVpUxtxvM739eLDBqud9c",
+      "name": "閃光",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "ROZEN HORIZON",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14890": {
+      "spotifyId": "1dtJVeimBR5CUk6UBSXBoR",
+      "url": "https://open.spotify.com/track/1dtJVeimBR5CUk6UBSXBoR",
+      "name": "One step at a time",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14891": {
+      "spotifyId": "6Mba25fkuIcWvkz42JY0Ru",
+      "url": "https://open.spotify.com/track/6Mba25fkuIcWvkz42JY0Ru",
+      "name": "寄る辺のSunny, Sunny",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14892": {
+      "spotifyId": "5WMaODhR7poKvoWV6UP982",
+      "url": "https://open.spotify.com/track/5WMaODhR7poKvoWV6UP982",
+      "name": "独創収差",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "STAY GLOW",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14893": {
+      "spotifyId": "05pX4qscY2RKEy5MybRKmK",
+      "url": "https://open.spotify.com/track/05pX4qscY2RKEy5MybRKmK",
+      "name": "The Circle Of Butterflies",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14894": {
+      "spotifyId": "6UNnBoYJOhny1DytXoUYf9",
+      "url": "https://open.spotify.com/track/6UNnBoYJOhny1DytXoUYf9",
+      "name": "Our Carol",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Swear ～Night & Day～",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14895": {
+      "spotifyId": "4DWAPMAyDsOVTttHt5wh4k",
+      "url": "https://open.spotify.com/track/4DWAPMAyDsOVTttHt5wh4k",
+      "name": "Swear ～Night & Day～",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Swear ～Night & Day～",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14896": {
+      "spotifyId": "12Qwn2bEStx6ASvdBKVji0",
+      "url": "https://open.spotify.com/track/12Qwn2bEStx6ASvdBKVji0",
+      "name": "名無声",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14897": {
+      "spotifyId": "4H9HNqkeeo0IABF2QTO1Vq",
+      "url": "https://open.spotify.com/track/4H9HNqkeeo0IABF2QTO1Vq",
+      "name": "迷星叫",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷星叫",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14898": {
+      "spotifyId": "7zxz9xLJvou9iSRYiIq3TX",
+      "url": "https://open.spotify.com/track/7zxz9xLJvou9iSRYiIq3TX",
+      "name": "影色舞",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14899": {
+      "spotifyId": "70oZ9paZhQYkYAd5nganwI",
+      "url": "https://open.spotify.com/track/70oZ9paZhQYkYAd5nganwI",
+      "name": "DEAD HEAT BEAT",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "THE WAY OF LIFE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14900": {
+      "spotifyId": "7u9S44Yk4GpnkAsKOZjZMq",
+      "url": "https://open.spotify.com/track/7u9S44Yk4GpnkAsKOZjZMq",
+      "name": "THE WAY OF LIFE",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "THE WAY OF LIFE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14901": {
+      "spotifyId": "14WgkU5eA11gLgVd7tTedm",
+      "url": "https://open.spotify.com/track/14WgkU5eA11gLgVd7tTedm",
+      "name": "潜在表明",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14902": {
+      "spotifyId": "0hMzESli2Pu2AyQW28oaZM",
+      "url": "https://open.spotify.com/track/0hMzESli2Pu2AyQW28oaZM",
+      "name": "Ever Sky Blue",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14904": {
+      "spotifyId": "6MZrN0CLFAKpqUV86s91wr",
+      "url": "https://open.spotify.com/track/6MZrN0CLFAKpqUV86s91wr",
+      "name": "カラフルリバティー",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14905": {
+      "spotifyId": "3oQcZVYK3jH1U6uXBSU7wV",
+      "url": "https://open.spotify.com/track/3oQcZVYK3jH1U6uXBSU7wV",
+      "name": "メランコリックララバイ",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14906": {
+      "spotifyId": "4MON0Z12vlhtuC6bFGt33s",
+      "url": "https://open.spotify.com/track/4MON0Z12vlhtuC6bFGt33s",
+      "name": "誓いのWingbeat",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "QUINTET",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14907": {
+      "spotifyId": "4I5Bsfl4gdoRcK3AF47hVf",
+      "url": "https://open.spotify.com/track/4I5Bsfl4gdoRcK3AF47hVf",
+      "name": "黒のバースデイ",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Ave Música",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14908": {
+      "spotifyId": "7fOzfAObhaqW7CYIojSJN9",
+      "url": "https://open.spotify.com/track/7fOzfAObhaqW7CYIojSJN9",
+      "name": "音一会",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14909": {
+      "spotifyId": "4Mudg5HCSIhNyjN8Rg08gM",
+      "url": "https://open.spotify.com/track/4Mudg5HCSIhNyjN8Rg08gM",
+      "name": "ふたつの月 ~Deep Into The Forest~",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "ふたつの月 ~Deep Into The Forest~",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14910": {
+      "spotifyId": "4lPNuizRfDvXB8ltrNPd1v",
+      "url": "https://open.spotify.com/track/4lPNuizRfDvXB8ltrNPd1v",
+      "name": "Choir ‘S’ Choir",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Choir ‘S’ Choir",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14911": {
+      "spotifyId": "5pPdOtMYKsHQoPRTOAdVPu",
+      "url": "https://open.spotify.com/track/5pPdOtMYKsHQoPRTOAdVPu",
+      "name": "Dear Gleam",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "THRONE OF ROSE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14914": {
+      "spotifyId": "26STVZHzUpepcrRHF1aiQJ",
+      "url": "https://open.spotify.com/track/26STVZHzUpepcrRHF1aiQJ",
+      "name": "THRONE OF ROSE",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "THRONE OF ROSE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14917": {
+      "spotifyId": "3ThxsSTcbUcjz9tobCPdyP",
+      "url": "https://open.spotify.com/track/3ThxsSTcbUcjz9tobCPdyP",
+      "name": "一逢のFull Glory",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "THRONE OF ROSE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14919": {
+      "spotifyId": "61WJfem6nwyZC51aJQa5eL",
+      "url": "https://open.spotify.com/track/61WJfem6nwyZC51aJQa5eL",
+      "name": "無路矢",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14920": {
+      "spotifyId": "6P1bG5AN1C1s7oTIF5nSm3",
+      "url": "https://open.spotify.com/track/6P1bG5AN1C1s7oTIF5nSm3",
+      "name": "最強☆ソング",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "最強☆ソング",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14921": {
+      "spotifyId": "0iNEdxHGgVMsCBgHFycwmL",
+      "url": "https://open.spotify.com/track/0iNEdxHGgVMsCBgHFycwmL",
+      "name": "神さま、バカ",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "神さま、バカ",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14922": {
+      "spotifyId": "3RtcR7pL6YNQ57fsRciMdp",
+      "url": "https://open.spotify.com/track/3RtcR7pL6YNQ57fsRciMdp",
+      "name": "Mas?uerade Rhapsody Re?uest",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Mas?uerade Rhapsody Re?uest",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14925": {
+      "spotifyId": "48QkQ2QLAoUybnWwDfLnT0",
+      "url": "https://open.spotify.com/track/48QkQ2QLAoUybnWwDfLnT0",
+      "name": "RiNG A BELL",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "青春 To Be Continued",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14930": {
+      "spotifyId": "3bDZfPqFNPYNYqUpR85Kiu",
+      "url": "https://open.spotify.com/track/3bDZfPqFNPYNYqUpR85Kiu",
+      "name": "青春 To Be Continued",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "青春 To Be Continued",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14932": {
+      "spotifyId": "4oWHlJ1SNUyk1jLR8rN4aW",
+      "url": "https://open.spotify.com/track/4oWHlJ1SNUyk1jLR8rN4aW",
+      "name": "-N-E-M-E-S-I-S-",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14937": {
+      "spotifyId": "01qMLSlYlp8dUD3u79XZo2",
+      "url": "https://open.spotify.com/track/01qMLSlYlp8dUD3u79XZo2",
+      "name": "せかいのっびのびトレジャー！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "SMILE ON PARADE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14942": {
+      "spotifyId": "1U9DXW2cBhCju3l0OWK1i6",
+      "url": "https://open.spotify.com/track/1U9DXW2cBhCju3l0OWK1i6",
+      "name": "壱雫空",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14943": {
+      "spotifyId": "7hvFHym3IfuMvvMy5KdB7J",
+      "url": "https://open.spotify.com/track/7hvFHym3IfuMvvMy5KdB7J",
+      "name": "栞",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14944": {
+      "spotifyId": "71xxxn03tCUVZCb5p6XMrF",
+      "url": "https://open.spotify.com/track/71xxxn03tCUVZCb5p6XMrF",
+      "name": "碧天伴走",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14948": {
+      "spotifyId": "4lypt03XVYnSat94IWFVPd",
+      "url": "https://open.spotify.com/track/4lypt03XVYnSat94IWFVPd",
+      "name": "焚音打",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14950": {
+      "spotifyId": "68pyZjn31y1s2MKgoOu4ug",
+      "url": "https://open.spotify.com/track/68pyZjn31y1s2MKgoOu4ug",
+      "name": "詩超絆",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14951": {
+      "spotifyId": "3KkJ0PqT1DO3d4On3xtCuk",
+      "url": "https://open.spotify.com/track/3KkJ0PqT1DO3d4On3xtCuk",
+      "name": "迷路日々",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14952": {
+      "spotifyId": "7Ghf5I1Nvrx0QmAJHxLB3T",
+      "url": "https://open.spotify.com/track/7Ghf5I1Nvrx0QmAJHxLB3T",
+      "name": "燦々",
+      "artists": [
+        "Afterglow"
+      ],
+      "album": "燦々",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14955": {
+      "spotifyId": "6CRCvjr2gLXGgUVra8KgvT",
+      "url": "https://open.spotify.com/track/6CRCvjr2gLXGgUVra8KgvT",
+      "name": "DANCING DARING",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14956": {
+      "spotifyId": "2eAwuGqVHytTBS65NrkvUi",
+      "url": "https://open.spotify.com/track/2eAwuGqVHytTBS65NrkvUi",
+      "name": "新しい季節に",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14957": {
+      "spotifyId": "2W99f2JxL6d2myh7nKAJKg",
+      "url": "https://open.spotify.com/track/2W99f2JxL6d2myh7nKAJKg",
+      "name": "Ave Mujica",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Alea jacta est",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14958": {
+      "spotifyId": "4pDT9poyakn5xnreqSLJrS",
+      "url": "https://open.spotify.com/track/4pDT9poyakn5xnreqSLJrS",
+      "name": "Apocalypse",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "Apocalypse",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14959": {
+      "spotifyId": "4kCfYBpSpj36owZA4iO9zN",
+      "url": "https://open.spotify.com/track/4kCfYBpSpj36owZA4iO9zN",
+      "name": "TWIN TALE",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "TWIN TALE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14960": {
+      "spotifyId": "5wdo9xKTbfxRSkys6aJW4O",
+      "url": "https://open.spotify.com/track/5wdo9xKTbfxRSkys6aJW4O",
+      "name": "BERSER-KEY",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "REVELATION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14961": {
+      "spotifyId": "75O9Afe1nxPITfoVTNeiN0",
+      "url": "https://open.spotify.com/track/75O9Afe1nxPITfoVTNeiN0",
+      "name": "POLARIS",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "REVELATION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14962": {
+      "spotifyId": "3nNgQi8AS2xhx9HWATAjhE",
+      "url": "https://open.spotify.com/track/3nNgQi8AS2xhx9HWATAjhE",
+      "name": "STRAY CERBERUS",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "REVELATION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14963": {
+      "spotifyId": "2ppMBBzXosczsCWvB2XBFd",
+      "url": "https://open.spotify.com/track/2ppMBBzXosczsCWvB2XBFd",
+      "name": "歌いましょう鳴らしましょう",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14964": {
+      "spotifyId": "2GC2OsWhRm9ltfxWBKuHhE",
+      "url": "https://open.spotify.com/track/2GC2OsWhRm9ltfxWBKuHhE",
+      "name": "春日影 (MyGO!!!!! ver.)",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "迷跡波",
+      "score": 70,
+      "matchType": "exact"
+    },
+    "14965": {
+      "spotifyId": "2hKZmf3dKhgwRvtlb5Zoch",
+      "url": "https://open.spotify.com/track/2hKZmf3dKhgwRvtlb5Zoch",
+      "name": "処救生",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14966": {
+      "spotifyId": "2bAYEWUa8D2aMYjSgSZcb0",
+      "url": "https://open.spotify.com/track/2bAYEWUa8D2aMYjSgSZcb0",
+      "name": "夢現妄想世界",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "夢現妄想世界",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14967": {
+      "spotifyId": "2YHRUcAYTBBMX8t2pMxVhQ",
+      "url": "https://open.spotify.com/track/2YHRUcAYTBBMX8t2pMxVhQ",
+      "name": "esora no clover",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "forte",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14968": {
+      "spotifyId": "3x1ePutzGDLc1yY4litD5I",
+      "url": "https://open.spotify.com/track/3x1ePutzGDLc1yY4litD5I",
+      "name": "MUGEN Reverberate!",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "forte",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14969": {
+      "spotifyId": "7mY21ZwEx2a7sjuIbdbkxH",
+      "url": "https://open.spotify.com/track/7mY21ZwEx2a7sjuIbdbkxH",
+      "name": "きょうもMerry go rounD",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "forte",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14970": {
+      "spotifyId": "1frGsNKskxBO6w7PbeiTr1",
+      "url": "https://open.spotify.com/track/1frGsNKskxBO6w7PbeiTr1",
+      "name": "フレージング ミラージュ",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "forte",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14971": {
+      "spotifyId": "3AukF2JscZSgUJQnRIXM3n",
+      "url": "https://open.spotify.com/track/3AukF2JscZSgUJQnRIXM3n",
+      "name": "わたしまちがいさがし",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "forte",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14972": {
+      "spotifyId": "32JhiDVk9SzLbPtdHbCqcB",
+      "url": "https://open.spotify.com/track/32JhiDVk9SzLbPtdHbCqcB",
+      "name": "VIOLET LINE",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "VIOLET LINE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14974": {
+      "spotifyId": "1bQY4fbYAqyPAElVWhgLjG",
+      "url": "https://open.spotify.com/track/1bQY4fbYAqyPAElVWhgLjG",
+      "name": "Angles",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Angles",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14975": {
+      "spotifyId": "1MZhwHvGwIxoU26xTj8a6I",
+      "url": "https://open.spotify.com/track/1MZhwHvGwIxoU26xTj8a6I",
+      "name": "両翼のBrilliance",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14978": {
+      "spotifyId": "3aeyG6JWxhYzfFQ2iZPl2n",
+      "url": "https://open.spotify.com/track/3aeyG6JWxhYzfFQ2iZPl2n",
+      "name": "ビッグマウス",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "ビッグマウス",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14979": {
+      "spotifyId": "35t8V6oqnrTJynstHC6qgV",
+      "url": "https://open.spotify.com/track/35t8V6oqnrTJynstHC6qgV",
+      "name": "輪符雨",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14980": {
+      "spotifyId": "0SVVKUSULjtBuAsQ2SnsfD",
+      "url": "https://open.spotify.com/track/0SVVKUSULjtBuAsQ2SnsfD",
+      "name": "回層浮",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14981": {
+      "spotifyId": "0PVR3V0YJblwgm45ApPGJm",
+      "url": "https://open.spotify.com/track/0PVR3V0YJblwgm45ApPGJm",
+      "name": "砂寸奏",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14984": {
+      "spotifyId": "6tNk1tjuv4s7yiN4xjELdS",
+      "url": "https://open.spotify.com/track/6tNk1tjuv4s7yiN4xjELdS",
+      "name": "Symbol I : △",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Ave Música",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14985": {
+      "spotifyId": "53mwZMkq2efQOOJpQaHn68",
+      "url": "https://open.spotify.com/track/53mwZMkq2efQOOJpQaHn68",
+      "name": "限界現実サバイブ天使",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "限界現実サバイブ天使",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14986": {
+      "spotifyId": "35tFQW0CfjxS7psHX1R3d3",
+      "url": "https://open.spotify.com/track/35tFQW0CfjxS7psHX1R3d3",
+      "name": "音がえしのセレナーデ",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "両翼のBrilliance",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14987": {
+      "spotifyId": "13ZB2x7O4kZn9H1eONafMd",
+      "url": "https://open.spotify.com/track/13ZB2x7O4kZn9H1eONafMd",
+      "name": "蒼穹へのトレイル",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "両翼のBrilliance",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14989": {
+      "spotifyId": "5x3ExaxnOVA4SwjLBYm6wX",
+      "url": "https://open.spotify.com/track/5x3ExaxnOVA4SwjLBYm6wX",
+      "name": "V.I.P MONSTER",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14990": {
+      "spotifyId": "6GD5lkW9g8CdGVgvVqgOZb",
+      "url": "https://open.spotify.com/track/6GD5lkW9g8CdGVgvVqgOZb",
+      "name": "Symbol II : Air",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Symbol II : Air",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14991": {
+      "spotifyId": "1ZYpMltyg5J2tJbMsxp8in",
+      "url": "https://open.spotify.com/track/1ZYpMltyg5J2tJbMsxp8in",
+      "name": "サンバロハッピ〜！",
+      "artists": [
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "サンバロハッピ〜！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14992": {
+      "spotifyId": "3TFwLw0NwmO17xvcTOG8P2",
+      "url": "https://open.spotify.com/track/3TFwLw0NwmO17xvcTOG8P2",
+      "name": "Floral Haven",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Für immer",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14997": {
+      "spotifyId": "3yrlq6ZwsDg2G9sWlZRHkn",
+      "url": "https://open.spotify.com/track/3yrlq6ZwsDg2G9sWlZRHkn",
+      "name": "エンプティパペット",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "エンプティパペット",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14998": {
+      "spotifyId": "1zgGCCazWLqrbBEWNXQ3lk",
+      "url": "https://open.spotify.com/track/1zgGCCazWLqrbBEWNXQ3lk",
+      "name": "BATTLE CRY",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "14999": {
+      "spotifyId": "6zknB214Dp3rScSMxZuM2l",
+      "url": "https://open.spotify.com/track/6zknB214Dp3rScSMxZuM2l",
+      "name": "Life on the Lotus",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "SAVAGE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15001": {
+      "spotifyId": "4U18VEyWj8y6xGcVtgZWT3",
+      "url": "https://open.spotify.com/track/4U18VEyWj8y6xGcVtgZWT3",
+      "name": "Symbol III : ▽",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Symbol III : ▽",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15006": {
+      "spotifyId": "68OymWhEAobP8ljyEoOo1M",
+      "url": "https://open.spotify.com/track/68OymWhEAobP8ljyEoOo1M",
+      "name": "Sage der Rosen",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Für immer",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15007": {
+      "spotifyId": "0L3tZ6gIbuw9euQR4SAvD3",
+      "url": "https://open.spotify.com/track/0L3tZ6gIbuw9euQR4SAvD3",
+      "name": "覚悟のLiberation",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Für immer",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15008": {
+      "spotifyId": "3SGEwJtFhYDp48dw0hsnRz",
+      "url": "https://open.spotify.com/track/3SGEwJtFhYDp48dw0hsnRz",
+      "name": "Symbol IV : Earth",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Symbol IV : Earth",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15009": {
+      "spotifyId": "07qmAUS6Vt9HhaQeGLvLAP",
+      "url": "https://open.spotify.com/track/07qmAUS6Vt9HhaQeGLvLAP",
+      "name": "TARINAI",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15010": {
+      "spotifyId": "669RI7o0s3Z0ncGntSeYTx",
+      "url": "https://open.spotify.com/track/669RI7o0s3Z0ncGntSeYTx",
+      "name": "トレモロアイズ",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15011": {
+      "spotifyId": "1wdCBeiYlPtjdNOcTwtYyQ",
+      "url": "https://open.spotify.com/track/1wdCBeiYlPtjdNOcTwtYyQ",
+      "name": "孤壊牢",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15012": {
+      "spotifyId": "4Lcewcj2kPhVhbrjp0aUiA",
+      "url": "https://open.spotify.com/track/4Lcewcj2kPhVhbrjp0aUiA",
+      "name": "端程山",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15013": {
+      "spotifyId": "5WvZy8C9QPzDYlYc4bmrO6",
+      "url": "https://open.spotify.com/track/5WvZy8C9QPzDYlYc4bmrO6",
+      "name": "✞animaるパーティ✞開催中✞",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "スタートライン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15014": {
+      "spotifyId": "4infqaVs9eVgjSaY4HdMwr",
+      "url": "https://open.spotify.com/track/4infqaVs9eVgjSaY4HdMwr",
+      "name": "コハク",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15015": {
+      "spotifyId": "5tixkNY0ZcxRkkmWfZqSDL",
+      "url": "https://open.spotify.com/track/5tixkNY0ZcxRkkmWfZqSDL",
+      "name": "Ether",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Ether",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15016": {
+      "spotifyId": "4UroCYgDB04zkfoIukcPGS",
+      "url": "https://open.spotify.com/track/4UroCYgDB04zkfoIukcPGS",
+      "name": "Tempest",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15018": {
+      "spotifyId": "4ASq7X4whuOi22olYMRnAw",
+      "url": "https://open.spotify.com/track/4ASq7X4whuOi22olYMRnAw",
+      "name": "Wreath of Brave",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15019": {
+      "spotifyId": "7MnIGGqUsB3CT0q2umoNZM",
+      "url": "https://open.spotify.com/track/7MnIGGqUsB3CT0q2umoNZM",
+      "name": "新人類は仮想世界の夢を見るか？",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "新人類は仮想世界の夢を見るか？",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15021": {
+      "spotifyId": "6uCJqrwPdPzTnLLn0iS0Yf",
+      "url": "https://open.spotify.com/track/6uCJqrwPdPzTnLLn0iS0Yf",
+      "name": "歩拾道",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15024": {
+      "spotifyId": "2qciW2NtSEPanmoPjD3Mbk",
+      "url": "https://open.spotify.com/track/2qciW2NtSEPanmoPjD3Mbk",
+      "name": "With〜きみとわたしたちの物語〜",
+      "artists": [
+        "Pastel*Palettes"
+      ],
+      "album": "With〜きみとわたしたちの物語〜",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15025": {
+      "spotifyId": "01Q3nEVbr4cwH2O8BVJlH2",
+      "url": "https://open.spotify.com/track/01Q3nEVbr4cwH2O8BVJlH2",
+      "name": "WELCOME TO PANDEMONIUM",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "WELCOME TO PANDEMONIUM",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15026": {
+      "spotifyId": "6BRO3N8Umo5iQPON37Fgjj",
+      "url": "https://open.spotify.com/track/6BRO3N8Umo5iQPON37Fgjj",
+      "name": "FRONTIER FANTASIA",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "礎の花冠",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15027": {
+      "spotifyId": "6KiEyThg9tYGMNSejoLQpF",
+      "url": "https://open.spotify.com/track/6KiEyThg9tYGMNSejoLQpF",
+      "name": "礎の花冠",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "礎の花冠",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15028": {
+      "spotifyId": "1enc7tpwG5F49UFgov1vwJ",
+      "url": "https://open.spotify.com/track/1enc7tpwG5F49UFgov1vwJ",
+      "name": "明弦音",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15029": {
+      "spotifyId": "3sujoP5pA4Fmk6qbjvdf0s",
+      "url": "https://open.spotify.com/track/3sujoP5pA4Fmk6qbjvdf0s",
+      "name": "夜隠染",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "跡暖空",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15030": {
+      "spotifyId": "2Tsc4911Gp0sI5CypnGgBL",
+      "url": "https://open.spotify.com/track/2Tsc4911Gp0sI5CypnGgBL",
+      "name": "コミュ着火Fire!",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15031": {
+      "spotifyId": "0y5QgAAEZoqStDtz5XGJlV",
+      "url": "https://open.spotify.com/track/0y5QgAAEZoqStDtz5XGJlV",
+      "name": "Bad Kids All Bet",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "Bad Kids All Bet",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15032": {
+      "spotifyId": "4m9bU1ifWPGprAtAab3VZn",
+      "url": "https://open.spotify.com/track/4m9bU1ifWPGprAtAab3VZn",
+      "name": "KiLLKiSS",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "KiLLKiSS",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15033": {
+      "spotifyId": "6BCuusKOo7e2KT22kKghRV",
+      "url": "https://open.spotify.com/track/6BCuusKOo7e2KT22kKghRV",
+      "name": "Georgette Me, Georgette You",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Completeness",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15034": {
+      "spotifyId": "3oalHljprltnnerxgu2E66",
+      "url": "https://open.spotify.com/track/3oalHljprltnnerxgu2E66",
+      "name": "TRASH LIFE",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15035": {
+      "spotifyId": "6ecV23jhX9vHkqZKXxW530",
+      "url": "https://open.spotify.com/track/6ecV23jhX9vHkqZKXxW530",
+      "name": "Polyphonyscape",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15036": {
+      "spotifyId": "59nmwMUOGWvypaoHkiYgS3",
+      "url": "https://open.spotify.com/track/59nmwMUOGWvypaoHkiYgS3",
+      "name": "DOKI DOKI SCARY",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15037": {
+      "spotifyId": "71QIULlehYxfPrpeKtU9Ac",
+      "url": "https://open.spotify.com/track/71QIULlehYxfPrpeKtU9Ac",
+      "name": "Tomorrow's Door",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "POPIGENIC",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15040": {
+      "spotifyId": "65Ccl0gl2WtWCGNdlC38a7",
+      "url": "https://open.spotify.com/track/65Ccl0gl2WtWCGNdlC38a7",
+      "name": "Crucifix X",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Crucifix X",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15041": {
+      "spotifyId": "5sUCmYVWX2blPomsCOu0Ij",
+      "url": "https://open.spotify.com/track/5sUCmYVWX2blPomsCOu0Ij",
+      "name": "Imprisoned XII",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Completeness",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15044": {
+      "spotifyId": "55hfswWLAudIAmmOzFuTKa",
+      "url": "https://open.spotify.com/track/55hfswWLAudIAmmOzFuTKa",
+      "name": "ティリカモニカリラ",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Polyphony",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15045": {
+      "spotifyId": "13K9GS3Z7UkyTQzZ7ztB2h",
+      "url": "https://open.spotify.com/track/13K9GS3Z7UkyTQzZ7ztB2h",
+      "name": "聿日箋秋",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "致並跡",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15046": {
+      "spotifyId": "7fh1kd9kH1F6aw1zjFOI6X",
+      "url": "https://open.spotify.com/track/7fh1kd9kH1F6aw1zjFOI6X",
+      "name": "天球(そら)のMúsica",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Completeness",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15047": {
+      "spotifyId": "7l1vIzKGyO7Z1hNTSdi177",
+      "url": "https://open.spotify.com/track/7l1vIzKGyO7Z1hNTSdi177",
+      "name": "テレパシー",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "テレパシー",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15048": {
+      "spotifyId": "0ZYgJq7TgMBm7Gp96A2nz0",
+      "url": "https://open.spotify.com/track/0ZYgJq7TgMBm7Gp96A2nz0",
+      "name": "顔",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "顔",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15049": {
+      "spotifyId": "0nMgVEqeEy30rFeP105DBz",
+      "url": "https://open.spotify.com/track/0nMgVEqeEy30rFeP105DBz",
+      "name": "掌心正銘",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "致並跡",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15050": {
+      "spotifyId": "4eR1tqIsDouIiI1cbTuCMy",
+      "url": "https://open.spotify.com/track/4eR1tqIsDouIiI1cbTuCMy",
+      "name": "八芒星ダンス",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "Completeness",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15051": {
+      "spotifyId": "0rNLITsnaH7Uanwqn4ZHqf",
+      "url": "https://open.spotify.com/track/0rNLITsnaH7Uanwqn4ZHqf",
+      "name": "Hi-Vision",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "Hi-Vision",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15052": {
+      "spotifyId": "36qqkkLRFAGZmaqR7C86du",
+      "url": "https://open.spotify.com/track/36qqkkLRFAGZmaqR7C86du",
+      "name": "Dazzle the Destiny",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Dazzle the Destiny",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15053": {
+      "spotifyId": "2IpamzXywPnXUZCpo7ZbPc",
+      "url": "https://open.spotify.com/track/2IpamzXywPnXUZCpo7ZbPc",
+      "name": "Requiem for Fate",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Requiem for Fate",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15054": {
+      "spotifyId": "2NYWu8xDb8g6Q8d6MxdmQV",
+      "url": "https://open.spotify.com/track/2NYWu8xDb8g6Q8d6MxdmQV",
+      "name": "HOWLING AMBITION",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "HOWLING AMBITION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15055": {
+      "spotifyId": "6Y4FgtaD5RPrldVxVFPUAa",
+      "url": "https://open.spotify.com/track/6Y4FgtaD5RPrldVxVFPUAa",
+      "name": "VIVID FIRST TIME",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "HOWLING AMBITION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15062": {
+      "spotifyId": "62J2LaVZG1FIQfmJBXYpdI",
+      "url": "https://open.spotify.com/track/62J2LaVZG1FIQfmJBXYpdI",
+      "name": "Dream Voyage",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "Dream Voyage",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15063": {
+      "spotifyId": "2EXMoOCIHbhnLzDg5gZZ4U",
+      "url": "https://open.spotify.com/track/2EXMoOCIHbhnLzDg5gZZ4U",
+      "name": "DIVINE",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "DIVINE",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15064": {
+      "spotifyId": "6Gb4jqMzfnJu5xA4mGTzKv",
+      "url": "https://open.spotify.com/track/6Gb4jqMzfnJu5xA4mGTzKv",
+      "name": "往欄印",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "致並跡",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15065": {
+      "spotifyId": "4KBwo2QAUo4Bmo3MZz7wDX",
+      "url": "https://open.spotify.com/track/4KBwo2QAUo4Bmo3MZz7wDX",
+      "name": "残痕字",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "致並跡",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15069": {
+      "spotifyId": "4pkSTx6ZTBXkF63An08L3f",
+      "url": "https://open.spotify.com/track/4pkSTx6ZTBXkF63An08L3f",
+      "name": "グラディエント",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "グラディエント",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15071": {
+      "spotifyId": "4QIA2VSrQDo4y53Pr4T5mE",
+      "url": "https://open.spotify.com/track/4QIA2VSrQDo4y53Pr4T5mE",
+      "name": "Feathered Dreams",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Feathered Dreams",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15072": {
+      "spotifyId": "21EwZl3EMt5UPD6XhzpuJB",
+      "url": "https://open.spotify.com/track/21EwZl3EMt5UPD6XhzpuJB",
+      "name": "Portray Empathy",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Feathered Dreams",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15073": {
+      "spotifyId": "7xn42dKzsWvXWeh5Qu2UFE",
+      "url": "https://open.spotify.com/track/7xn42dKzsWvXWeh5Qu2UFE",
+      "name": "LET'Sあちあちトレーニング！",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "真夜中遊園地",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15074": {
+      "spotifyId": "4aRZJESJcRa1i2gZD06WPk",
+      "url": "https://open.spotify.com/track/4aRZJESJcRa1i2gZD06WPk",
+      "name": "真夜中遊園地",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15075": {
+      "spotifyId": "4UQmtceQpVzfSgwW7EWfwf",
+      "url": "https://open.spotify.com/track/4UQmtceQpVzfSgwW7EWfwf",
+      "name": "碧い瞳の中に",
+      "artists": [
+        "Ave Mujica",
+        "塞壬唱片-MSR"
+      ],
+      "album": "碧い瞳の中に",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15076": {
+      "spotifyId": "2FhUOU5p5ZCMOxPkRO1bAL",
+      "url": "https://open.spotify.com/track/2FhUOU5p5ZCMOxPkRO1bAL",
+      "name": "チューニング",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15078": {
+      "spotifyId": "1HNKxinsz9yDUKp68nNnxh",
+      "url": "https://open.spotify.com/track/1HNKxinsz9yDUKp68nNnxh",
+      "name": "エガクミライ",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "エガクミライ",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15083": {
+      "spotifyId": "2Ammvg8GD0lN5Rd3xNXB3S",
+      "url": "https://open.spotify.com/track/2Ammvg8GD0lN5Rd3xNXB3S",
+      "name": "Calling",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15084": {
+      "spotifyId": "3bNwhp4SuoTVqbCobgXIPK",
+      "url": "https://open.spotify.com/track/3bNwhp4SuoTVqbCobgXIPK",
+      "name": "'FIGHT' ADDICT",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "'FIGHT' ADDICT",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15085": {
+      "spotifyId": "7kgpuDQ0n9nFfYxttuECjg",
+      "url": "https://open.spotify.com/track/7kgpuDQ0n9nFfYxttuECjg",
+      "name": "Drown Out the Noise and Push Through the Trash",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "'FIGHT' ADDICT",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15086": {
+      "spotifyId": "4girzTtWyJSzuRJYt52l06",
+      "url": "https://open.spotify.com/track/4girzTtWyJSzuRJYt52l06",
+      "name": "FIVE as ONE",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "'FIGHT' ADDICT",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15087": {
+      "spotifyId": "0NmyomegQ4lOcXfs2IQNL2",
+      "url": "https://open.spotify.com/track/0NmyomegQ4lOcXfs2IQNL2",
+      "name": "Steadfast Spirits",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Steadfast Spirits",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15088": {
+      "spotifyId": "5Cc5MekehtXOXOJ0pRZFDy",
+      "url": "https://open.spotify.com/track/5Cc5MekehtXOXOJ0pRZFDy",
+      "name": "紫炎",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Steadfast Spirits",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15089": {
+      "spotifyId": "5CBUHnHEyrrAmvj1MLRqrf",
+      "url": "https://open.spotify.com/track/5CBUHnHEyrrAmvj1MLRqrf",
+      "name": "静降想",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "致並跡",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15090": {
+      "spotifyId": "6O36bjXdeg0e1wv51Qp1kw",
+      "url": "https://open.spotify.com/track/6O36bjXdeg0e1wv51Qp1kw",
+      "name": "‘S/’ The Way",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "‘S/’ The Way / Sophie",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15091": {
+      "spotifyId": "3kNstETQbKxO8bSph97UZO",
+      "url": "https://open.spotify.com/track/3kNstETQbKxO8bSph97UZO",
+      "name": "Sophie",
+      "artists": [
+        "Ave Mujica"
+      ],
+      "album": "‘S/’ The Way / Sophie",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15092": {
+      "spotifyId": "2NWLVbYlgqRhpNV06MiR4U",
+      "url": "https://open.spotify.com/track/2NWLVbYlgqRhpNV06MiR4U",
+      "name": "Drive Your Heart",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "Drive Your Heart",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15093": {
+      "spotifyId": "4agtWVS9lzynKNxUVJeo4c",
+      "url": "https://open.spotify.com/track/4agtWVS9lzynKNxUVJeo4c",
+      "name": "アイの夢限",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15095": {
+      "spotifyId": "39AxmTMwXJldD5se2EJWnH",
+      "url": "https://open.spotify.com/track/39AxmTMwXJldD5se2EJWnH",
+      "name": "どんがらがっしゃん",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15096": {
+      "spotifyId": "6CT0VzUjcq0hz64CeppUdO",
+      "url": "https://open.spotify.com/track/6CT0VzUjcq0hz64CeppUdO",
+      "name": "みゅーたんとミュータント",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "プログレス サイン",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15099": {
+      "spotifyId": "7xDPmQoY2vlr05ys49NO0j",
+      "url": "https://open.spotify.com/track/7xDPmQoY2vlr05ys49NO0j",
+      "name": "ホーミー・タイッ！！",
+      "artists": [
+        "一家Dumb Rock!"
+      ],
+      "album": "ホーミー・タイッ！！",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15100": {
+      "spotifyId": "3dhWspMJASIE3VoCDpaNtw",
+      "url": "https://open.spotify.com/track/3dhWspMJASIE3VoCDpaNtw",
+      "name": "起死開戦",
+      "artists": [
+        "millsage"
+      ],
+      "album": "起死開戦",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15101": {
+      "spotifyId": "51lCln1HkJ8tllULb2v7vL",
+      "url": "https://open.spotify.com/track/51lCln1HkJ8tllULb2v7vL",
+      "name": "証命讃歌",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "証命讃歌",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15102": {
+      "spotifyId": "2QazOPcLPhUJxrOTKnG8Fb",
+      "url": "https://open.spotify.com/track/2QazOPcLPhUJxrOTKnG8Fb",
+      "name": "Resonant Strings",
+      "artists": [
+        "Morfonica"
+      ],
+      "album": "Resonant Strings",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15106": {
+      "spotifyId": "5825o3HCJ40sqj6JMXyC8I",
+      "url": "https://open.spotify.com/track/5825o3HCJ40sqj6JMXyC8I",
+      "name": "Talk to My Tone",
+      "artists": [
+        "Roselia"
+      ],
+      "album": "Fear Nothing",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15107": {
+      "spotifyId": "1Nvgq4W1rdhZcaTFe0rw12",
+      "url": "https://open.spotify.com/track/1Nvgq4W1rdhZcaTFe0rw12",
+      "name": "どきどきデエト",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "album": "どきどきデエト",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15109": {
+      "spotifyId": "5zz4jsVaX3OPx4ZK5kaaBa",
+      "url": "https://open.spotify.com/track/5zz4jsVaX3OPx4ZK5kaaBa",
+      "name": "超惑星Xへの旅",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "超惑星Xへの旅",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15111": {
+      "spotifyId": "2GHQQfkXEOY2O8yqFB3INa",
+      "url": "https://open.spotify.com/track/2GHQQfkXEOY2O8yqFB3INa",
+      "name": "RUNAWAY STAR",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "WHAT AN EXPLOSION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15112": {
+      "spotifyId": "00vlXRYEnMTUnhM0NRjg4r",
+      "url": "https://open.spotify.com/track/00vlXRYEnMTUnhM0NRjg4r",
+      "name": "WHAT AN EXPLOSION",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "album": "WHAT AN EXPLOSION",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15116": {
+      "spotifyId": "3AYKCdPgc1VdsKyTyyl7op",
+      "url": "https://open.spotify.com/track/3AYKCdPgc1VdsKyTyyl7op",
+      "name": "羅永線",
+      "artists": [
+        "MyGO!!!!!"
+      ],
+      "album": "致並跡",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15119": {
+      "spotifyId": "51pypU0qsKgWwiPdMuCzmi",
+      "url": "https://open.spotify.com/track/51pypU0qsKgWwiPdMuCzmi",
+      "name": "これはぼくたちの生存のあらすじ",
+      "artists": [
+        "夢限大みゅーたいぷ"
+      ],
+      "album": "これはぼくたちの生存のあらすじ",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15122": {
+      "spotifyId": "618sNpgK4RGCaqF3s5eP1C",
+      "url": "https://open.spotify.com/track/618sNpgK4RGCaqF3s5eP1C",
+      "name": "カーネーションの咲く日に",
+      "artists": [
+        "millsage"
+      ],
+      "album": "カーネーションの咲く日に",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15123": {
+      "spotifyId": "42oOagLyB7uVsrNMKCd6eN",
+      "url": "https://open.spotify.com/track/42oOagLyB7uVsrNMKCd6eN",
+      "name": "Keep on Riddim",
+      "artists": [
+        "一家Dumb Rock!"
+      ],
+      "album": "Keep on Riddim",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15157": {
+      "spotifyId": "0RoP1ZrQ6gHkwTyRE84QNm",
+      "url": "https://open.spotify.com/track/0RoP1ZrQ6gHkwTyRE84QNm",
+      "name": "Don't be afraid",
+      "artists": [
+        "WEST."
+      ],
+      "album": "POWER (2025)",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15164": {
+      "spotifyId": "4VwhDHPgNVr0xoDB0ZyDyG",
+      "url": "https://open.spotify.com/track/4VwhDHPgNVr0xoDB0ZyDyG",
+      "name": "ピコっと！パピっと！！ガルパ☆ピコ！！！",
+      "artists": [
+        "戸山香澄(CV:愛美)",
+        "美竹 蘭(CV:佐倉綾音)",
+        "丸山 彩(CV:前島亜美)",
+        "湊 友希那(CV:相羽あいな)",
+        "弦巻こころ(CV:伊藤美来)"
+      ],
+      "album": "ピコっと！パピっと！！ガルパ☆ピコ！！！",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15166": {
+      "spotifyId": "2S8yrKBjTrjqbyOxspIR4i",
+      "url": "https://open.spotify.com/track/2S8yrKBjTrjqbyOxspIR4i",
+      "name": "Glee Glee Glee",
+      "artists": [
+        "Bill Brown"
+      ],
+      "album": "Glee Glee Glee",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15169": {
+      "spotifyId": "5AQxiOtc3EsQSQP2wirgg2",
+      "url": "https://open.spotify.com/track/5AQxiOtc3EsQSQP2wirgg2",
+      "name": "ナカナ イナ カナイ",
+      "artists": [
+        "花園たえ(CV:大塚紗英)",
+        "レイヤ(CV:Raychell)"
+      ],
+      "album": "ナカナ イナ カナイ",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15170": {
+      "spotifyId": "4xPftzZ7ImXMcYEvHXz7Mq",
+      "url": "https://open.spotify.com/track/4xPftzZ7ImXMcYEvHXz7Mq",
+      "name": "Are you ready to FIGHT",
+      "artists": [
+        "Raychell"
+      ],
+      "album": "Are you ready to FIGHT",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15210": {
+      "spotifyId": "73xOjfO4kH0KkF5GOT8G05",
+      "url": "https://open.spotify.com/track/73xOjfO4kH0KkF5GOT8G05",
+      "name": "絆色のアンサンブル",
+      "artists": [
+        "Poppin'Party",
+        "Pastel*Palettes",
+        "Morfonica"
+      ],
+      "album": "劇場版「BanG Dream! FILM LIVE 2nd Stage」Special Songs",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15211": {
+      "spotifyId": "0a75uWMYYyzQhZkYyw754I",
+      "url": "https://open.spotify.com/track/0a75uWMYYyzQhZkYyw754I",
+      "name": "ラスハピーポー！",
+      "artists": [
+        "RAISE A SUILEN",
+        "ハロー、ハッピーワールド!"
+      ],
+      "album": "劇場版「BanG Dream! FILM LIVE 2nd Stage」Special Songs",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15212": {
+      "spotifyId": "3uXz1lgsibXdWQ05wc2P6f",
+      "url": "https://open.spotify.com/track/3uXz1lgsibXdWQ05wc2P6f",
+      "name": "競宴Red×Violet",
+      "artists": [
+        "Roselia",
+        "Afterglow"
+      ],
+      "album": "劇場版「BanG Dream! FILM LIVE 2nd Stage」Special Songs",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15213": {
+      "spotifyId": "1Px6CBXDra1UK9u7XgMh9F",
+      "url": "https://open.spotify.com/track/1Px6CBXDra1UK9u7XgMh9F",
+      "name": "クインティプル☆すまいる",
+      "artists": [
+        "戸山香澄(CV:愛美)",
+        "美竹 蘭(CV:佐倉綾音)",
+        "丸山 彩(CV:前島亜美)",
+        "湊 友希那(CV:相羽あいな)",
+        "弦巻こころ(CV:伊藤美来)"
+      ],
+      "album": "クインティプル☆すまいる",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15214": {
+      "spotifyId": "2SDncecQMrWa3tmhnV2C5K",
+      "url": "https://open.spotify.com/track/2SDncecQMrWa3tmhnV2C5K",
+      "name": "TWiNKLE CiRCLE",
+      "artists": [
+        "戸山香澄(CV:愛美)",
+        "美竹 蘭(CV:佐倉綾音)",
+        "丸山 彩(CV:前島亜美)",
+        "湊 友希那(CV:相羽あいな)",
+        "弦巻こころ(CV:伊藤美来)"
+      ],
+      "album": "大盛り一丁！ガルパ☆ピコ",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15215": {
+      "spotifyId": "3EirJToZtqh3zPjW2pDXxs",
+      "url": "https://open.spotify.com/track/3EirJToZtqh3zPjW2pDXxs",
+      "name": "CiRCLE THANKS MUSiC♪",
+      "artists": [
+        "Poppin'Party",
+        "Afterglow",
+        "Pastel*Palettes",
+        "Roselia",
+        "ハロー、ハッピーワールド!",
+        "Morfonica",
+        "RAISE A SUILEN"
+      ],
+      "album": "BanG Dream! Dreamer's Best",
+      "score": 100,
+      "matchType": "exact"
+    },
+    "15239": {
+      "spotifyId": "6ZTMwdB4WIjrbphjQGUAV4",
+      "url": "https://open.spotify.com/track/6ZTMwdB4WIjrbphjQGUAV4",
+      "name": "Here, the world!",
+      "artists": [
+        "sumimi"
+      ],
+      "album": "Here, the world!",
+      "score": 70,
+      "matchType": "title-only"
+    },
+    "15240": {
+      "spotifyId": "4GcTGeyAAn3jkx6Ln0Gw2k",
+      "url": "https://open.spotify.com/track/4GcTGeyAAn3jkx6Ln0Gw2k",
+      "name": "Sweet Escape",
+      "artists": [
+        "Alesso",
+        "Sirena"
+      ],
+      "album": "Forever (Deluxe)",
+      "score": 70,
+      "matchType": "title-only"
+    }
+  },
+  "unresolved": [
+    {
+      "id": 14774,
+      "title": "天下卜ーイツA to Z☆",
+      "artists": [
+        "Pastel＊Palettes",
+        "Afterglow",
+        "Ave Mujica",
+        "ハロー、ハッピーワールド！",
+        "Morfonica",
+        "夢限大みゅーたいぷ",
+        "MyGO!!!!!",
+        "Poppin'Party",
+        "RAISE A SUILEN",
+        "Roselia"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 14973,
+      "title": "素晴らしき世界 でも どこにもない場所",
+      "artists": [
+        "Ave Mujica",
+        "Roselia"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15110,
+      "title": "BIBIBABI BRAVER",
+      "artists": [
+        "RAISE A SUILEN"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15152,
+      "title": "花園電気ギター！！！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15153,
+      "title": "チョコレイトの低音レシピ",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15154,
+      "title": "遠い音楽 ～ハートビート～",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15155,
+      "title": "す、好きなんかじゃない！",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15156,
+      "title": "どきどきSING OUT!",
+      "artists": [
+        "Poppin'Party"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15202,
+      "title": "雨上がりの夢",
+      "artists": [
+        "Roselia"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15230,
+      "title": "人間になりたいうた",
+      "artists": [
+        "Ave Mujica",
+        "MyGO!!!!!"
+      ],
+      "reason": "No confident Spotify track result."
+    },
+    {
+      "id": 15241,
+      "title": "人間になりたいうたⅡ",
+      "artists": [
+        "Ave Mujica",
+        "MyGO!!!!!"
+      ],
+      "reason": "No confident Spotify track result."
+    }
+  ]
+}
