@@ -677,7 +677,7 @@ export function RankingClient() {
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Link href="/" className={navPillLabel}>
-              Songs
+              Live Songs
             </Link>
             <ThemeToggle labels={{ ariaLabel: "Color theme", light: "Light", system: "System", dark: "Dark" }} />
           </div>
@@ -827,7 +827,12 @@ export function RankingClient() {
                                   <button
                                     type="button"
                                     className="font-medium text-foreground hover:text-accent"
-                                    onClick={() => setSelectedUser(row.user)}
+                                    onClick={() => {
+                                      setSelectedUser(row.user);
+                                      setExpandedEventer((current) =>
+                                        current === row.user ? "" : row.user,
+                                      );
+                                    }}
                                   >
                                     {row.user}
                                   </button>
