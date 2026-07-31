@@ -30,7 +30,7 @@
     "drizzle-orm": "^0.45.2",
     "html-to-image": "^1.11.13",
     "lucide-react": "^0.547.0",
-    "next": "16.2.4",
+    "next": "16.2.12",
     "postgres": "^3.4.7",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -51,5 +51,9 @@
     "tsx": "^4.20.6",
     "typescript": "^5",
     "vitest": "^4.0.7"
+  },
+  "overrides": {
+    "postcss": "8.5.25",
+    "sharp": "0.35.3"
   }
 }

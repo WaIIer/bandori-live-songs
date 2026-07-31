@@ -32,6 +32,10 @@ function getPoolMax() {
   return 5;
 }
 
+function getSslMode() {
+  return process.env.DATABASE_SSL === "disable" ? false : "require";
+}
+
 export function connectDatabase(preferDirect = false) {
   const connectionString = getConnectionString(preferDirect);
   const sql = postgres(connectionString, {
@@ -39,7 +43,7 @@ export function connectDatabase(preferDirect = false) {
     idle_timeout: 20,
     connect_timeout: 10,
     prepare: false,
-    ssl: "require",
+    ssl: getSslMode(),
   });
 
   return {
