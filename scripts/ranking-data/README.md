@@ -1,6 +1,6 @@
 # Ranking Data Refresh
 
-The ranking page reads its generated files from `public/ranking-data`.
+The ranking page reads its generated files from `public/ranking-data`. At runtime it only fetches those static assets; it does not require the application database or `/api/v1`.
 
 Run a normal incremental refresh with:
 
