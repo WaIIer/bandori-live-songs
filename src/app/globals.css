@@ -86,6 +86,15 @@ input {
     transform 180ms ease;
 }
 
+/* iOS Safari zooms the viewport when a focused form control is below 16px. */
+@supports (-webkit-touch-callout: none) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}
+
 ::selection {
   background: color-mix(in srgb, var(--accent) 24%, transparent);
 }

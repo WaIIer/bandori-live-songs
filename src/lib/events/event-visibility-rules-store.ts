@@ -19,7 +19,15 @@ export const eventVisibilityRulesFilePath = path.join(
 
 export type EventVisibilityRulesFormInput = {
   hiddenTitleKeywordsText: string;
+  allowedTitleKeywordsText: string;
   hiddenEventernoteEventIdsText: string;
+  titleTagsToStripText: string;
+};
+
+export type EventVisibilityRuleEventSummary = {
+  eventernoteEventId: number;
+  title: string;
+  sourceUrl: string;
 };
 
 function uniqueValues<T>(values: T[]) {
@@ -28,10 +36,18 @@ function uniqueValues<T>(values: T[]) {
 
 export function parseEventVisibilityRulesForm({
   hiddenTitleKeywordsText,
+  allowedTitleKeywordsText,
   hiddenEventernoteEventIdsText,
+  titleTagsToStripText,
 }: EventVisibilityRulesFormInput): EventVisibilityRules {
   const hiddenTitleKeywords = uniqueValues(
     hiddenTitleKeywordsText
+      .split(/\r?\n/u)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0),
+  );
+  const allowedTitleKeywords = uniqueValues(
+    allowedTitleKeywordsText
       .split(/\r?\n/u)
       .map((value) => value.trim())
       .filter((value) => value.length > 0),
@@ -42,18 +58,28 @@ export function parseEventVisibilityRulesForm({
       .map((value) => Number.parseInt(value.trim(), 10))
       .filter((value) => Number.isSafeInteger(value) && value > 0),
   );
+  const titleTagsToStrip = uniqueValues(
+    titleTagsToStripText
+      .split(/\r?\n/u)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0),
+  );
 
   return eventVisibilityRulesSchema.parse({
     version: 1,
     hiddenTitleKeywords,
+    allowedTitleKeywords,
     hiddenEventernoteEventIds,
+    titleTagsToStrip,
   });
 }
 
 export function eventVisibilityRulesToFormText(rules: EventVisibilityRules): EventVisibilityRulesFormInput {
   return {
     hiddenTitleKeywordsText: rules.hiddenTitleKeywords.join("\n"),
+    allowedTitleKeywordsText: rules.allowedTitleKeywords.join("\n"),
     hiddenEventernoteEventIdsText: rules.hiddenEventernoteEventIds.join("\n"),
+    titleTagsToStripText: rules.titleTagsToStrip.join("\n"),
   };
 }
 
@@ -75,6 +101,31 @@ export async function readEventVisibilityRulesFromDb(db?: Awaited<ReturnType<typ
     .limit(1);
 
   return row ? eventVisibilityRulesSchema.parse(row.payload) : null;
+}
+
+export async function readEventVisibilityRuleEventSummaries(
+  eventernoteEventIds: number[],
+  db?: Awaited<ReturnType<typeof getDb>>,
+): Promise<EventVisibilityRuleEventSummary[]> {
+  if (eventernoteEventIds.length === 0) {
+    return [];
+  }
+
+  const [{ inArray }, { bandoriEventIndex }] = await Promise.all([
+    import("drizzle-orm"),
+    import("@/lib/db/schema"),
+  ]);
+  const resolvedDb = db ?? (await getDb());
+
+  return resolvedDb
+    .select({
+      eventernoteEventId: bandoriEventIndex.eventernoteEventId,
+      title: bandoriEventIndex.title,
+      sourceUrl: bandoriEventIndex.sourceUrl,
+    })
+    .from(bandoriEventIndex)
+    .where(inArray(bandoriEventIndex.eventernoteEventId, eventernoteEventIds))
+    .orderBy(bandoriEventIndex.eventernoteEventId);
 }
 
 export async function readEventVisibilityRules() {

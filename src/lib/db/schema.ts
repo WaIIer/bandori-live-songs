@@ -1,7 +1,9 @@
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  check,
   date,
+  index,
   integer,
   jsonb,
   pgEnum,
@@ -15,6 +17,7 @@ import type { BandoriUserEventSnapshot } from "@/lib/eventernote/bandori-user-ev
 import type { EventVisibilityRules } from "@/lib/events/event-visibility";
 
 export const bandGroupTypeEnum = pgEnum("band_group_type", ["band", "project-common"]);
+export const songCategoryEnum = pgEnum("song_category", ["original", "cover", "project-common"]);
 export const setlistStatusEnum = pgEnum("setlist_status", ["missing", "partial", "complete"]);
 export const eventernoteFetchStatusEnum = pgEnum("eventernote_fetch_status", ["ok", "error"]);
 
@@ -34,16 +37,24 @@ export const songs = pgTable(
   {
     id: serial("id").primaryKey(),
     bandSlug: text("band_slug")
-      .notNull()
       .references(() => bands.slug, { onDelete: "restrict" }),
+    category: songCategoryEnum("category").default("original").notNull(),
     title: text("title").notNull(),
-    firstReleaseDate: date("first_release_date", { mode: "string" }).notNull(),
+    firstReleaseDate: date("first_release_date", { mode: "string" }),
     hasBeenPlayedLive: boolean("has_been_played_live").default(false).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     titleUnique: uniqueIndex("songs_title_idx").on(table.title),
+    categoryFieldsCheck: check(
+      "songs_category_fields_check",
+      sql`(
+        (${table.category} = 'original' AND ${table.bandSlug} IS NOT NULL AND ${table.firstReleaseDate} IS NOT NULL)
+        OR
+        (${table.category} IN ('cover', 'project-common') AND ${table.bandSlug} IS NULL)
+      )`,
+    ),
   }),
 );
 
@@ -73,10 +84,12 @@ export const setlistEntries = pgTable(
       .references(() => events.id, { onDelete: "cascade" }),
     orderIndex: integer("order_index").notNull(),
     rawTitle: text("raw_title").notNull(),
+    songId: integer("song_id").references(() => songs.id, { onDelete: "set null" }),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
     eventOrderIndex: uniqueIndex("setlist_entries_event_order_idx").on(table.eventId, table.orderIndex),
+    songIdIndex: index("setlist_entries_song_id_idx").on(table.songId),
   }),
 );
 

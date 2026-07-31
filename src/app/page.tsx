@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { notFound } from "next/navigation";
 import { HomePageClient } from "@/components/home-page-client";
 import { adminAuthCookieName, verifyAdminAuthToken } from "@/lib/admin/auth";
 import {
@@ -9,6 +10,8 @@ import {
 import { awaitFreshAfterCookieName, decodeAwaitFreshAfterCookie } from "@/lib/manual-refresh-navigation";
 import { readEventVisibilityRules } from "@/lib/events/event-visibility-rules-store";
 import { getRequestLocale } from "@/lib/request-locale";
+import { getLiveSetlist } from "@/lib/live-setlist/search";
+import { eventSearchTabValue } from "@/lib/live-setlist/url";
 import { getUserSongStats } from "@/lib/stats/get-user-song-stats";
 
 export const runtime = "nodejs";
@@ -16,16 +19,46 @@ export const runtime = "nodejs";
 type PageProps = {
   searchParams: Promise<{
     userId?: string;
+    eventId?: string;
+    tab?: string;
     refresh?: string;
     awaitFreshAfter?: string;
   }>;
 };
 
 export default async function Home({ searchParams }: PageProps) {
-  const { userId = "", refresh = "", awaitFreshAfter = "" } = await searchParams;
+  const {
+    userId = "",
+    eventId = "",
+    tab = "",
+    refresh = "",
+    awaitFreshAfter = "",
+  } = await searchParams;
   const normalizedUserId = normalizeEventernoteUserId(userId);
   const invalidUserId = normalizedUserId.length > 0 && !isValidEventernoteUserId(normalizedUserId);
   const hasExplicitUser = normalizedUserId.length > 0;
+  const normalizedEventId = eventId.trim();
+  const hasExplicitEvent = normalizedEventId.length > 0;
+  const parsedEventId = /^\d+$/u.test(normalizedEventId)
+    ? Number(normalizedEventId)
+    : null;
+  if (
+    hasExplicitEvent &&
+    (!parsedEventId ||
+      !Number.isSafeInteger(parsedEventId) ||
+      parsedEventId <= 0)
+  ) {
+    notFound();
+  }
+  const defaultLive =
+    parsedEventId === null
+      ? null
+      : await getLiveSetlist(parsedEventId);
+  if (hasExplicitEvent && !defaultLive) {
+    notFound();
+  }
+  const defaultSearchMode =
+    defaultLive || tab === eventSearchTabValue ? "live" : "user";
   const forceRefresh = refresh === "1";
   const cookieStore = await cookies();
   const awaitFreshAfterFromCookie = hasExplicitUser
@@ -51,7 +84,6 @@ export default async function Home({ searchParams }: PageProps) {
   const isAdminAuthenticated = await verifyAdminAuthToken(cookieStore.get(adminAuthCookieName)?.value);
   const eventVisibilityRules = await readEventVisibilityRules();
   const locale = await getRequestLocale();
-
   const demoUserId = getDefaultUserId();
 
   return (
@@ -66,6 +98,8 @@ export default async function Home({ searchParams }: PageProps) {
       defaultHideSonglessActivities={defaultHideSonglessActivities}
       isAdminAuthenticated={isAdminAuthenticated}
       eventVisibilityRules={eventVisibilityRules}
+      defaultLive={defaultLive}
+      defaultSearchMode={defaultSearchMode}
     />
   );
 }

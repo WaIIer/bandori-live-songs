@@ -9,9 +9,6 @@ const discographyCatalogSongSchema = z.object({
 
 const discographyCatalogSchema = z.object({
   version: z.literal(2),
-  sourceUrl: z.string().url(),
-  savedAt: z.string().datetime(),
-  songCount: z.number().int().nonnegative(),
   songs: z.array(discographyCatalogSongSchema),
 });
 

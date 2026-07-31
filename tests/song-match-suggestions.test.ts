@@ -24,4 +24,13 @@ describe("song-match-suggestions", () => {
     const result = findClosestSongTitle("完全不同的歌", catalog);
     expect(result).toBeNull();
   });
+
+  it("uses fuzzy-search-style containment matching", () => {
+    const result = findClosestSongTitle(
+      "STAR BEAT ホシノコドウ",
+      ["STAR BEAT!〜ホシノコドウ〜", "ティアドロップス"],
+    );
+
+    expect(result?.title).toBe("STAR BEAT!〜ホシノコドウ〜");
+  });
 });

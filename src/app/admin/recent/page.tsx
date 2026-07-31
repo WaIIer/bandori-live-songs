@@ -1,7 +1,5 @@
-import { inArray } from "drizzle-orm";
-import { getDb } from "@/lib/db/core";
 import { BAND_SEEDS } from "@/lib/constants/bands";
-import { events } from "@/lib/db/schema";
+import { getEventSetlistMeta } from "@/lib/admin/event-setlist-meta";
 import { listRecentEventsFromIndex } from "@/lib/eventernote/bandori-event-index";
 import { readEventVisibilityRules } from "@/lib/events/event-visibility-rules-store";
 import { EventRankingClient } from "./event-ranking-client";
@@ -25,26 +23,12 @@ function formatDateTime(value: Date | null) {
   }).format(value);
 }
 
-async function getEventSetlistStatuses(eventIds: number[]) {
-  if (!process.env.DATABASE_URL && !process.env.DIRECT_URL) {
-    return {} as Record<number, "missing" | "partial" | "complete" | null>;
-  }
-
-  const db = getDb();
-  const rows = await db
-    .select({
-      eventernoteEventId: events.eventernoteEventId,
-      setlistStatus: events.setlistStatus,
-    })
-    .from(events)
-    .where(inArray(events.eventernoteEventId, [...new Set(eventIds)]));
-
-  return Object.fromEntries(rows.map((row) => [row.eventernoteEventId, row.setlistStatus]));
-}
-
 export default async function RecentEventPage() {
   const ranking = await listRecentEventsFromIndex();
-  const statusByEventId = await getEventSetlistStatuses(ranking.events.map((event) => event.eventernoteEventId));
+  const { statusByEventId, updatedAtByEventId } =
+    await getEventSetlistMeta(
+      ranking.events.map((event) => event.eventernoteEventId),
+    );
   const eventVisibilityRules = await readEventVisibilityRules();
 
   return (
@@ -60,6 +44,7 @@ export default async function RecentEventPage() {
           nameJa: band.nameJa,
         }))}
         statusByEventId={statusByEventId}
+        setlistUpdatedAtByEventId={updatedAtByEventId}
         eventVisibilityRules={eventVisibilityRules}
       />
     </main>

@@ -43,8 +43,8 @@ describe("bandori user event cache", () => {
   it("keeps only index hits and prefers index metadata over list-page fields", () => {
     const index = new Map<number, BandoriEventIndexLookup>([
       [
-        420629,
-        indexEntry(420629, ["poppin-party", "roselia"], {
+        100001,
+        indexEntry(100001, ["poppin-party", "roselia"], {
           title: "BanG Dream! 合同ライブ",
           venue: "武蔵野の森総合スポーツプラザ",
         }),
@@ -54,7 +54,7 @@ describe("bandori user event cache", () => {
     const cached = createBandoriUserEventSnapshots(
       [
         snapshot({
-          eventernoteEventId: 420629,
+          eventernoteEventId: 100001,
           title: "wrong title from misaligned list row",
           venue: "wrong venue",
           actorIds: [123456],
@@ -71,7 +71,7 @@ describe("bandori user event cache", () => {
 
     expect(cached).toEqual([
       {
-        eventernoteEventId: 420629,
+        eventernoteEventId: 100001,
         title: "BanG Dream! 合同ライブ",
         eventDate: "2026-01-01",
         venue: "武蔵野の森総合スポーツプラザ",

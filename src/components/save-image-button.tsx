@@ -241,12 +241,12 @@ export function SaveImageButton({ userId, copy: localeCopy }: { userId: string; 
         type="button"
         disabled={state === "capturing"}
         onClick={handleCapture}
-        className="inline-flex items-center gap-2 rounded-full border border-border-soft bg-panel-strong px-5 py-2 text-sm font-medium text-foreground shadow-sm transition hover:border-accent hover:bg-accent/5 disabled:opacity-50"
+        className="inline-flex items-center gap-2 rounded-full border border-border-soft bg-panel-strong px-5 py-2 text-sm font-medium text-foreground shadow-sm transition hover:border-accent hover:bg-accent/5 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {state === "capturing" ? (
           <Loader2Icon className="h-4 w-4 animate-spin text-accent" />
         ) : state === "success" ? (
-          <CheckIcon className="h-4 w-4 text-green-500" />
+          <CheckIcon className="h-4 w-4 text-emerald-500" />
         ) : (
           <CameraIcon className="h-4 w-4 text-accent" />
         )}

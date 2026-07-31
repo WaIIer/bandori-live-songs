@@ -1,39 +1,69 @@
 "use client";
 
 import { Fragment } from "react";
-import { buildSetlistImportHref } from "@/lib/admin/setlist-import-url";
+import {
+  buildGoogleSetlistSearchHref,
+  buildSetlistImportHref,
+} from "@/lib/admin/setlist-import-url";
 import type { ActorEventRankingEntry } from "@/lib/eventernote/actor-events";
 import { groupEventsByYear } from "@/lib/admin/list-event-filters";
 
 export type AdminEventSetlistStatus = "missing" | "partial" | "complete" | null;
 
 function getSetlistStatusPresentation(status: AdminEventSetlistStatus) {
-  if (status === "complete" || status === "partial") {
+  if (status === "complete") {
     return {
       marker: "✓",
-      title: "已收录歌单",
+      title: "完整",
       className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-800 dark:text-emerald-300",
     };
   }
 
+  if (status === "partial") {
+    return {
+      marker: "◐",
+      title: "部分",
+      className: "border-sky-500/30 bg-sky-500/10 text-sky-800 dark:text-sky-300",
+    };
+  }
+
   return {
-    marker: "✗",
+    marker: "—",
     title: "未收录歌单",
     className: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
   };
+}
+
+function formatSetlistUpdatedAt(value: string | null | undefined) {
+  if (!value) {
+    return "—";
+  }
+
+  return new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(value));
 }
 
 function AdminEventRow({
   event,
   index,
   statusByEventId,
+  setlistUpdatedAtByEventId,
 }: {
   event: ActorEventRankingEntry;
   index: number;
   statusByEventId: Record<number, AdminEventSetlistStatus>;
+  setlistUpdatedAtByEventId: Record<number, string | null>;
 }) {
   const status = getSetlistStatusPresentation(statusByEventId[event.eventernoteEventId] ?? null);
   const importHref = buildSetlistImportHref(event.eventernoteEventId);
+  const searchHref = buildGoogleSetlistSearchHref(event.title);
 
   return (
     <tr className="border-t border-border-soft align-top">
@@ -43,12 +73,13 @@ function AdminEventRow({
           href={importHref}
           target="_blank"
           rel="noreferrer"
-          className="font-medium text-foreground transition hover:text-accent"
-          title={`编辑 / 导入 Event #${event.eventernoteEventId}`}
+          className="font-medium text-foreground transition hover:text-accent hover:underline"
+          title={`编辑本站 Event #${event.eventernoteEventId}`}
         >
           {event.title}
         </a>
         <p className="mt-1 text-xs leading-5 text-ink-soft">Event #{event.eventernoteEventId}</p>
+        {event.venue ? <p className="mt-1 text-xs leading-5 text-ink-soft">{event.venue}</p> : null}
       </td>
       <td className="px-4 py-4 font-semibold text-foreground">{event.attendeeCount}</td>
       <td className="px-4 py-4 text-ink-soft">{event.eventDate}</td>
@@ -73,6 +104,32 @@ function AdminEventRow({
           {status.marker}
         </span>
       </td>
+      <td className="whitespace-nowrap px-4 py-4 text-xs text-ink-soft">
+        {formatSetlistUpdatedAt(
+          setlistUpdatedAtByEventId[event.eventernoteEventId],
+        )}
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex min-w-48 flex-wrap gap-2">
+          <a
+            href={searchHref}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg border border-border-soft bg-panel-strong px-3 py-2 text-xs font-medium text-foreground transition hover:border-accent hover:text-accent"
+            title={`搜索“${event.title} セットリスト”`}
+          >
+            一键搜索
+          </a>
+          <a
+            href={event.sourceUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-lg border border-border-soft bg-panel-strong px-3 py-2 text-xs font-medium text-ink-soft transition hover:border-accent hover:text-foreground"
+          >
+            Eventernote
+          </a>
+        </div>
+      </td>
     </tr>
   );
 }
@@ -80,6 +137,7 @@ function AdminEventRow({
 type AdminEventTableProps = {
   events: ActorEventRankingEntry[];
   statusByEventId: Record<number, AdminEventSetlistStatus>;
+  setlistUpdatedAtByEventId: Record<number, string | null>;
   variant?: "flat" | "timeline";
   rowKeyPrefix?: string;
 };
@@ -87,6 +145,7 @@ type AdminEventTableProps = {
 export function AdminEventTable({
   events,
   statusByEventId,
+  setlistUpdatedAtByEventId,
   variant = "flat",
   rowKeyPrefix = "",
 }: AdminEventTableProps) {
@@ -107,14 +166,16 @@ export function AdminEventTable({
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full border-collapse text-sm">
-        <thead className="bg-panel-strong text-left text-ink-soft">
+        <thead className="bg-panel-strong text-left text-xs text-ink-soft">
           <tr>
-            <th className="px-4 py-3 font-medium">#</th>
-            <th className="px-4 py-3 font-medium">活动</th>
-            <th className="px-4 py-3 font-medium">人数</th>
-            <th className="px-4 py-3 font-medium">日期</th>
-            <th className="px-4 py-3 font-medium">命中乐队</th>
-            <th className="px-4 py-3 font-medium">歌单状态</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">#</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">活动</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">人数</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">日期</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">命中乐队</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">歌单状态</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">最后修改</th>
+            <th className="whitespace-nowrap px-4 py-3 font-medium">快捷操作</th>
           </tr>
         </thead>
         <tbody>
@@ -122,7 +183,7 @@ export function AdminEventTable({
             ? timelineGroups.map(({ year, rows }) => (
                 <Fragment key={year}>
                   <tr className="border-t border-border-soft bg-panel-strong">
-                    <td colSpan={6} className="px-4 py-3 font-semibold text-foreground">
+                    <td colSpan={8} className="px-4 py-3 font-semibold text-foreground">
                       {year} 年
                       <span className="ml-2 text-xs font-normal text-ink-soft">{rows.length} 场</span>
                     </td>
@@ -133,6 +194,9 @@ export function AdminEventTable({
                       event={event}
                       index={index}
                       statusByEventId={statusByEventId}
+                      setlistUpdatedAtByEventId={
+                        setlistUpdatedAtByEventId
+                      }
                     />
                   ))}
                 </Fragment>
@@ -143,6 +207,9 @@ export function AdminEventTable({
                   event={event}
                   index={index + 1}
                   statusByEventId={statusByEventId}
+                  setlistUpdatedAtByEventId={
+                    setlistUpdatedAtByEventId
+                  }
                 />
               ))}
         </tbody>

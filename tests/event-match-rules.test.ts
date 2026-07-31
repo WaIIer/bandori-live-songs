@@ -4,13 +4,13 @@ import { shouldIncludeEventInSongStats } from "@/lib/eventernote/match-rules";
 
 function buildSnapshot(overrides: Partial<EventernoteEventSnapshot>): EventernoteEventSnapshot {
   return {
-    eventernoteEventId: 420629,
+    eventernoteEventId: 100001,
     title: "BanG Dream! LIVE",
     eventDate: "2026-04-19",
     venue: "Kアリーナ横浜",
     actorIds: [14234],
     actorNames: ["Poppin'Party"],
-    sourceUrl: "https://www.eventernote.com/events/420629",
+    sourceUrl: "https://www.eventernote.com/events/100001",
     ...overrides,
   };
 }

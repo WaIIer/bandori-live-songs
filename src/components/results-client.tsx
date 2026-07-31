@@ -3,7 +3,10 @@
 import { SaveImageButton } from "@/components/save-image-button";
 import type { EventVisibilityRules } from "@/lib/events/event-visibility";
 import type { CopyDefinition } from "@/lib/i18n";
-import type { MatchedEventEntry, SongPoolItem } from "@/lib/stats/aggregate";
+import {
+  type MatchedEventEntry,
+  type SongPoolItem,
+} from "@/lib/stats/aggregate";
 import { useResultsState } from "./results/use-results-state";
 import { percentLabel } from "./results/utils";
 import { BandSummaryCard } from "./results/band-summary-card";
@@ -40,11 +43,7 @@ export function ResultsClient({
     defaultHideSonglessActivities,
     eventVisibilityRules,
   });
-  const songById = new Map(
-    songs
-      .filter((song) => song.bandGroupType === "band")
-      .map((song) => [song.id, song]),
-  );
+  const songById = new Map(songs.map((song) => [song.id, song]));
 
   return (
     <div className="space-y-8">
@@ -223,10 +222,21 @@ export function ResultsClient({
               localeCopy={localeCopy}
               isExpanded={state.expandedEvents[event.eventernoteEventId] ?? false}
               newlyHeardSongs={state.stats.newlyHeardSongsByEventId[event.eventernoteEventId] ?? []}
-              performedSongs={[...new Set(event.heardSongIds)].flatMap((songId) => {
-                const song = songById.get(songId);
-                return song ? [song] : [];
-              })}
+              performedSongs={
+                event.setlistEntries ??
+                event.heardSongIds.flatMap((songId, index) => {
+                  const song = songById.get(songId);
+                  return song
+                    ? [{
+                        position: index + 1,
+                        title: song.title,
+                        songId: song.id,
+                        category: song.category,
+                        bandSlug: song.category === "original" ? song.bandSlug : null,
+                      }]
+                    : [];
+                })
+              }
               toggleEventUnlocks={state.toggleEventUnlocks}
             />
           ))}

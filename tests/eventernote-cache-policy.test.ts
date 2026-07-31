@@ -15,8 +15,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "ok",
           parserVersion: 2,
@@ -40,8 +40,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "ok",
           parserVersion: 2,
@@ -65,8 +65,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "ok",
           parserVersion: 2,
@@ -90,8 +90,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "ok",
           parserVersion: 2,
@@ -115,8 +115,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "error",
           parserVersion: 2,
@@ -140,8 +140,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "ok",
           parserVersion: 2,
@@ -165,8 +165,8 @@ describe("getEventernoteCacheDisposition", () => {
     expect(
       getEventernoteCacheDisposition(
         {
-          userId: "revast",
-          displayId: "revast",
+          userId: "sample_user",
+          displayId: "sample_user",
           displayName: null,
           fetchStatus: "ok",
           parserVersion: 2,

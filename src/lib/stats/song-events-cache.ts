@@ -17,6 +17,7 @@ const getSongEventsBySongIdCached = unstable_cache(
       db
         .select({
           rawTitle: setlistEntries.rawTitle,
+          songId: setlistEntries.songId,
           eventernoteEventId: events.eventernoteEventId,
           title: events.title,
           eventDate: events.eventDate,
@@ -47,7 +48,7 @@ const getSongEventsBySongIdCached = unstable_cache(
     const dedupedRefs = new Set<string>();
 
     for (const row of setlistRows) {
-      let songId = songIdByTitle.get(row.rawTitle);
+      let songId = row.songId ?? songIdByTitle.get(row.rawTitle);
 
       if (!songId) {
         const fallbackSongId = songIdByNormalizedTitle.get(normalizeSongTitle(row.rawTitle));

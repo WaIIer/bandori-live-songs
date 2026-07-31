@@ -1,7 +1,8 @@
 # BanG Dream! 现场听歌统计
 
 输入 [Eventernote](https://www.eventernote.com/) 用户名，即可查看自己参加过的
-BanG Dream! 现场、各乐队原创曲听歌进度，以及尚未在现场听到的歌曲。
+BanG Dream! 现场、各乐队原创曲听歌进度，以及尚未在现场听到的歌曲；也可以直接搜索
+已收录活动的 Setlist。
 
 > 本仓库是项目的开源分支。
 > 欢迎通过 [Issue](https://github.com/calcxx/bandori-live-songs/issues) 反馈问题。线上站点的改动可能不会立即同步至此。
@@ -9,13 +10,17 @@ BanG Dream! 现场、各乐队原创曲听歌进度，以及尚未在现场听�
 ## 功能亮点
 
 - 按乐队统计原创曲覆盖率，筛选未听歌曲、虚拟团与无歌曲活动
-- 展示每场活动的 Setlist 收录状态、首次听到的歌曲与单曲演唱次数
+- 在用户统计与独立歌曲统计页中查看演唱次数、发售日期和对应场次
+- 按 Eventernote 活动 ID 或标题模糊搜索 Setlist，并生成可分享的活动链接
+- 展示每场活动的 Setlist 收录状态、首次演唱标记与首次听到的歌曲
+- 曲库支持原创曲、翻唱曲与企划共通歌曲，Setlist 条目绑定明确的歌曲记录
 - 通过 Eventernote 演员页活动索引识别活动归属，减少列表页出演者错位影响
 - 支持简体中文、繁体中文和日语
 - 支持浅色、深色及跟随系统主题，并可将统计结果导出为 JPEG
 - Eventernote 用户数据使用数据库缓存，并在过期时后台静默刷新
-- 管理后台支持活动浏览、Setlist/歌曲导入、屏蔽规则及用户缓存查看
+- 管理后台支持活动浏览、Setlist/歌曲导入与编辑、持久化列表筛选、屏蔽规则及用户缓存查看
 - 可选的每日 MusicBrainz 同步会补充新歌并修正更早的发售日期
+- 提供带 OpenAPI 规范的版本化公开数据 API
 
 ## 工作原理
 
@@ -25,12 +30,22 @@ flowchart LR
   Index["演员页活动索引"] --> App
   DB[("PostgreSQL<br/>曲库 + Setlist")] --> App
   MB["MusicBrainz<br/>可选定时同步"] --> DB
-  App --> UI["歌曲进度 / 活动列表 / 图片导出"]
+  App --> UI["歌曲进度 / Setlist 搜索 / 图片导出"]
+  App --> API["开放 API / OpenAPI"]
 ```
 
-Eventernote 提供用户参加过的活动；本地数据库维护 BanG Dream! 原创曲曲库与人工录入的
-Setlist。只有已收录 Setlist 的活动才会计入「听过」。详细设计见
+Eventernote 提供用户参加过的活动；本地数据库维护 BanG Dream! 曲库与人工录入的
+Setlist。只有已收录 Setlist 的活动才会计入「听过」，听歌覆盖率仍只统计原创曲。
+详细设计见
 [ARCHITECTURE.md](ARCHITECTURE.md)。
+
+开源仓库不附带生产歌曲、活动或 Setlist 数据。初始化后的曲库与活动规则为空，需通过管理后台
+或自行准备的数据导入流程填充；乐队及外部服务标识作为应用运行所需的公开领域配置保留。
+
+## 开放 API
+
+运行后访问 `/api` 查看接口说明，或从 `/api/openapi.json` 获取 OpenAPI 规范。
+版本化接口以 `/api/v1` 为根路径，提供乐队、歌曲、活动、歌曲演出场次及完整 Setlist 数据。
 
 ## 快速开始
 

@@ -12,7 +12,7 @@ describe("parseEventernoteActorEventsPage", () => {
             <li class="clearfix">
               <div class="date"><p>2026-03-01 (日)</p></div>
               <div class="event">
-                <h4><a href="/events/441100">MyGO!!!!!×Ave Mujica ツーマンライブ「“moment / memory”」</a></h4>
+                <h4><a href="/events/100005">MyGO!!!!!×Ave Mujica ツーマンライブ「“moment / memory”」</a></h4>
                 <div class="place">会場: <a href="/places/999">Kアリーナ横浜</a></div>
               </div>
               <div class="note_count"><p title="参加者数">622</p></div>
@@ -31,12 +31,12 @@ describe("parseEventernoteActorEventsPage", () => {
     expect(parsed.nextPage).toBe(2);
     expect(parsed.events).toEqual([
       {
-        eventernoteEventId: 441100,
+        eventernoteEventId: 100005,
         title: "MyGO!!!!!×Ave Mujica ツーマンライブ「“moment / memory”」",
         eventDate: "2026-03-01",
         venue: "Kアリーナ横浜",
         attendeeCount: 622,
-        sourceUrl: "https://www.eventernote.com/events/441100",
+        sourceUrl: "https://www.eventernote.com/events/100005",
         sourceBandSlug: "mygo",
         sourceBandName: "MyGO!!!!!",
       },
@@ -48,22 +48,22 @@ describe("mergeActorEvents", () => {
   it("dedupes events across band pages and merges band labels", () => {
     const merged = mergeActorEvents([
       {
-        eventernoteEventId: 441100,
+        eventernoteEventId: 100005,
         title: "moment / memory",
         eventDate: "2026-03-01",
         venue: "Kアリーナ横浜",
         attendeeCount: 622,
-        sourceUrl: "https://www.eventernote.com/events/441100",
+        sourceUrl: "https://www.eventernote.com/events/100005",
         sourceBandSlug: "mygo",
         sourceBandName: "MyGO!!!!!",
       },
       {
-        eventernoteEventId: 441100,
+        eventernoteEventId: 100005,
         title: "moment / memory",
         eventDate: "2026-03-01",
         venue: "Kアリーナ横浜",
         attendeeCount: 622,
-        sourceUrl: "https://www.eventernote.com/events/441100",
+        sourceUrl: "https://www.eventernote.com/events/100005",
         sourceBandSlug: "ave-mujica",
         sourceBandName: "Ave Mujica",
       },
@@ -71,12 +71,12 @@ describe("mergeActorEvents", () => {
 
     expect(merged).toEqual([
       {
-        eventernoteEventId: 441100,
+        eventernoteEventId: 100005,
         title: "moment / memory",
         eventDate: "2026-03-01",
         venue: "Kアリーナ横浜",
         attendeeCount: 622,
-        sourceUrl: "https://www.eventernote.com/events/441100",
+        sourceUrl: "https://www.eventernote.com/events/100005",
         bandSlugs: ["mygo", "ave-mujica"],
         bandNames: ["MyGO!!!!!", "Ave Mujica"],
       },

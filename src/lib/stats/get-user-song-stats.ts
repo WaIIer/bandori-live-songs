@@ -23,6 +23,7 @@ import {
   normalizeEventernoteUserCacheKey,
   normalizeEventernoteUserId,
 } from "@/lib/eventernote/user-id";
+import { readEventVisibilityRules } from "@/lib/events/event-visibility-rules-store";
 
 import { getSongCatalog } from "./catalog-cache";
 import { getEventernoteCacheDisposition } from "./eventernote-cache-policy";
@@ -30,11 +31,22 @@ import { buildMatchedEvents } from "./build-matched-events";
 import type { MatchedEventEntry, SongPoolItem } from "./aggregate";
 
 const getMatchedEventsCached = unstable_cache(
-  async (_cacheKey: string, activitiesJson: string, catalogJson: string) => {
+  async (
+    _cacheKey: string,
+    activitiesJson: string,
+    catalogJson: string,
+    titleTagsJson: string,
+  ) => {
     const db = getDb();
     const activities = cachePayloadSchema.parse(JSON.parse(activitiesJson));
     const songsWithLiveState = JSON.parse(catalogJson) as SongPoolItem[];
-    return buildMatchedEvents(activities, songsWithLiveState, db);
+    const titleTagsToStrip = JSON.parse(titleTagsJson) as string[];
+    return buildMatchedEvents(
+      activities,
+      songsWithLiveState,
+      db,
+      titleTagsToStrip,
+    );
   },
   ["matched-events"],
   {
@@ -149,7 +161,11 @@ async function persistFetchedUserEventsCache(
   };
 }
 
-async function markUserEventsRefreshFailure(cacheUserId: string, errorMessage: string, db = getDb()) {
+async function markUserEventsNotFound(
+  cacheUserId: string,
+  errorMessage: string,
+  db = getDb(),
+) {
   const now = new Date();
 
   const existingRow = await db
@@ -176,6 +192,59 @@ async function markUserEventsRefreshFailure(cacheUserId: string, errorMessage: s
     .where(eq(eventernoteUserCache.userId, cacheUserId));
 }
 
+async function releaseUserEventsAfterTransientFailure(
+  cacheUserId: string,
+  db = getDb(),
+) {
+  const existingRow = await db
+    .select({
+      activities: eventernoteUserCache.activities,
+      fetchStatus: eventernoteUserCache.fetchStatus,
+      errorMessage: eventernoteUserCache.errorMessage,
+      remoteEventCount: eventernoteUserCache.remoteEventCount,
+    })
+    .from(eventernoteUserCache)
+    .where(eq(eventernoteUserCache.userId, cacheUserId))
+    .then((rows) => rows[0] ?? null);
+
+  if (!existingRow) {
+    return;
+  }
+
+  const hasSuccessfulCache =
+    existingRow.remoteEventCount !== null ||
+    existingRow.activities.length > 0;
+  const isKnownMissingUser =
+    existingRow.fetchStatus === "error" &&
+    existingRow.errorMessage?.includes("不存在");
+
+  if (isKnownMissingUser) {
+    await db
+      .update(eventernoteUserCache)
+      .set({ refreshingStartedAt: null })
+      .where(eq(eventernoteUserCache.userId, cacheUserId));
+    return;
+  }
+
+  if (hasSuccessfulCache) {
+    await db
+      .update(eventernoteUserCache)
+      .set({
+        fetchStatus: "ok",
+        errorMessage: null,
+        refreshingStartedAt: null,
+      })
+      .where(eq(eventernoteUserCache.userId, cacheUserId));
+    return;
+  }
+
+  // A failed first fetch has no reusable data. Removing its lease row avoids
+  // persisting a transient upstream outage as a user-level cache error.
+  await db
+    .delete(eventernoteUserCache)
+    .where(eq(eventernoteUserCache.userId, cacheUserId));
+}
+
 async function fetchAndPersistUserEvents(
   requestedUserId: string,
   cacheUserId: string,
@@ -195,7 +264,7 @@ async function fetchAndPersistUserEvents(
   } catch (error) {
     if (error instanceof EventernoteUserNotFoundError) {
       const message = "Eventernote 用户不存在或不可访问。";
-      await markUserEventsRefreshFailure(cacheUserId, message, db);
+      await markUserEventsNotFound(cacheUserId, message, db);
 
       return {
         status: "not-found",
@@ -204,7 +273,11 @@ async function fetchAndPersistUserEvents(
     }
 
     const message = error instanceof Error ? error.message : "抓取 Eventernote 失败。";
-  await markUserEventsRefreshFailure(cacheUserId, message, db);
+    await releaseUserEventsAfterTransientFailure(cacheUserId, db);
+    console.warn("[eventernote] transient user refresh failure", {
+      userId: cacheUserId,
+      message,
+    });
 
     return {
       status: "error",
@@ -382,25 +455,53 @@ export async function getUserSongStats(
   }
 
   const db = getDb();
-  const [{ songsWithLiveState }, cacheRow] = await Promise.all([
+  const [{ songsWithLiveState }, cacheRow, eventRules] = await Promise.all([
     getSongCatalog(),
     db
       .select()
       .from(eventernoteUserCache)
       .where(sql`lower(${eventernoteUserCache.userId}) = ${cacheUserId}`)
       .then((rows) => rows[0] ?? null),
+    readEventVisibilityRules(),
   ]);
   const refreshCacheUserId = cacheRow?.userId ?? cacheUserId;
   let displayUserId = cacheRow?.displayId ?? requestedUserId;
   let displayName = cacheRow?.displayName ?? null;
 
-  // Fetch remote event count to compare with cached count.
-  const remoteEventCount = await fetchUserEventCount(requestedUserId);
+  const cachedActivities = cacheRow
+    ? cachePayloadSchema.parse(cacheRow.activities)
+    : [];
+  const isKnownMissingUser = Boolean(
+    cacheRow?.fetchStatus === "error" &&
+      cacheRow.errorMessage?.includes("不存在"),
+  );
+  const isRetryableEmptyFailure = Boolean(
+    cacheRow?.fetchStatus === "error" &&
+      !isKnownMissingUser &&
+      cacheRow.remoteEventCount === null &&
+      cachedActivities.length === 0,
+  );
+  const cacheRowForDisposition = isRetryableEmptyFailure
+    ? null
+    : cacheRow;
 
-  const cacheDisposition = getEventernoteCacheDisposition(cacheRow, remoteEventCount);
+  // Cache misses already need the complete first page, so a separate count
+  // request would fetch the same Eventernote page twice. Existing transient
+  // failures also retry the complete fetch directly.
+  const remoteEventCount =
+    cacheRowForDisposition && !isKnownMissingUser
+      ? await fetchUserEventCount(requestedUserId)
+      : null;
+
+  const cacheDisposition = getEventernoteCacheDisposition(
+    cacheRowForDisposition,
+    remoteEventCount,
+  );
   let staleCacheUsed = cacheDisposition.staleCacheUsed;
   let activities: z.infer<typeof cachePayloadSchema> =
-    cacheRow && !hasOutdatedUserEventsParser(cacheRow) ? cachePayloadSchema.parse(cacheRow.activities) : [];
+    cacheRow && !hasOutdatedUserEventsParser(cacheRow)
+      ? cachedActivities
+      : [];
   const hasFreshEnoughCache =
     typeof awaitFreshAfter === "number" &&
     cacheRow !== null &&
@@ -423,6 +524,7 @@ export async function getUserSongStats(
       `${refreshCacheUserId}:${cacheKeyTime}`,
       JSON.stringify(nextActivities),
       JSON.stringify(songsWithLiveState),
+      JSON.stringify(eventRules.titleTagsToStrip),
     );
 
     return {
@@ -598,6 +700,7 @@ export async function getUserSongStats(
     `${refreshCacheUserId}:${cacheRow?.lastFetchedAt?.getTime() ?? 0}`,
     JSON.stringify(activities),
     JSON.stringify(songsWithLiveState),
+    JSON.stringify(eventRules.titleTagsToStrip),
   );
 
   return {

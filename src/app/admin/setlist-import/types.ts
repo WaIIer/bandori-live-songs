@@ -1,18 +1,19 @@
-export type MismatchLine = {
+import type { SongResolutionCandidate } from "@/lib/music/song-resolution";
+
+export type ResolutionLine = {
   lineNumber: number;
   value: string;
-  suggestedValue?: string;
-  suggestionScore?: number;
+  candidates: SongResolutionCandidate[];
 };
 
 export type SetlistImportActionState = {
-  status: "idle" | "error" | "mismatch" | "success";
+  status: "idle" | "error" | "resolution-required" | "success";
   message?: string;
   eventernoteEventId?: number;
   eventTitle?: string;
   eventDate?: string;
   venue?: string | null;
-  mismatchLines?: MismatchLine[];
+  resolutionLines?: ResolutionLine[];
   submittedCount?: number;
   existingRecord?: boolean;
 };

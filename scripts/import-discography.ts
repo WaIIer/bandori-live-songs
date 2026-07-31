@@ -1,5 +1,7 @@
 import { pathToFileURL } from "node:url";
+import { eq } from "drizzle-orm";
 import { getLocalDiscographyCatalog } from "../src/lib/bandori/discography-catalog";
+import { PROJECT_COMMON_SLUG } from "../src/lib/constants/bands";
 import { connectDatabase } from "../src/lib/db/core";
 import { songs } from "../src/lib/db/schema";
 import { compareSongsByReleaseDate } from "../src/lib/music/sort";
@@ -15,18 +17,104 @@ function chunk<T>(items: T[], size: number) {
   return chunks;
 }
 
+export function planDiscographySync(
+  catalogSongs: Array<{
+    bandSlug: string;
+    title: string;
+    firstReleaseDate: string;
+  }>,
+  existingRows: Array<{
+    id: number;
+    title: string;
+    category: "original" | "cover" | "project-common";
+  }>,
+) {
+  const existingByTitle = new Map(
+    existingRows.map((song) => [song.title, song]),
+  );
+  const inserts: Array<typeof songs.$inferInsert> = [];
+  const updates: Array<{
+    id: number;
+    bandSlug: string | null;
+    firstReleaseDate: string;
+  }> = [];
+  const conflicts: Array<{
+    title: string;
+    existingCategory: "original" | "cover" | "project-common";
+  }> = [];
+
+  for (const song of catalogSongs) {
+    const projectCommon = song.bandSlug === PROJECT_COMMON_SLUG;
+    const category = projectCommon ? "project-common" : "original";
+    const existing = existingByTitle.get(song.title);
+
+    if (!existing) {
+      inserts.push({
+        bandSlug: projectCommon ? null : song.bandSlug,
+        category,
+        title: song.title,
+        firstReleaseDate: song.firstReleaseDate,
+      });
+      continue;
+    }
+
+    if (existing.category !== category) {
+      conflicts.push({
+        title: song.title,
+        existingCategory: existing.category,
+      });
+      continue;
+    }
+
+    updates.push({
+      id: existing.id,
+      bandSlug: projectCommon ? null : song.bandSlug,
+      firstReleaseDate: song.firstReleaseDate,
+    });
+  }
+
+  return { inserts, updates, conflicts };
+}
+
 export async function importDiscography() {
   const { db, sql } = connectDatabase(true);
   const catalogSongs = getLocalDiscographyCatalog().songs;
 
   try {
     await db.transaction(async (tx) => {
-      await tx.delete(songs);
-
       const songRows = [...catalogSongs].sort(compareSongsByReleaseDate);
+      const existingRows = await tx
+        .select({
+          id: songs.id,
+          title: songs.title,
+          category: songs.category,
+        })
+        .from(songs);
+      const plan = planDiscographySync(
+        songRows,
+        existingRows,
+      );
 
-      for (const batch of chunk(songRows, 500)) {
-        await tx.insert(songs).values(batch);
+      for (const conflict of plan.conflicts) {
+        console.warn(
+          `[discography] preserve manual ${conflict.existingCategory} song with conflicting title: ${conflict.title}`,
+        );
+      }
+      for (const update of plan.updates) {
+        await tx
+          .update(songs)
+          .set({
+            bandSlug: update.bandSlug,
+            firstReleaseDate: update.firstReleaseDate,
+            updatedAt: new Date(),
+          })
+          .where(eq(songs.id, update.id));
+      }
+
+      for (const batch of chunk(plan.inserts, 500)) {
+        await tx.insert(songs).values(batch).onConflictDoNothing({
+          target: songs.title,
+        });
       }
     });
     await refreshSongLiveState(db);

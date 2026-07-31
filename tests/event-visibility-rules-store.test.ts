@@ -7,18 +7,23 @@ import {
   parseEventVisibilityRulesForm,
   readEventVisibilityRulesFromFile,
 } from "@/lib/events/event-visibility-rules-store";
+import { defaultEventTitleTagsToStrip } from "@/lib/events/event-visibility";
 
 describe("event visibility rules store", () => {
   it("parses editable textarea values into normalized rules", () => {
     expect(
       parseEventVisibilityRulesForm({
         hiddenTitleKeywordsText: " トーク \n\n舞台挨拶\nトーク ",
+        allowedTitleKeywordsText: " ミニライブ \n\nミニライブ ",
         hiddenEventernoteEventIdsText: "123\nabc\n456, 123 -1",
+        titleTagsToStripText: " 出演者変更 \n\n振替\n出演者変更 ",
       }),
     ).toEqual({
       version: 1,
       hiddenTitleKeywords: ["トーク", "舞台挨拶"],
+      allowedTitleKeywords: ["ミニライブ"],
       hiddenEventernoteEventIds: [123, 456],
+      titleTagsToStrip: ["出演者変更", "振替"],
     });
   });
 
@@ -33,7 +38,11 @@ describe("event visibility rules store", () => {
 
     await writeFile(filePath, `${JSON.stringify(rules)}\n`, "utf8");
 
-    expect(await readEventVisibilityRulesFromFile(filePath)).toEqual(rules);
+    expect(await readEventVisibilityRulesFromFile(filePath)).toEqual({
+      ...rules,
+      allowedTitleKeywords: [],
+      titleTagsToStrip: [...defaultEventTitleTagsToStrip],
+    });
   });
 
   it("formats rules for admin textarea editing", () => {
@@ -41,11 +50,15 @@ describe("event visibility rules store", () => {
       eventVisibilityRulesToFormText({
         version: 1,
         hiddenTitleKeywords: ["トーク", "舞台挨拶"],
+        allowedTitleKeywords: ["ミニライブ"],
         hiddenEventernoteEventIds: [123, 456],
+        titleTagsToStrip: ["出演者変更", "振替"],
       }),
     ).toEqual({
       hiddenTitleKeywordsText: "トーク\n舞台挨拶",
+      allowedTitleKeywordsText: "ミニライブ",
       hiddenEventernoteEventIdsText: "123\n456",
+      titleTagsToStripText: "出演者変更\n振替",
     });
   });
 });

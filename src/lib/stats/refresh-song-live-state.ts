@@ -1,12 +1,19 @@
-import { inArray } from "drizzle-orm";
+import { inArray, isNotNull, isNull } from "drizzle-orm";
 import { getDb } from "@/lib/db/core";
 import { songs, setlistEntries } from "@/lib/db/schema";
 import { normalizeSongTitle } from "@/lib/music/title-utils";
 
 export async function refreshSongLiveState(db = getDb()) {
-  const [songRows, distinctSetlistRows] = await Promise.all([
+  const [songRows, distinctSetlistRows, linkedSongRows] = await Promise.all([
     db.select({ id: songs.id, title: songs.title }).from(songs),
-    db.selectDistinct({ rawTitle: setlistEntries.rawTitle }).from(setlistEntries),
+    db
+      .selectDistinct({ rawTitle: setlistEntries.rawTitle })
+      .from(setlistEntries)
+      .where(isNull(setlistEntries.songId)),
+    db
+      .selectDistinct({ songId: setlistEntries.songId })
+      .from(setlistEntries)
+      .where(isNotNull(setlistEntries.songId)),
   ]);
 
   const playedSongTitleSet = new Set(distinctSetlistRows.map((row) => row.rawTitle));
@@ -27,7 +34,9 @@ export async function refreshSongLiveState(db = getDb()) {
     }
   }
 
-  const nextPlayedSongIds = new Set<number>();
+  const nextPlayedSongIds = new Set<number>(
+    linkedSongRows.flatMap((row) => (row.songId ? [row.songId] : [])),
+  );
 
   for (const song of songRows) {
     const normalizedTitle = normalizeSongTitle(song.title);

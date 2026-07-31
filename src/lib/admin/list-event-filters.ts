@@ -1,5 +1,7 @@
 import type { ActorEventRankingEntry } from "@/lib/eventernote/actor-events";
 
+export type AdminListSetlistStatus = "all" | "missing" | "partial" | "complete";
+
 export function collectEventYears(events: ActorEventRankingEntry[]) {
   return [...new Set(events.map((event) => event.eventDate.slice(0, 4)))].sort((left, right) =>
     left.localeCompare(right),
@@ -26,6 +28,53 @@ export function filterEventsByYearAndBand(
     }
 
     return true;
+  });
+}
+
+export function filterEventsByFutureDate<T extends { eventDate: string }>(
+  events: T[],
+  hideFutureEvents: boolean,
+  todayDate: string,
+) {
+  if (!hideFutureEvents) {
+    return events;
+  }
+
+  return events.filter((event) => event.eventDate <= todayDate);
+}
+
+export function filterEventsBySearch(
+  events: ActorEventRankingEntry[],
+  query: string,
+) {
+  const normalizedQuery = query.trim().toLocaleLowerCase();
+  if (!normalizedQuery) {
+    return events;
+  }
+
+  return events.filter((event) =>
+    [
+      event.title,
+      event.venue ?? "",
+      event.eventDate,
+      String(event.eventernoteEventId),
+      ...event.bandNames,
+    ].some((value) => value.toLocaleLowerCase().includes(normalizedQuery)),
+  );
+}
+
+export function filterEventsBySetlistStatus(
+  events: ActorEventRankingEntry[],
+  statusByEventId: Record<number, "missing" | "partial" | "complete" | null>,
+  selectedStatus: AdminListSetlistStatus,
+) {
+  if (selectedStatus === "all") {
+    return events;
+  }
+
+  return events.filter((event) => {
+    const status = statusByEventId[event.eventernoteEventId] ?? "missing";
+    return status === selectedStatus;
   });
 }
 

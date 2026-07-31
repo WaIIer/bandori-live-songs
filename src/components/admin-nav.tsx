@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import type { MouseEvent } from "react";
-import { GithubNavLink } from "@/components/github-nav-link";
 import { navPillLabel } from "@/components/nav-pill";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { cnCopy } from "@/lib/i18n/cn";
@@ -28,7 +27,6 @@ export function AdminNav() {
             <span className="sm:hidden">{localeCopy.navTitleMobile}</span>
             <span className="hidden sm:inline">{localeCopy.navTitleDesktop}</span>
           </Link>
-          <GithubNavLink />
         </div>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
           <Link href="/admin" className={navPillLabel}>

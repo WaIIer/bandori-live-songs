@@ -1,24 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { getBandSupportColor, getBandTextColor } from "@/lib/constants/bands";
 import type { CopyDefinition } from "@/lib/i18n";
+import { buildLiveSetlistHref } from "@/lib/live-setlist/url";
 import { formatSongTitleForDisplay } from "@/lib/music/title-utils";
-import type { MatchedEventEntry } from "@/lib/stats/aggregate";
+import type {
+  MatchedEventEntry,
+  MatchedEventSetlistEntry,
+} from "@/lib/stats/aggregate";
 import type { useResultsState } from "./use-results-state";
 import { withAlpha } from "./utils";
 
-type EventSong = {
+type NewlyHeardSong = {
   id: number;
-  title: string;
-  bandSlug: string;
 };
 
 type EventCardProps = {
   event: MatchedEventEntry;
   localeCopy: CopyDefinition;
   isExpanded: boolean;
-  newlyHeardSongs: EventSong[];
-  performedSongs: EventSong[];
+  newlyHeardSongs: NewlyHeardSong[];
+  performedSongs: MatchedEventSetlistEntry[];
   toggleEventUnlocks: ReturnType<typeof useResultsState>["toggleEventUnlocks"];
 };
 
@@ -28,23 +31,40 @@ function SongChips({
   newlyHeardSongIds,
 }: {
   eventernoteEventId: number;
-  songs: EventSong[];
+  songs: MatchedEventSetlistEntry[];
   newlyHeardSongIds: Set<number>;
 }) {
+  const markedNewlyHeardSongIds = new Set<number>();
+
   return (
     <div className="flex flex-wrap gap-2">
-      {songs.map((song) => {
-        const supportColor = getBandSupportColor(song.bandSlug) ?? "var(--accent)";
-        const textColor = getBandTextColor(song.bandSlug) ?? supportColor;
-        const emphasized = newlyHeardSongIds.has(song.id);
+      {songs.map((song, index) => {
+        const supportColor = song.bandSlug
+          ? getBandSupportColor(song.bandSlug) ?? "var(--accent)"
+          : song.category === "project-common"
+            ? "var(--foreground)"
+            : "var(--accent)";
+        const textColor = song.bandSlug
+          ? getBandTextColor(song.bandSlug) ?? supportColor
+          : "var(--foreground)";
+        const emphasizedBackground = song.bandSlug
+          ? withAlpha(supportColor, "12")
+          : "color-mix(in srgb, var(--foreground) 7%, transparent)";
+        const emphasized =
+          song.songId !== null &&
+          newlyHeardSongIds.has(song.songId) &&
+          !markedNewlyHeardSongIds.has(song.songId);
+        if (emphasized && song.songId !== null) {
+          markedNewlyHeardSongIds.add(song.songId);
+        }
 
         return (
           <span
-            key={`${eventernoteEventId}-${song.id}`}
-            className="rounded-[1rem] border px-3 py-2 text-sm"
+            key={`${eventernoteEventId}-${song.position}-${song.songId ?? song.title}-${index}`}
+            className="inline-flex items-center rounded-[1rem] border px-3 py-2 text-sm"
             style={{
               borderColor: emphasized ? supportColor : "var(--border)",
-              backgroundColor: emphasized ? withAlpha(supportColor, "12") : "var(--panel-strong)",
+              backgroundColor: emphasized ? emphasizedBackground : "var(--panel-strong)",
               color: textColor,
             }}
           >
@@ -98,17 +118,29 @@ export function EventCard({
           }
         >
           <div className="font-heading text-lg font-semibold sm:text-xl">
-            <a
-              href={event.sourceUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="hover:text-accent"
-              onClick={(mouseEvent) => {
-                mouseEvent.stopPropagation();
-              }}
-            >
-              {event.title}
-            </a>
+            {hasCollectedSetlist ? (
+              <Link
+                href={buildLiveSetlistHref(event.eventernoteEventId)}
+                className="hover:text-accent"
+                onClick={(mouseEvent) => {
+                  mouseEvent.stopPropagation();
+                }}
+              >
+                {event.title}
+              </Link>
+            ) : (
+              <a
+                href={event.sourceUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-accent"
+                onClick={(mouseEvent) => {
+                  mouseEvent.stopPropagation();
+                }}
+              >
+                {event.title}
+              </a>
+            )}
             <span
               className={`ml-2 inline-flex align-middle rounded-full px-2 py-0.5 text-[11px] font-normal sm:hidden ${
                 hasCollectedSetlist

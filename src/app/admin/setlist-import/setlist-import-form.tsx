@@ -1,7 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
+import type { SongCategory } from "@/lib/music/song-category";
+import { stripSetlistNumbering } from "@/lib/music/setlist-text";
 import type { SetlistImportActionState } from "./types";
 
 type SetlistImportFormProps = {
@@ -13,14 +15,90 @@ type SetlistImportFormProps = {
   defaultSetlistText?: string;
   existingRecord?: boolean;
   existingEventTitle?: string | null;
+  bandOptions: { slug: string; label: string }[];
 };
 
 const initialState: SetlistImportActionState = {
   status: "idle",
 };
 
-const numberingPrefixPattern = /^(?:(?:M|EN)\s*\.?\s*\d+|\d+)\s*\.?[\t \u3000]+/iu;
-const overwriteConfirmPrompt = "该活动已有 setlist，确认整场替换？";
+function QuickAddSongControls({
+  lineNumber,
+  bandOptions,
+  pending,
+  hasCandidates,
+}: {
+  lineNumber: number;
+  bandOptions: { slug: string; label: string }[];
+  pending: boolean;
+  hasCandidates: boolean;
+}) {
+  const [category, setCategory] = useState<SongCategory>("cover");
+
+  return (
+    <div className="grid gap-2 rounded-lg border border-rose-400/30 bg-panel/50 p-3">
+      {hasCandidates ? (
+        <p className="text-xs text-ink-soft">
+          候选均不正确？可直接新增这首歌曲。
+        </p>
+      ) : null}
+      <label className="grid gap-1 text-xs">
+        歌曲分类
+        <select
+          form="setlist-import-form"
+          name={`quickAddCategory:${lineNumber}`}
+          value={category}
+          onChange={(event) =>
+            setCategory(event.target.value as SongCategory)
+          }
+          className="min-h-10 rounded-lg border border-border-soft bg-panel-strong px-3 text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+        >
+          <option value="cover">翻唱曲</option>
+          <option value="project-common">企划共通</option>
+          <option value="original">乐队原创曲</option>
+        </select>
+      </label>
+      {category === "original" ? (
+        <div className="grid gap-2 sm:grid-cols-2">
+          <label className="grid gap-1 text-xs">
+            乐队
+            <select
+              form="setlist-import-form"
+              name={`quickAddBandSlug:${lineNumber}`}
+              defaultValue={bandOptions[0]?.slug ?? ""}
+              className="min-h-10 rounded-lg border border-border-soft bg-panel-strong px-3 text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            >
+              {bandOptions.map((band) => (
+                <option key={band.slug} value={band.slug}>
+                  {band.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="grid gap-1 text-xs">
+            发行日期
+            <input
+              form="setlist-import-form"
+              type="date"
+              name={`quickAddReleaseDate:${lineNumber}`}
+              className="min-h-10 rounded-lg border border-border-soft bg-panel-strong px-3 text-foreground outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+            />
+          </label>
+        </div>
+      ) : null}
+      <button
+        form="setlist-import-form"
+        type="submit"
+        name="intent"
+        value={`quick-add:${lineNumber}`}
+        disabled={pending}
+        className="inline-flex min-h-10 items-center justify-center rounded-lg bg-foreground px-4 text-xs font-medium text-background disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        {pending ? "处理中..." : "新增歌曲并继续匹配"}
+      </button>
+    </div>
+  );
+}
 
 export function SetlistImportForm({
   action,
@@ -28,6 +106,7 @@ export function SetlistImportForm({
   defaultSetlistText = "",
   existingRecord = false,
   existingEventTitle = null,
+  bandOptions,
 }: SetlistImportFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
   const [eventInput, setEventInput] = useState(defaultEventInput);
@@ -43,49 +122,10 @@ export function SetlistImportForm({
     setSetlistText((prev) =>
       prev
         .split(/\r?\n/u)
-        .map((line) => line.replace(numberingPrefixPattern, "").trim())
+        .map(stripSetlistNumbering)
         .filter((line) => line.length > 0)
         .join("\n"),
     );
-  }
-
-  function replaceLineValue(lineNumber: number, nextValue: string) {
-    setSetlistText((prev) => {
-      const lines = prev.split(/\r?\n/u);
-      const lineIndex = lineNumber - 1;
-
-      if (lineIndex < 0 || lineIndex >= lines.length) {
-        return prev;
-      }
-
-      lines[lineIndex] = nextValue;
-      return lines.join("\n");
-    });
-  }
-
-  function applyAllSuggestions() {
-    if (!state.mismatchLines?.length) {
-      return;
-    }
-
-    setSetlistText((prev) => {
-      const lines = prev.split(/\r?\n/u);
-
-      for (const item of state.mismatchLines ?? []) {
-        if (!item.suggestedValue) {
-          continue;
-        }
-
-        const lineIndex = item.lineNumber - 1;
-        if (lineIndex < 0 || lineIndex >= lines.length) {
-          continue;
-        }
-
-        lines[lineIndex] = item.suggestedValue;
-      }
-
-      return lines.join("\n");
-    });
   }
 
   async function handleSpotifyImport() {
@@ -133,47 +173,32 @@ export function SetlistImportForm({
     }
   }
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    const form = event.currentTarget;
-    const confirmInput = form.elements.namedItem("confirmOverwrite");
-    if (!(confirmInput instanceof HTMLInputElement)) {
-      return;
-    }
-
-    if (!treatsAsExisting) {
-      confirmInput.value = "0";
-      return;
-    }
-
-    const confirmed = window.confirm(overwriteConfirmPrompt);
-    if (!confirmed) {
-      event.preventDefault();
-      confirmInput.value = "0";
-      return;
-    }
-
-    confirmInput.value = "1";
-  }
-
-  const suggestedCount = state.mismatchLines?.filter((item) => Boolean(item.suggestedValue)).length ?? 0;
-
   return (
-    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-2xl border border-border-soft bg-panel p-6">
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-[1.75rem] border border-border-soft bg-panel p-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold text-foreground">歌单导入</h1>
+        <h1 className="font-heading text-2xl font-semibold tracking-[-0.04em] text-foreground">歌单导入</h1>
         <p className="text-sm text-ink-soft">
           填写 Eventernote 链接或数字 event 号；歌单每行一首。点击提交会先校验，全部匹配后自动写入。
         </p>
         {existingRecord ? (
           <p className="rounded-xl border border-amber-500/40 bg-amber-500/15 px-4 py-3 text-sm text-amber-900 dark:text-amber-100">
             已加载数据库中的 setlist
-            {existingEventTitle ? `（${existingEventTitle}）` : ""}。提交前将弹出确认，确认后整场替换。
+            {existingEventTitle ? `（${existingEventTitle}）` : ""}。点击“确认并替换”后将直接整场替换。
           </p>
         ) : null}
       </div>
 
-      <form action={formAction} onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <input type="hidden" name="confirmOverwrite" defaultValue="0" />
+      <form
+        id="setlist-import-form"
+        action={formAction}
+        className="flex flex-col gap-4"
+      >
+        <input
+          type="hidden"
+          name="confirmOverwrite"
+          value={treatsAsExisting ? "1" : "0"}
+          readOnly
+        />
         <label className="flex flex-col gap-2 text-sm text-foreground">
           Eventernote 链接或 event 号
           <input
@@ -203,7 +228,7 @@ export function SetlistImportForm({
               type="button"
               onClick={handleSpotifyImport}
               disabled={spotifyImporting}
-              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border-soft bg-panel-strong px-4 text-sm font-medium text-foreground transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl border border-border-soft bg-panel-strong px-4 text-sm font-medium text-foreground transition hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
             >
               {spotifyImporting ? "解析中..." : "解析并填入"}
             </button>
@@ -239,7 +264,7 @@ export function SetlistImportForm({
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-foreground px-5 font-medium text-background transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-foreground px-5 font-medium text-background transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
         >
           {pending ? "提交中..." : treatsAsExisting ? "确认并替换" : "提交"}
         </button>
@@ -268,48 +293,82 @@ export function SetlistImportForm({
         </div>
       ) : null}
 
-      {state.mismatchLines && state.mismatchLines.length > 0 ? (
+      {state.resolutionLines && state.resolutionLines.length > 0 ? (
         <div className="rounded-xl border border-rose-500/40 bg-rose-500/20 px-4 py-3 text-sm font-medium text-black dark:text-rose-100">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <p className="font-medium">以下行未匹配 songs.title（严格匹配）：</p>
-            {suggestedCount > 0 ? (
-              <button
-                type="button"
-                onClick={applyAllSuggestions}
-                className="inline-flex min-h-9 items-center justify-center rounded-lg border border-rose-400/40 bg-rose-400/20 px-3 text-xs text-black transition hover:border-rose-300 hover:bg-rose-400/30 dark:text-rose-50"
+          <p className="mb-3 font-medium">
+            以下行需要绑定具体曲库记录：
+          </p>
+          <ul className="space-y-4">
+            {state.resolutionLines.map((item) => (
+              <li
+                key={`${item.lineNumber}-${item.value}`}
+                className="space-y-2"
               >
-                一键替换 {suggestedCount} 条建议
-              </button>
-            ) : null}
-          </div>
-          <ul className="list-disc space-y-1 pl-5">
-            {state.mismatchLines.map((item) => (
-              <li key={`${item.lineNumber}-${item.value}`} className="space-y-2">
                 <p>
-                  第 {item.lineNumber} 行: {item.value}
+                  第 {item.lineNumber} 行：{item.value}
                 </p>
-                {item.suggestedValue ? (
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-black dark:text-rose-50/90">
-                    <span>
-                      建议改为: {item.suggestedValue}
-                      {typeof item.suggestionScore === "number"
-                        ? ` · 相似度 ${(item.suggestionScore * 100).toFixed(0)}%`
-                        : ""}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => replaceLineValue(item.lineNumber, item.suggestedValue!)}
-                      className="inline-flex min-h-8 items-center justify-center rounded-lg border border-rose-400/40 bg-rose-400/20 px-3 text-[11px] transition hover:border-rose-300 hover:bg-rose-400/30"
-                    >
-                      替换为该候选
-                    </button>
+                {item.candidates.length > 0 ? (
+                  <div className="grid gap-2">
+                    {item.candidates.map((candidate) => (
+                      <label
+                        key={candidate.songId}
+                        className="flex cursor-pointer items-start gap-2 rounded-lg border border-rose-400/30 bg-panel/50 px-3 py-2 text-xs"
+                      >
+                        <input
+                          form="setlist-import-form"
+                          type="radio"
+                          name={`songResolution:${item.lineNumber}`}
+                          value={candidate.songId}
+                          className="mt-0.5"
+                        />
+                        <span>
+                          <span className="font-medium">
+                            {candidate.title}
+                          </span>
+                          <span className="ml-2 opacity-75">
+                            {candidate.category === "original"
+                              ? "原创"
+                              : candidate.category === "cover"
+                                ? "翻唱"
+                                : "企划共通"}
+                            {candidate.bandLabel
+                              ? ` · ${candidate.bandLabel}`
+                              : ""}
+                            {` · 相似度 ${(candidate.score * 100).toFixed(0)}%`}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                    <QuickAddSongControls
+                      lineNumber={item.lineNumber}
+                      bandOptions={bandOptions}
+                      pending={pending}
+                      hasCandidates
+                    />
                   </div>
                 ) : (
-                  <p className="text-xs text-black dark:text-rose-50/70">未找到足够接近的候选，请手动修正。</p>
+                  <QuickAddSongControls
+                    lineNumber={item.lineNumber}
+                    bandOptions={bandOptions}
+                    pending={pending}
+                    hasCandidates={false}
+                  />
                 )}
               </li>
             ))}
           </ul>
+          {state.resolutionLines.every(
+            (item) => item.candidates.length > 0,
+          ) ? (
+            <button
+              form="setlist-import-form"
+              type="submit"
+              disabled={pending}
+              className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-background disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {pending ? "提交中..." : "使用所选曲目并重新提交"}
+            </button>
+          ) : null}
         </div>
       ) : null}
     </div>

@@ -1,16 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { getBandSupportColor, getBandTextColor } from "@/lib/constants/bands";
 import { filterEventsByVisibilityRules, type EventVisibilityRules } from "@/lib/events/event-visibility";
 import type { CopyDefinition } from "@/lib/i18n";
+import { buildLiveSetlistHref } from "@/lib/live-setlist/url";
 import { formatSongTitleForDisplay } from "@/lib/music/title-utils";
 import type { SongEventReference } from "@/lib/stats/aggregate";
 import type { useResultsState } from "./use-results-state";
 import { percentLabel, withAlpha } from "./utils";
 
 type BandSummaryCardProps = {
-  summary: { slug: string; nameJa: string; heardCount: number; totalCount: number; percentage: number; songs: { id: number; title: string; heard: boolean }[] };
+  summary: { slug: string; nameJa: string; heardCount: number; totalCount: number; percentage: number; songs: { id: number; title: string; firstReleaseDate: string | null; heard: boolean }[] };
   localeCopy: CopyDefinition;
   activeSongId: number | null;
   expandedBands: Record<string, boolean>;
@@ -132,6 +134,12 @@ export function BandSummaryCard({
             });
             const isBandLoading = loadingBands[summary.slug] ?? false;
             const bandLoaded = loadedBands[summary.slug] ?? false;
+            const heardEventCount = relatedEvents.reduce(
+              (count, event) =>
+                count +
+                Number(attendedEventIds.has(event.eventernoteEventId)),
+              0,
+            );
 
             return (
               <div
@@ -161,19 +169,31 @@ export function BandSummaryCard({
                 </button>
 
                 {isActive ? (
-                  <div className="absolute left-0 top-full z-20 mt-2 w-full min-w-0 rounded-[1rem] border border-border-soft bg-panel px-3 py-3 sm:min-w-[22rem]">
+                  <div className="absolute left-0 top-full z-20 mt-2 w-full min-w-0 rounded-[1rem] border border-border-soft bg-panel px-3 py-3 shadow-lg sm:min-w-[22rem]">
                     {relatedEvents.length > 0 ? (
                       <>
-                        <p className="text-xs text-ink-soft">
-                          {localeCopy.relatedEventsLabel(relatedEvents.length)}
+                        {song.firstReleaseDate ? (
+                          <p className="text-xs text-ink-soft">
+                            {localeCopy.releaseDateLabel(song.firstReleaseDate)}
+                          </p>
+                        ) : null}
+                        <p
+                          className={`text-xs text-ink-soft ${
+                            song.firstReleaseDate ? "mt-1.5" : ""
+                          }`}
+                        >
+                          {localeCopy.songEventCountsLabel(
+                            relatedEvents.length,
+                            heardEventCount,
+                          )}
                         </p>
                         <div className="mt-2 space-y-2">
                           {relatedEvents.map((event) => (
-                            <a
+                            <Link
                               key={`${song.id}-${event.eventernoteEventId}`}
-                              href={event.sourceUrl}
-                              target="_blank"
-                              rel="noreferrer"
+                              href={buildLiveSetlistHref(
+                                event.eventernoteEventId,
+                              )}
                               className="block text-sm transition hover:opacity-80"
                               style={
                                 attendedEventIds.has(event.eventernoteEventId)
@@ -186,7 +206,7 @@ export function BandSummaryCard({
                               <span className="font-medium">{event.eventDate}</span>
                               <span className="mx-1.5 text-ink-soft">·</span>
                               <span>{event.title}</span>
-                            </a>
+                            </Link>
                           ))}
                         </div>
                       </>

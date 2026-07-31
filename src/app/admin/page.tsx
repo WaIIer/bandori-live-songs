@@ -20,7 +20,7 @@ const adminLinks = [
   },
   {
     href: "/admin/list",
-    title: "活动列表",
+    title: "全部活动列表",
     description: "浏览全量活动，按年份与乐队筛选，并进入歌单导入/编辑。",
   },
   {
@@ -30,13 +30,13 @@ const adminLinks = [
   },
   {
     href: "/admin/songs-import",
-    title: "歌曲导入",
-    description: "导入新原创曲并刷新曲库缓存。",
+    title: "歌曲导入与编辑",
+    description: "导入新歌曲，或修改已有歌曲的曲名、分类、乐队与发行日期。",
   },
   {
     href: "/admin/rules",
-    title: "活动屏蔽规则",
-    description: "编辑无歌曲活动的屏蔽词和 Eventernote event ID。",
+    title: "活动规则",
+    description: "编辑活动屏蔽条件和标题清理标签。",
   },
   {
     href: "/admin/user-cache",
@@ -94,7 +94,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   if (!authStatus.authenticated) {
     return (
       <main className="mx-auto flex min-h-[70vh] w-full max-w-lg items-center px-4 py-8 sm:px-6">
-        <section className="w-full rounded-2xl border border-border-soft bg-panel p-6">
+        <section className="w-full rounded-[1.75rem] border border-border-soft bg-panel p-6">
           <AdminLoginForm action={submitAdminLogin} nextPath={nextPath} />
         </section>
       </main>
@@ -102,17 +102,17 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
       <section className="mb-6 space-y-2">
         <p className="text-sm text-ink-soft">Admin</p>
-        <h1 className="text-3xl font-semibold text-foreground">管理页面</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-[-0.04em] text-foreground">管理页面</h1>
       </section>
       <div className="grid gap-3 sm:grid-cols-2">
         {adminLinks.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="rounded-2xl border border-border-soft bg-panel px-5 py-4 transition hover:border-accent"
+            className="rounded-[1.75rem] border border-border-soft bg-panel px-5 py-4 transition hover:border-accent"
           >
             <h2 className="text-lg font-semibold text-foreground">{item.title}</h2>
             <p className="mt-2 text-sm leading-6 text-ink-soft">{item.description}</p>

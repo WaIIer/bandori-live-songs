@@ -43,7 +43,8 @@ npm run db:migrate
 npm run db:seed
 ```
 
-`db:seed` 会写入乐队元数据、内置曲目库（`src/data/discography-catalog.json`）与活动可见性规则。
+`db:seed` 会写入乐队领域配置，并导入仓库中的空曲库与空活动规则模板。开源仓库不附带
+生产歌曲、活动或 Setlist 数据；首次启动后需通过管理后台或自备导入流程填充。
 
 ## 4. 本地验证
 
@@ -81,14 +82,26 @@ curl -H "Authorization: Bearer $CRON_SECRET" https://your-domain/api/cron/songs-
 ```
 
 建议每天各执行一次，并错开调用时间。未配置 `CRON_SECRET` 时，两条接口仅在非生产环境允许匿名访问。
-仓库内的 `vercel.json` 已提供上述调度配置；在其他平台部署时请配置等效任务。
+本开源仓库不绑定具体托管平台，请在所选平台配置等效调度任务。
 
 ## 7. 后续维护
 
 ### 更新曲目库
 
-通过管理页 `/admin/songs-import` 手动添加新曲，重新执行 `npm run db:seed`
-（会 upsert 内置 catalog 中的歌曲），或启用 `/api/cron/songs-sync` 增量同步最近歌曲。
+通过管理页 `/admin/songs-import` 手动添加歌曲，导入自行维护的 catalog，或启用
+`/api/cron/songs-sync` 增量同步最近歌曲。
+翻唱曲与企划共通歌曲可通过 `/admin/songs-import` 单独维护；自动导入不会删除这些手工记录。
+
+### 从旧版本升级
+
+本次更新增加歌曲分类与 Setlist 歌曲外键。更新代码后先执行：
+
+```bash
+npm run db:migrate
+```
+
+迁移会保留原歌曲数据，将既有歌曲视为原创曲，并按可唯一匹配的曲名回填 Setlist 的歌曲 ID。
+建议在执行迁移前按数据库平台的方式创建备份。
 
 ### Schema 变更
 

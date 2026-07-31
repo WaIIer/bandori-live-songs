@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq, lte } from "drizzle-orm";
+import { eq, isNull, lte, ne, or } from "drizzle-orm";
 import { unstable_cache } from "next/cache";
 import { getDb } from "@/lib/db/core";
 import { bands, songs } from "@/lib/db/schema";
@@ -18,6 +18,7 @@ const getSongCatalogCached = unstable_cache(
       .select({
         id: songs.id,
         bandSlug: songs.bandSlug,
+        category: songs.category,
         bandNameJa: bands.nameJa,
         bandDisplayOrder: bands.displayOrder,
         bandGroupType: bands.groupType,
@@ -26,8 +27,14 @@ const getSongCatalogCached = unstable_cache(
         hasBeenPlayedLive: songs.hasBeenPlayedLive,
       })
       .from(songs)
-      .innerJoin(bands, eq(songs.bandSlug, bands.slug))
-      .where(lte(songs.firstReleaseDate, releasedThroughDate));
+      .leftJoin(bands, eq(songs.bandSlug, bands.slug))
+      .where(
+        or(
+          ne(songs.category, "original"),
+          isNull(songs.firstReleaseDate),
+          lte(songs.firstReleaseDate, releasedThroughDate),
+        ),
+      );
 
     return {
       songsWithLiveState: songRows satisfies SongPoolItem[],

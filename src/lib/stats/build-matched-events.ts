@@ -5,9 +5,15 @@ import { BAND_SEEDS } from "@/lib/constants/bands";
 import { getDb } from "@/lib/db/core";
 import { events, setlistEntries } from "@/lib/db/schema";
 import { shouldIncludeEventInSongStats } from "@/lib/eventernote/match-rules";
+import { sanitizeEventernoteEventTitle } from "@/lib/eventernote/event-meta";
+import { defaultEventTitleTagsToStrip } from "@/lib/events/event-visibility";
 import { normalizeSongTitle } from "@/lib/music/title-utils";
 import type { BandoriUserEventSnapshot } from "@/lib/eventernote/bandori-user-events";
-import type { MatchedEventEntry, SongPoolItem } from "./aggregate";
+import type {
+  MatchedEventEntry,
+  MatchedEventSetlistEntry,
+  SongPoolItem,
+} from "./aggregate";
 
 function dedupBandsBySlug(bands: typeof BAND_SEEDS) {
   const seen = new Set<string>();
@@ -44,6 +50,7 @@ export async function buildMatchedEvents(
   activities: BandoriUserEventSnapshot[],
   songsWithLiveState: SongPoolItem[],
   db: ReturnType<typeof getDb> = getDb(),
+  titleTagsToStrip: readonly string[] = defaultEventTitleTagsToStrip,
 ): Promise<MatchedEventEntry[]> {
   const bandBySlug = new Map(BAND_SEEDS.map((band) => [band.slug, band]));
 
@@ -100,12 +107,14 @@ export async function buildMatchedEvents(
           eventId: setlistEntries.eventId,
           orderIndex: setlistEntries.orderIndex,
           rawTitle: setlistEntries.rawTitle,
+          songId: setlistEntries.songId,
         })
         .from(setlistEntries)
         .where(inArray(setlistEntries.eventId, eventRows.map((event) => event.id)))
         .orderBy(asc(setlistEntries.eventId), asc(setlistEntries.orderIndex))
     : [];
 
+  const songById = new Map(songsWithLiveState.map((song) => [song.id, song]));
   const songIdByTitle = new Map(songsWithLiveState.map((song) => [song.title, song.id]));
   const songIdByNormalizedTitle = new Map<string, number | null>();
   for (const song of songsWithLiveState) {
@@ -121,15 +130,27 @@ export async function buildMatchedEvents(
   }
 
   const heardSongIdsByEventId = new Map<number, number[]>();
+  const setlistEntriesByEventId = new Map<number, MatchedEventSetlistEntry[]>();
   for (const row of setlistRows) {
     const bucket = heardSongIdsByEventId.get(row.eventId) ?? [];
-    let songId = songIdByTitle.get(row.rawTitle);
+    let songId = row.songId ?? songIdByTitle.get(row.rawTitle);
     if (!songId) {
       const fallbackSongId = songIdByNormalizedTitle.get(normalizeSongTitle(row.rawTitle));
       if (fallbackSongId) songId = fallbackSongId;
     }
     if (songId) bucket.push(songId);
     heardSongIdsByEventId.set(row.eventId, bucket);
+
+    const song = songId ? songById.get(songId) ?? null : null;
+    const entryBucket = setlistEntriesByEventId.get(row.eventId) ?? [];
+    entryBucket.push({
+      position: row.orderIndex,
+      title: row.rawTitle,
+      songId: song?.id ?? null,
+      category: song?.category ?? null,
+      bandSlug: song?.category === "original" ? song.bandSlug : null,
+    });
+    setlistEntriesByEventId.set(row.eventId, entryBucket);
   }
 
   return matchedSnapshots
@@ -138,7 +159,10 @@ export async function buildMatchedEvents(
       return {
         eventId: eventRecord?.id ?? null,
         eventernoteEventId: snapshot.eventernoteEventId,
-        title: snapshot.title,
+        title: sanitizeEventernoteEventTitle(
+          eventRecord?.title ?? snapshot.title,
+          titleTagsToStrip,
+        ),
         eventDate: snapshot.eventDate,
         venue: snapshot.venue,
         matchedBandSlugs: matchedBands.map((band) => band.slug),
@@ -146,6 +170,7 @@ export async function buildMatchedEvents(
         setlistStatus: eventRecord?.setlistStatus ?? null,
         sourceUrl: snapshot.sourceUrl,
         heardSongIds: eventRecord ? heardSongIdsByEventId.get(eventRecord.id) ?? [] : [],
+        setlistEntries: eventRecord ? setlistEntriesByEventId.get(eventRecord.id) ?? [] : [],
       };
     })
     .sort((left, right) => {

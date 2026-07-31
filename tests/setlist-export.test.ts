@@ -1,29 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { toBandoriFansBandLabel, BANDORI_FANS_BAND_LABELS } from "@/lib/setlist-export/bandori-fans-band-names";
 import {
   extractDistinctiveTitleNeedle,
   scoreEventCandidateForExport,
 } from "@/lib/setlist-export/scoring";
 
-describe("bandori-fans band labels", () => {
-  it("maps known slugs to bandori.fans picker labels", () => {
-    expect(toBandoriFansBandLabel("raise-a-suilen")).toBe("RAISE A SUILEN");
-    expect(toBandoriFansBandLabel("poppin-party")).toBe("POPPIN\u2019PARTY");
-    expect(toBandoriFansBandLabel("hello-happy-world")).toBe("HELLO,HAPPY WORLD!");
-    expect(toBandoriFansBandLabel("mugendai-mewtype")).toBe("MUGENDAI MYU-TYPE");
-  });
-
-  it("falls back to provided name for unknown slugs", () => {
-    expect(toBandoriFansBandLabel("millsage", "millsage")).toBe("millsage");
-    expect(toBandoriFansBandLabel("unknown")).toBeNull();
-  });
-
-  it("covers the ten main bands on bandori.fans", () => {
-    expect(Object.keys(BANDORI_FANS_BAND_LABELS)).toHaveLength(10);
-  });
-});
-
-describe("setlist export event date scoring", () => {
+describe("event title candidate scoring", () => {
   const day1 = { title: "MEGA VEGAS 2026 DAY1", eventDate: "2026-03-20" };
   const day2 = { title: "MEGA VEGAS 2026 DAY2", eventDate: "2026-03-21" };
 
@@ -49,6 +30,22 @@ describe("setlist export event date scoring", () => {
       0,
     );
     expect(extractDistinctiveTitleNeedle(fansTitle)).toBe("thanxx");
+  });
+
+  it("tolerates small spelling mistakes in manual searches", () => {
+    const score = scoreEventCandidateForExport(
+      { title: "Rosellia 2nd Live Zeit" },
+      { title: "Roselia 2nd Live「Zeit」", eventDate: "2017-10-08" },
+    );
+    expect(score).toBeGreaterThan(3_000);
+  });
+
+  it("does not match unrelated events that only share generic words", () => {
+    const score = scoreEventCandidateForExport(
+      { title: "Roselia 2nd Live Zeit" },
+      { title: "RAISE A SUILEN SPECIAL LIVE", eventDate: "2024-01-01" },
+    );
+    expect(score).toBe(0);
   });
 
   it("requires exact date match when filtering ranked results", () => {

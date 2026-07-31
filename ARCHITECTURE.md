@@ -9,6 +9,9 @@
 - 输入 Eventernote 用户 ID，抓取该用户参加过的所有活动
 - 匹配活动与 BanG Dream! 乐队，关联官方曲目库
 - 统计每支乐队的歌曲听取覆盖率，展示已收录/缺失的 Setlist
+- 按活动 ID 或标题模糊检索 Setlist，并提供可分享的活动链接
+- 展示独立的歌曲演出统计页与版本化开放 API
+- 区分原创曲、翻唱曲和企划共通歌曲，Setlist 条目绑定歌曲 ID
 - 支持简体中文、繁体中文和日语
 - 支持浅色、深色、跟随系统主题以及 JPEG 统计图导出
 - 可通过 MusicBrainz 定时补充新曲并修正更早的发售日期
@@ -133,12 +136,16 @@ sequenceDiagram
 ```
 app/
 ├── page.tsx                          # 首页 (RSC) — 查询入口 + 数据预取
+├── songs/page.tsx                    # 歌曲演出统计
+├── api/page.tsx                      # 开放 API 说明页
 ├── layout.tsx                        # 根布局 — 字体、主题
 ├── globals.css                       # Tailwind 全局样式
 ├── api/
 │   ├── song-events/route.ts          # 歌曲关联的活动列表 API
 │   ├── user-refresh-status/route.ts  # 用户缓存刷新状态查询
-│   ├── setlist-export/route.ts       # Setlist 导出 API
+│   ├── live-setlists/route.ts        # 活动 Setlist 模糊搜索
+│   ├── openapi.json/route.ts         # OpenAPI 规范
+│   ├── v1/                           # 版本化乐队、歌曲与活动 API
 │   └── cron/
 │       ├── event-ranking/route.ts    # 刷新 bandori_event_index
 │       └── songs-sync/route.ts       # 同步 MusicBrainz 最近歌曲
@@ -165,6 +172,10 @@ components/
 │   ├── event-card.tsx                # 活动卡片
 │   └── utils.ts                      # 共享工具函数
 ├── search-form.tsx                   # 搜索表单
+├── live-setlist-search.tsx           # 活动搜索表单与候选项
+├── live-setlist-result.tsx           # Setlist 及首次演唱标记
+├── songs-stats-page-client.tsx       # 歌曲演出统计交互
+├── public-footer.tsx                 # API 与 GitHub 链接
 ├── locale-toggle.tsx                 # 语言切换
 ├── theme-toggle.tsx                  # 主题切换
 ├── save-image-button.tsx             # 导出 JPEG 图片
@@ -189,6 +200,7 @@ stats/
 ├── aggregate.ts                 # 前端聚合逻辑 (纯函数)
 ├── eventernote-cache-policy.ts  # 缓存策略：活动数比对 / 日龄静默刷新 / 租约
 ├── song-events-cache.ts         # 歌曲关联活动缓存
+├── song-performance-stats.ts    # 歌曲演出次数统计
 └── refresh-song-live-state.ts   # 刷新歌曲现场演出状态
 ```
 
@@ -251,7 +263,8 @@ bandori/
 
 - `discography-catalog.ts` 加载 `src/data/discography-catalog.json`，用 Zod 校验结构
 - 曲目标题标准化通过 `music/title-utils.ts` 完成（NFKC 归一化、去除翻唱标记等）
-- 新增歌曲通过 `/admin/songs-import` 维护
+- 原创曲由内置目录与 MusicBrainz 维护；翻唱曲和企划共通歌曲通过 `/admin/songs-import` 维护
+- `songs.category` 区分 `original`、`cover` 和 `project-common`
 
 #### 6.3.4 `music/` — 歌曲工具
 
@@ -259,6 +272,9 @@ bandori/
 music/
 ├── sort.ts                  # 排序比较器 (compareSongsByReleaseDate 等)
 ├── title-utils.ts           # 标题规范化、归一化、去重
+├── song-category.ts         # 歌曲分类类型
+├── song-resolution.ts       # Setlist 歌曲唯一解析
+├── setlist-text.ts          # Setlist 文本处理
 └── song-match-suggestions.ts # 歌曲匹配建议
 ```
 
@@ -311,7 +327,8 @@ erDiagram
     }
     songs {
         int id PK
-        text band_slug FK
+        text band_slug FK "原创曲必填"
+        enum category
         text title
         date first_release_date
         boolean has_been_played_live
@@ -330,6 +347,7 @@ erDiagram
         int event_id FK
         int order_index
         text raw_title
+        int song_id FK
     }
     eventernote_user_cache {
         text user_id PK
@@ -360,9 +378,12 @@ erDiagram
 
 ```
 data/
-├── discography-catalog.json         # 内置曲目库（seed 导入）
-└── event-visibility-rules.json      # 活动可见性过滤规则
+├── discography-catalog.json         # 空曲库导入模板
+└── event-visibility-rules.json      # 空活动规则模板
 ```
+
+开源仓库不附带生产歌曲、活动、Setlist 或按活动 ID 定制的屏蔽数据。乐队 slug、显示名称、
+颜色与公开外部服务标识属于应用运行所需的领域配置。
 
 ### 6.5 `scripts/` — 离线数据管理
 
@@ -395,6 +416,10 @@ tests/
 ├── manual-refresh-navigation.test.ts    # 手动刷新导航
 ├── i18n.test.ts                         # 语言解析与文案完整性
 ├── musicbrainz-recent-songs-sync.test.ts # 最近歌曲过滤与同步
+├── live-search-history.test.ts          # 活动搜索历史
+├── public-api-pagination.test.ts        # 开放 API 分页
+├── song-resolution.test.ts              # Setlist 歌曲解析
+├── setlist-text.test.ts                 # Setlist 文本处理
 ├── setlist-status-filter.test.ts        # Setlist 状态过滤
 ├── song-match-suggestions.test.ts       # 歌曲匹配建议
 └── title-utils.test.ts                  # 标题工具函数

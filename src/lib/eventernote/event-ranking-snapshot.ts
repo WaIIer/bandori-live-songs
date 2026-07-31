@@ -1,8 +1,11 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { BAND_SEEDS } from "@/lib/constants/bands";
 import { connectDatabase, getDb } from "@/lib/db/core";
+import { emptyEventVisibilityRules } from "@/lib/events/event-visibility";
+import { readEventVisibilityRulesFromDb } from "@/lib/events/event-visibility-rules-store";
 import { fetchAllActorEvents, mergeActorEvents } from "./actor-events";
 import { getRecentEventDateWindow, upsertBandoriEventIndex } from "./bandori-event-index";
+import { sanitizeEventernoteEventTitle } from "./event-meta";
 import type { ActorEventRankingEntry } from "./actor-events";
 
 export type BandoriActorEventsRefreshResult = {
@@ -65,10 +68,30 @@ async function fetchMergedActorEvents() {
   };
 }
 
+function sanitizeActorEventTitles(
+  events: ActorEventRankingEntry[],
+  titleTagsToStrip: string[],
+) {
+  return events.map((event) => ({
+    ...event,
+    title: sanitizeEventernoteEventTitle(
+      event.title,
+      titleTagsToStrip,
+    ),
+  }));
+}
+
 /** One crawl: upsert bandori_event_index only. */
 export async function refreshBandoriActorEvents(): Promise<BandoriActorEventsRefreshResult> {
   const { mergedEvents } = await fetchMergedActorEvents();
-  const indexedEventCount = await upsertBandoriEventIndex(mergedEvents, getDb());
+  const db = getDb();
+  const rules =
+    (await readEventVisibilityRulesFromDb(db)) ??
+    emptyEventVisibilityRules;
+  const indexedEventCount = await upsertBandoriEventIndex(
+    sanitizeActorEventTitles(mergedEvents, rules.titleTagsToStrip),
+    db,
+  );
   return {
     indexedEventCount,
     updatedAt: new Date().toISOString(),
@@ -80,7 +103,13 @@ export async function refreshBandoriActorEventsDirect(): Promise<BandoriActorEve
   const { mergedEvents } = await fetchMergedActorEvents();
   const { db, sql: client } = connectDatabase(true);
   try {
-    const indexedEventCount = await upsertBandoriEventIndex(mergedEvents, db);
+    const rules =
+      (await readEventVisibilityRulesFromDb(db)) ??
+      emptyEventVisibilityRules;
+    const indexedEventCount = await upsertBandoriEventIndex(
+      sanitizeActorEventTitles(mergedEvents, rules.titleTagsToStrip),
+      db,
+    );
     return {
       indexedEventCount,
       updatedAt: new Date().toISOString(),

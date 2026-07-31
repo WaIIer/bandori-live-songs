@@ -1,15 +1,27 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { AdminEventTable, type AdminEventSetlistStatus } from "@/components/admin-event-table";
 import {
   collectEventYears,
+  filterEventsByFutureDate,
+  filterEventsBySearch,
+  filterEventsBySetlistStatus,
   filterEventsByYearAndBand,
+  type AdminListSetlistStatus,
   toggleSelection,
 } from "@/lib/admin/list-event-filters";
+import {
+  adminListFiltersCookieName,
+  adminListFiltersMaxAgeSeconds,
+  adminListFiltersStorageKey,
+  parsePersistedAdminListFilters,
+  sanitizePersistedAdminListFilters,
+  serializePersistedAdminListFilters,
+  type PersistedAdminListFilters,
+} from "@/lib/admin/list-filters-state";
 import type { ActorEventRankingEntry } from "@/lib/eventernote/actor-events";
 import { filterEventsByVisibilityRules, type EventVisibilityRules } from "@/lib/events/event-visibility";
-import { filterEventsByCollectedSetlistStatus } from "@/lib/events/setlist-status-filter";
 
 type BandFilter = {
   slug: string;
@@ -21,7 +33,10 @@ type AdminListClientProps = {
   events: ActorEventRankingEntry[];
   bands: BandFilter[];
   statusByEventId: Record<number, AdminEventSetlistStatus>;
+  setlistUpdatedAtByEventId: Record<number, string | null>;
   eventVisibilityRules: EventVisibilityRules;
+  initialFilters: PersistedAdminListFilters;
+  todayDate: string;
 };
 
 function filterChipClass(active: boolean) {
@@ -32,49 +47,144 @@ function filterChipClass(active: boolean) {
   }`;
 }
 
+const persistedAdminListFiltersChangedEvent = "admin-list-filters-changed";
+
+function subscribeToAdminListFilters(onStoreChange: () => void) {
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(persistedAdminListFiltersChangedEvent, onStoreChange);
+
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(persistedAdminListFiltersChangedEvent, onStoreChange);
+  };
+}
+
+function readStoredAdminListFilters(defaultSerialized: string) {
+  try {
+    const stored = window.localStorage.getItem(adminListFiltersStorageKey);
+    if (stored) {
+      return stored;
+    }
+  } catch {
+    // Storage may be disabled by the browser.
+  }
+
+  return defaultSerialized;
+}
+
+function writeStoredAdminListFilters(filters: PersistedAdminListFilters) {
+  const serialized = serializePersistedAdminListFilters(filters);
+
+  try {
+    window.localStorage.setItem(adminListFiltersStorageKey, serialized);
+  } catch {
+    // Storage may be disabled by the browser.
+  }
+
+  document.cookie = `${adminListFiltersCookieName}=${encodeURIComponent(serialized)}; path=/; max-age=${adminListFiltersMaxAgeSeconds}; samesite=lax`;
+  window.dispatchEvent(new Event(persistedAdminListFiltersChangedEvent));
+}
+
 export function AdminListClient({
   generatedAtLabel,
   events,
   bands,
   statusByEventId,
+  setlistUpdatedAtByEventId,
   eventVisibilityRules,
+  initialFilters,
+  todayDate,
 }: AdminListClientProps) {
-  const [selectedYears, setSelectedYears] = useState<string[]>([]);
-  const [selectedBandSlugs, setSelectedBandSlugs] = useState<string[]>([]);
-  const [hideSonglessActivities, setHideSonglessActivities] = useState(true);
-  const [hideCollectedActivities, setHideCollectedActivities] = useState(false);
-
+  const [searchQuery, setSearchQuery] = useState("");
   const years = useMemo(() => collectEventYears(events), [events]);
+  const availableBandSlugs = useMemo(() => bands.map((band) => band.slug), [bands]);
+  const defaultFilters = useMemo(
+    () => sanitizePersistedAdminListFilters(initialFilters, years, availableBandSlugs),
+    [availableBandSlugs, initialFilters, years],
+  );
+  const defaultFiltersSerialized = useMemo(
+    () => serializePersistedAdminListFilters(defaultFilters),
+    [defaultFilters],
+  );
+  const storedFiltersSerialized = useSyncExternalStore(
+    subscribeToAdminListFilters,
+    () => readStoredAdminListFilters(defaultFiltersSerialized),
+    () => defaultFiltersSerialized,
+  );
+  const persistedFilters = useMemo(
+    () =>
+      sanitizePersistedAdminListFilters(
+        parsePersistedAdminListFilters(storedFiltersSerialized),
+        years,
+        availableBandSlugs,
+      ),
+    [availableBandSlugs, storedFiltersSerialized, years],
+  );
+  const {
+    selectedStatus,
+    selectedYears,
+    selectedBandSlugs,
+    hideSonglessActivities,
+    hideFutureEvents,
+  } = persistedFilters;
+
+  function updatePersistedFilters(patch: Partial<PersistedAdminListFilters>) {
+    writeStoredAdminListFilters({
+      ...persistedFilters,
+      ...patch,
+    });
+  }
 
   const filteredByTabs = useMemo(
     () => filterEventsByYearAndBand(events, selectedYears, selectedBandSlugs),
     [events, selectedBandSlugs, selectedYears],
   );
 
-  const visibleEvents = useMemo(
+  const filteredByDate = useMemo(
+    () => filterEventsByFutureDate(filteredByTabs, hideFutureEvents, todayDate),
+    [filteredByTabs, hideFutureEvents, todayDate],
+  );
+
+  const searchableEvents = useMemo(
     () =>
-      filterEventsByCollectedSetlistStatus(
-        filterEventsByVisibilityRules(filteredByTabs, hideSonglessActivities, eventVisibilityRules),
-        statusByEventId,
-        hideCollectedActivities,
-      ),
+      filterEventsBySearch(filterEventsByVisibilityRules(filteredByDate, hideSonglessActivities, eventVisibilityRules), searchQuery),
     [
       eventVisibilityRules,
-      filteredByTabs,
-      hideCollectedActivities,
+      filteredByDate,
       hideSonglessActivities,
+      searchQuery,
+    ],
+  );
+
+  const visibleEvents = useMemo(
+    () =>
+      filterEventsBySetlistStatus(
+        searchableEvents,
+        statusByEventId,
+        selectedStatus,
+      ),
+    [
+      searchableEvents,
+      selectedStatus,
       statusByEventId,
     ],
   );
 
-  const collectedSetlistCount = useMemo(
-    () =>
-      visibleEvents.filter((event) => {
-        const status = statusByEventId[event.eventernoteEventId] ?? null;
-        return status === "complete" || status === "partial";
-      }).length,
-    [statusByEventId, visibleEvents],
-  );
+  const statusCounts = useMemo(() => {
+    const counts = { missing: 0, partial: 0, complete: 0 };
+    for (const event of searchableEvents) {
+      const status = statusByEventId[event.eventernoteEventId] ?? "missing";
+      counts[status] += 1;
+    }
+    return counts;
+  }, [searchableEvents, statusByEventId]);
+
+  const statusFilters: Array<{ value: AdminListSetlistStatus; label: string; count: number }> = [
+    { value: "all", label: "全部", count: searchableEvents.length },
+    { value: "missing", label: "未收录", count: statusCounts.missing },
+    { value: "partial", label: "部分", count: statusCounts.partial },
+    { value: "complete", label: "完整", count: statusCounts.complete },
+  ];
 
   return (
     <>
@@ -84,19 +194,19 @@ export function AdminListClient({
             <p className="text-sm text-ink-soft">List</p>
             <h1 className="font-heading text-3xl font-semibold tracking-[-0.04em]">活动列表</h1>
             <p className="max-w-3xl text-sm leading-6 text-ink-soft">
-              数据来自乐队 Eventernote actor 活动页写入的 bandori_event_index。可按年份与乐队复选筛选；点击活动标题进入歌单导入/编辑页。
+              数据来自乐队 Eventernote actor 活动页写入的 bandori_event_index。可搜索并按状态、年份和乐队筛选，再从每行快捷进入本站编辑器。
             </p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[1.1rem] border border-border-soft bg-panel-strong px-4 py-3">
-              <p className="text-xs text-ink-soft">当前已收录歌单</p>
-              <p className="mt-1 text-sm font-medium">
-                {collectedSetlistCount}/{visibleEvents.length}
+              <p className="text-xs text-ink-soft">当前范围</p>
+              <p className="mt-1 whitespace-nowrap text-sm font-medium">
+                {visibleEvents.length}/{events.length} 场
               </p>
             </div>
             <div className="rounded-[1.1rem] border border-border-soft bg-panel-strong px-4 py-3">
               <p className="text-xs text-ink-soft">抓取时间</p>
-              <p className="mt-1 text-sm font-medium">{generatedAtLabel}</p>
+              <p className="mt-1 whitespace-nowrap text-sm font-medium">{generatedAtLabel}</p>
             </div>
           </div>
         </div>
@@ -112,11 +222,36 @@ export function AdminListClient({
           </div>
 
           <div className="space-y-3">
+            <label className="block max-w-xl">
+              <span className="mb-2 block text-xs text-ink-soft">快速搜索</span>
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="活动、场馆、日期、Event ID 或乐队"
+                className="min-h-11 w-full rounded-xl border border-border-soft bg-panel-strong px-4 text-sm text-foreground outline-none placeholder:text-ink-soft focus:border-accent focus:ring-2 focus:ring-accent/20"
+              />
+            </label>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs text-ink-soft">歌单状态</span>
+              {statusFilters.map((status) => (
+                <button
+                  key={status.value}
+                  type="button"
+                  onClick={() => updatePersistedFilters({ selectedStatus: status.value })}
+                  className={filterChipClass(selectedStatus === status.value)}
+                >
+                  {status.label} {status.count}
+                </button>
+              ))}
+            </div>
+
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-xs text-ink-soft">年份</span>
               <button
                 type="button"
-                onClick={() => setSelectedYears([])}
+                onClick={() => updatePersistedFilters({ selectedYears: [] })}
                 className={filterChipClass(selectedYears.length === 0)}
               >
                 全部
@@ -125,7 +260,11 @@ export function AdminListClient({
                 <button
                   key={year}
                   type="button"
-                  onClick={() => setSelectedYears((prev) => toggleSelection(prev, year))}
+                  onClick={() =>
+                    updatePersistedFilters({
+                      selectedYears: toggleSelection(selectedYears, year),
+                    })
+                  }
                   className={filterChipClass(selectedYears.includes(year))}
                 >
                   {year}
@@ -137,7 +276,7 @@ export function AdminListClient({
               <span className="text-xs text-ink-soft">乐队</span>
               <button
                 type="button"
-                onClick={() => setSelectedBandSlugs([])}
+                onClick={() => updatePersistedFilters({ selectedBandSlugs: [] })}
                 className={filterChipClass(selectedBandSlugs.length === 0)}
               >
                 全部
@@ -146,7 +285,11 @@ export function AdminListClient({
                 <button
                   key={band.slug}
                   type="button"
-                  onClick={() => setSelectedBandSlugs((prev) => toggleSelection(prev, band.slug))}
+                  onClick={() =>
+                    updatePersistedFilters({
+                      selectedBandSlugs: toggleSelection(selectedBandSlugs, band.slug),
+                    })
+                  }
                   className={filterChipClass(selectedBandSlugs.includes(band.slug))}
                 >
                   {band.nameJa}
@@ -158,26 +301,31 @@ export function AdminListClient({
               <label className="inline-flex cursor-pointer items-center gap-3 rounded-full border border-border-soft bg-panel-strong px-4 py-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={hideSonglessActivities}
-                  onChange={(event) => setHideSonglessActivities(event.target.checked)}
+                  checked={hideFutureEvents}
+                  onChange={(event) => updatePersistedFilters({ hideFutureEvents: event.target.checked })}
                   className="h-4 w-4 accent-[var(--accent)]"
                 />
-                隐藏无歌曲活动
+                隐藏未来活动
               </label>
               <label className="inline-flex cursor-pointer items-center gap-3 rounded-full border border-border-soft bg-panel-strong px-4 py-2 text-sm">
                 <input
                   type="checkbox"
-                  checked={hideCollectedActivities}
-                  onChange={(event) => setHideCollectedActivities(event.target.checked)}
+                  checked={hideSonglessActivities}
+                  onChange={(event) => updatePersistedFilters({ hideSonglessActivities: event.target.checked })}
                   className="h-4 w-4 accent-[var(--accent)]"
                 />
-                隐藏已收录活动
+                隐藏无歌曲活动
               </label>
             </div>
           </div>
         </div>
 
-        <AdminEventTable events={visibleEvents} statusByEventId={statusByEventId} variant="timeline" />
+        <AdminEventTable
+          events={visibleEvents}
+          statusByEventId={statusByEventId}
+          setlistUpdatedAtByEventId={setlistUpdatedAtByEventId}
+          variant="timeline"
+        />
       </section>
     </>
   );

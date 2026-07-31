@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { XIcon } from "lucide-react";
+import { useRef, useState, type FormEvent } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { isValidEventernoteUserId, normalizeEventernoteUserId } from "@/lib/eventernote/user-id";
 import type { CopyDefinition } from "@/lib/i18n";
@@ -14,6 +15,7 @@ type SearchFormProps = {
 export function SearchForm({ defaultUserId = "", copy: localeCopy }: SearchFormProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
   const [userIdValue, setUserIdValue] = useState(defaultUserId);
   const [hasInputChanged, setHasInputChanged] = useState(false);
   const normalizedUserId = normalizeEventernoteUserId(userIdValue);
@@ -47,26 +49,43 @@ export function SearchForm({ defaultUserId = "", copy: localeCopy }: SearchFormP
         {localeCopy.searchInputLabel}
       </label>
       <div className="flex w-full flex-col gap-3 sm:flex-row">
-        <input
-          id="userId"
-          name="userId"
-          value={userIdValue}
-          onChange={(event) => {
-            setUserIdValue(event.target.value);
-            setHasInputChanged(true);
-          }}
-          autoCapitalize="none"
-          autoCorrect="off"
-          spellCheck={false}
-          placeholder={localeCopy.searchPlaceholder}
-          aria-invalid={invalidUserId}
-          aria-describedby={invalidUserId ? "userId-validation-message" : undefined}
-          className={`min-h-13 flex-1 rounded-[1.25rem] border bg-panel-strong px-4 text-base outline-none placeholder:text-ink-soft focus:ring-2 ${
-            invalidUserId
-              ? "border-red-500/70 focus:border-red-500 focus:ring-red-500/20"
-              : "border-border-soft focus:border-accent focus:ring-accent/20"
-          }`}
-        />
+        <div className="relative min-w-0 flex-1">
+          <input
+            ref={inputRef}
+            id="userId"
+            name="userId"
+            value={userIdValue}
+            onChange={(event) => {
+              setUserIdValue(event.target.value);
+              setHasInputChanged(true);
+            }}
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            placeholder={localeCopy.searchPlaceholder}
+            aria-invalid={invalidUserId}
+            aria-describedby={invalidUserId ? "userId-validation-message" : undefined}
+            className={`min-h-13 w-full rounded-[1.25rem] border bg-panel-strong px-4 pr-12 text-base outline-none placeholder:text-ink-soft focus:ring-2 sm:pr-4 ${
+              invalidUserId
+                ? "border-red-500/70 focus:border-red-500 focus:ring-red-500/20"
+                : "border-border-soft focus:border-accent focus:ring-accent/20"
+            }`}
+          />
+          {userIdValue.length > 0 ? (
+            <button
+              type="button"
+              aria-label={localeCopy.searchClearAria}
+              className="absolute right-2.5 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-ink-soft transition hover:bg-background hover:text-foreground sm:hidden"
+              onClick={() => {
+                setUserIdValue("");
+                setHasInputChanged(true);
+                inputRef.current?.focus();
+              }}
+            >
+              <XIcon className="h-4 w-4" aria-hidden="true" />
+            </button>
+          ) : null}
+        </div>
         <button
           type="submit"
           disabled={isEmptyInput}

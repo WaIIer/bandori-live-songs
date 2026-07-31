@@ -1,4 +1,6 @@
 import { load } from "cheerio";
+import { defaultEventTitleTagsToStrip } from "@/lib/events/event-visibility";
+import { readEventVisibilityRules } from "@/lib/events/event-visibility-rules-store";
 import { fetchWithTimeout } from "@/lib/http/fetch-with-timeout";
 
 const EVENTERNOTE_BASE_URL = "https://www.eventernote.com";
@@ -11,29 +13,6 @@ export type EventernoteEventMeta = {
   eventDate: string;
   venue: string | null;
 };
-
-const EVENT_TITLE_TAGS = [
-  "出演者変更",
-  "振替",
-  "振替公演",
-  "振替試合",
-  "時間変更",
-  "試合中止 ※ステージのみ",
-  "出演者一部キャンセル",
-] as const;
-
-const EVENT_TITLE_TAG_PATTERN = EVENT_TITLE_TAGS
-  .map((tag) => tag.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"))
-  .join("|");
-
-const TITLE_PREFIX_TAG_PATTERN = new RegExp(
-  `^\\s*[【\\[]\\s*(?:${EVENT_TITLE_TAG_PATTERN})\\s*[】\\]]\\s*`,
-  "u",
-);
-const TITLE_SUFFIX_TAG_PATTERN = new RegExp(
-  `\\s*[【\\[]\\s*(?:${EVENT_TITLE_TAG_PATTERN})\\s*[】\\]]\\s*$`,
-  "u",
-);
 
 function parseDateFromText(input: string) {
   const match = input.match(/(\d{4})[-/.年](\d{2})[-/.月](\d{2})/u);
@@ -48,11 +27,45 @@ function normalizeText(input: string) {
   return input.replace(/\s+/g, " ").trim();
 }
 
-export function sanitizeEventernoteEventTitle(input: string) {
-  let title = normalizeText(input);
+function createTitleTagPatterns(titleTags: readonly string[]) {
+  const tagPattern = [...new Set(
+    titleTags
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0),
+  )]
+    .map((tag) => tag.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&"))
+    .join("|");
+  if (!tagPattern) {
+    return null;
+  }
 
-  while (TITLE_PREFIX_TAG_PATTERN.test(title) || TITLE_SUFFIX_TAG_PATTERN.test(title)) {
-    title = title.replace(TITLE_PREFIX_TAG_PATTERN, "").replace(TITLE_SUFFIX_TAG_PATTERN, "").trim();
+  return {
+    prefix: new RegExp(
+      `^\\s*[【\\[]\\s*(?:${tagPattern})\\s*[】\\]]\\s*`,
+      "u",
+    ),
+    suffix: new RegExp(
+      `\\s*[【\\[]\\s*(?:${tagPattern})\\s*[】\\]]\\s*$`,
+      "u",
+    ),
+  };
+}
+
+export function sanitizeEventernoteEventTitle(
+  input: string,
+  titleTags: readonly string[] = defaultEventTitleTagsToStrip,
+) {
+  let title = normalizeText(input);
+  const patterns = createTitleTagPatterns(titleTags);
+  if (!patterns) {
+    return title;
+  }
+
+  while (patterns.prefix.test(title) || patterns.suffix.test(title)) {
+    title = title
+      .replace(patterns.prefix, "")
+      .replace(patterns.suffix, "")
+      .trim();
   }
 
   return title;
@@ -85,7 +98,11 @@ function extractKeyedTableValue(html: string, keys: string[]) {
   return null;
 }
 
-export function parseEventernoteEventMetaPage(html: string, eventernoteEventId: number): EventernoteEventMeta {
+export function parseEventernoteEventMetaPage(
+  html: string,
+  eventernoteEventId: number,
+  titleTags: readonly string[] = defaultEventTitleTagsToStrip,
+): EventernoteEventMeta {
   const $ = load(html);
   const ogTitle = normalizeText($("meta[property='og:title']").attr("content") ?? "");
   const titleTag = normalizeText($("title").text()).replace(/\s*Eventernote.*$/u, "").trim();
@@ -93,6 +110,7 @@ export function parseEventernoteEventMetaPage(html: string, eventernoteEventId: 
     ogTitle ||
       extractKeyedTableValue(html, ["公演名", "タイトル"]) ||
       titleTag,
+    titleTags,
   );
 
   const eventDate =
@@ -120,19 +138,26 @@ export function parseEventernoteEventMetaPage(html: string, eventernoteEventId: 
 
 export async function fetchEventMetaFromEventernote(eventernoteEventId: number, timeoutMs = 8000) {
   const url = `${EVENTERNOTE_BASE_URL}/events/${eventernoteEventId}`;
-  const response = await fetchWithTimeout(url, {
-    headers: {
-      "accept-language": "ja,en-US;q=0.9,en;q=0.8",
-      "user-agent": EVENTERNOTE_USER_AGENT,
-    },
-    next: { revalidate: 0 },
-    timeoutMs,
-  });
+  const [response, rules] = await Promise.all([
+    fetchWithTimeout(url, {
+      headers: {
+        "accept-language": "ja,en-US;q=0.9,en;q=0.8",
+        "user-agent": EVENTERNOTE_USER_AGENT,
+      },
+      next: { revalidate: 0 },
+      timeoutMs,
+    }),
+    readEventVisibilityRules(),
+  ]);
 
   if (!response.ok) {
     throw new Error(`无法读取 Eventernote 活动页面（HTTP ${response.status}）`);
   }
 
   const html = await response.text();
-  return parseEventernoteEventMetaPage(html, eventernoteEventId);
+  return parseEventernoteEventMetaPage(
+    html,
+    eventernoteEventId,
+    rules.titleTagsToStrip,
+  );
 }

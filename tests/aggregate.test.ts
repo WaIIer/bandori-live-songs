@@ -8,6 +8,7 @@ const songs = [
     bandNameJa: "Poppin'Party",
     bandDisplayOrder: 1,
     bandGroupType: "band" as const,
+    category: "original" as const,
     title: "ティアドロップス",
     firstReleaseDate: "2016-02-24",
     hasBeenPlayedLive: true,
@@ -18,16 +19,18 @@ const songs = [
     bandNameJa: "Poppin'Party",
     bandDisplayOrder: 1,
     bandGroupType: "band" as const,
+    category: "original" as const,
     title: "STAR BEAT!~ホシノコドウ~",
     firstReleaseDate: "2017-08-30",
     hasBeenPlayedLive: false,
   },
   {
     id: 3,
-    bandSlug: "project-common",
-    bandNameJa: "企划共通",
-    bandDisplayOrder: 0,
-    bandGroupType: "project-common" as const,
+    bandSlug: null,
+    bandNameJa: null,
+    bandDisplayOrder: null,
+    bandGroupType: null,
+    category: "project-common" as const,
     title: "Yes! BanG_Dream!",
     firstReleaseDate: "2023-05-24",
     hasBeenPlayedLive: true,
@@ -38,6 +41,7 @@ const songs = [
     bandNameJa: "Afterglow",
     bandDisplayOrder: 2,
     bandGroupType: "band" as const,
+    category: "original" as const,
     title: "That Is How I Roll!",
     firstReleaseDate: "2017-06-21",
     hasBeenPlayedLive: true,
@@ -48,8 +52,20 @@ const songs = [
     bandNameJa: "MyGO!!!!!",
     bandDisplayOrder: 8,
     bandGroupType: "band" as const,
+    category: "original" as const,
     title: "迷星叫",
     firstReleaseDate: "2023-04-12",
+    hasBeenPlayedLive: true,
+  },
+  {
+    id: 6,
+    bandSlug: null,
+    bandNameJa: null,
+    bandDisplayOrder: null,
+    bandGroupType: null,
+    category: "cover" as const,
+    title: "Alchemy",
+    firstReleaseDate: null,
     hasBeenPlayedLive: true,
   },
 ];
@@ -57,38 +73,38 @@ const songs = [
 const matchedEvents = [
   {
     eventId: 10,
-    eventernoteEventId: 420629,
+    eventernoteEventId: 100001,
     title: "Test Event",
     eventDate: "2026-02-28",
     venue: "Kアリーナ横浜",
     matchedBandSlugs: ["poppin-party"],
     matchedBandNames: ["Poppin'Party"],
     setlistStatus: "complete" as const,
-    sourceUrl: "https://www.eventernote.com/events/420629",
-    heardSongIds: [1, 3, 4, 5],
+    sourceUrl: "https://www.eventernote.com/events/100001",
+    heardSongIds: [1, 3, 4, 5, 6],
   },
   {
     eventId: 11,
-    eventernoteEventId: 420630,
+    eventernoteEventId: 100002,
     title: "Partial Event",
     eventDate: "2026-03-01",
     venue: "Kアリーナ横浜",
     matchedBandSlugs: ["poppin-party"],
     matchedBandNames: ["Poppin'Party"],
     setlistStatus: "partial" as const,
-    sourceUrl: "https://www.eventernote.com/events/420630",
+    sourceUrl: "https://www.eventernote.com/events/100002",
     heardSongIds: [],
   },
   {
     eventId: null,
-    eventernoteEventId: 420631,
+    eventernoteEventId: 100003,
     title: "Missing Event",
     eventDate: "2026-03-02",
     venue: "Kアリーナ横浜",
     matchedBandSlugs: ["poppin-party"],
     matchedBandNames: ["Poppin'Party"],
     setlistStatus: null,
-    sourceUrl: "https://www.eventernote.com/events/420631",
+    sourceUrl: "https://www.eventernote.com/events/100003",
     heardSongIds: [],
   },
 ];
@@ -137,6 +153,32 @@ describe("aggregateUserSongStats", () => {
     expect(poppinParty?.songs.map((song) => song.heard)).toEqual([true, false]);
   });
 
+  it("keeps progress original-only while unlocking project-common songs but not covers", () => {
+    const aggregated = aggregateUserSongStats({
+      songs,
+      matchedEvents,
+      hideUnplayed: false,
+      hideVirtualBands: false,
+      hideSonglessActivities: false,
+    });
+
+    expect(aggregated.totalSummary).toEqual({
+      heardCount: 3,
+      totalCount: 4,
+      percentage: 3 / 4,
+    });
+    expect(
+      Object.values(aggregated.newlyHeardSongsByEventId)
+        .flat()
+        .map((song) => song.id),
+    ).toContain(3);
+    expect(
+      Object.values(aggregated.newlyHeardSongsByEventId)
+        .flat()
+        .map((song) => song.id),
+    ).not.toContain(6);
+  });
+
   it("treats partial setlists as collected and keeps missing setlists separate", () => {
     const aggregated = aggregateUserSongStats({
       songs,
@@ -174,26 +216,26 @@ describe("aggregateUserSongStats", () => {
       matchedEvents: [
         {
           eventId: 11,
-          eventernoteEventId: 420630,
+          eventernoteEventId: 100002,
           title: "Later Event",
           eventDate: "2026-03-01",
           venue: "Kアリーナ横浜",
           matchedBandSlugs: ["poppin-party"],
           matchedBandNames: ["Poppin'Party"],
           setlistStatus: "complete",
-          sourceUrl: "https://www.eventernote.com/events/420630",
+          sourceUrl: "https://www.eventernote.com/events/100002",
           heardSongIds: [1, 4, 5],
         },
         {
           eventId: 10,
-          eventernoteEventId: 420629,
+          eventernoteEventId: 100001,
           title: "Earlier Event",
           eventDate: "2026-02-28",
           venue: "Kアリーナ横浜",
           matchedBandSlugs: ["poppin-party"],
           matchedBandNames: ["Poppin'Party"],
           setlistStatus: "complete",
-          sourceUrl: "https://www.eventernote.com/events/420629",
+          sourceUrl: "https://www.eventernote.com/events/100001",
           heardSongIds: [1, 4],
         },
       ],
@@ -202,8 +244,8 @@ describe("aggregateUserSongStats", () => {
       hideSonglessActivities: false,
     });
 
-    expect(aggregated.newlyHeardSongsByEventId[420629]?.map((song) => song.id)).toEqual([1, 4]);
-    expect(aggregated.newlyHeardSongsByEventId[420630]?.map((song) => song.id)).toEqual([5]);
+    expect(aggregated.newlyHeardSongsByEventId[100001]?.map((song) => song.id)).toEqual([1, 4]);
+    expect(aggregated.newlyHeardSongsByEventId[100002]?.map((song) => song.id)).toEqual([5]);
   });
 
   it("keeps virtual band unlock songs visible even when virtual bands are hidden from summaries", () => {
@@ -216,7 +258,24 @@ describe("aggregateUserSongStats", () => {
     });
 
     expect(aggregated.bandSummaries.map((summary) => summary.slug)).toEqual(["poppin-party", "mygo"]);
-    expect(aggregated.newlyHeardSongsByEventId[420629]?.map((song) => song.id)).toEqual([1, 4, 5]);
+    expect(aggregated.newlyHeardSongsByEventId[100001]?.map((song) => song.id)).toEqual([1, 3, 4, 5]);
+  });
+
+  it("keeps first-unlock songs in setlist order and only records repeated songs once", () => {
+    const aggregated = aggregateUserSongStats({
+      songs,
+      matchedEvents: [
+        {
+          ...matchedEvents[0],
+          heardSongIds: [4, 3, 4, 6, 1, 3],
+        },
+      ],
+      hideUnplayed: true,
+      hideVirtualBands: false,
+      hideSonglessActivities: false,
+    });
+
+    expect(aggregated.newlyHeardSongsByEventId[100001]?.map((song) => song.id)).toEqual([4, 3, 1]);
   });
 
   it("excludes unreleased songs from totals and first-heard unlocks", () => {
@@ -229,6 +288,7 @@ describe("aggregateUserSongStats", () => {
           bandNameJa: "Poppin'Party",
           bandDisplayOrder: 1,
           bandGroupType: "band",
+          category: "original",
           title: "Future Place",
           firstReleaseDate: "2099-01-01",
           hasBeenPlayedLive: true,

@@ -37,7 +37,7 @@ export function AdminLoginForm({ action, nextPath }: AdminLoginFormProps) {
         <button
           type="submit"
           disabled={pending}
-          className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-foreground px-5 font-medium text-background transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-11 shrink-0 items-center justify-center rounded-xl bg-foreground px-5 font-medium text-background transition hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
         >
           {pending ? "验证中..." : "进入管理页"}
         </button>

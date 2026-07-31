@@ -1,8 +1,14 @@
-import { inArray } from "drizzle-orm";
+import { cookies } from "next/headers";
 import { BAND_SEEDS } from "@/lib/constants/bands";
-import { getDb } from "@/lib/db/core";
-import { events } from "@/lib/db/schema";
-import { listRankingEventsFromIndex } from "@/lib/eventernote/bandori-event-index";
+import { getEventSetlistMeta } from "@/lib/admin/event-setlist-meta";
+import { collectEventYears } from "@/lib/admin/list-event-filters";
+import {
+  decodeAdminListFiltersCookie,
+  adminListFiltersCookieName,
+  parsePersistedAdminListFilters,
+  sanitizePersistedAdminListFilters,
+} from "@/lib/admin/list-filters-state";
+import { getCurrentDateInShanghai, listRankingEventsFromIndex } from "@/lib/eventernote/bandori-event-index";
 import { readEventVisibilityRules } from "@/lib/events/event-visibility-rules-store";
 import { AdminListClient } from "./list-client";
 
@@ -25,26 +31,24 @@ function formatDateTime(value: Date | null) {
   }).format(value);
 }
 
-async function getEventSetlistStatuses(eventIds: number[]) {
-  if (!process.env.DATABASE_URL && !process.env.DIRECT_URL) {
-    return {} as Record<number, "missing" | "partial" | "complete" | null>;
-  }
-
-  const db = getDb();
-  const rows = await db
-    .select({
-      eventernoteEventId: events.eventernoteEventId,
-      setlistStatus: events.setlistStatus,
-    })
-    .from(events)
-    .where(inArray(events.eventernoteEventId, [...new Set(eventIds)]));
-
-  return Object.fromEntries(rows.map((row) => [row.eventernoteEventId, row.setlistStatus]));
-}
-
 export default async function AdminListPage() {
   const ranking = await listRankingEventsFromIndex();
-  const statusByEventId = await getEventSetlistStatuses(ranking.events.map((event) => event.eventernoteEventId));
+  const bands = BAND_SEEDS.filter((band) => band.groupType === "band").map((band) => ({
+    slug: band.slug,
+    nameJa: band.nameJa,
+  }));
+  const cookieStore = await cookies();
+  const initialFilters = sanitizePersistedAdminListFilters(
+    parsePersistedAdminListFilters(
+      decodeAdminListFiltersCookie(cookieStore.get(adminListFiltersCookieName)?.value),
+    ),
+    collectEventYears(ranking.events),
+    bands.map((band) => band.slug),
+  );
+  const { statusByEventId, updatedAtByEventId } =
+    await getEventSetlistMeta(
+      ranking.events.map((event) => event.eventernoteEventId),
+    );
   const eventVisibilityRules = await readEventVisibilityRules();
 
   return (
@@ -52,12 +56,12 @@ export default async function AdminListPage() {
       <AdminListClient
         generatedAtLabel={formatDateTime(ranking.updatedAt)}
         events={ranking.events}
-        bands={BAND_SEEDS.filter((band) => band.groupType === "band").map((band) => ({
-          slug: band.slug,
-          nameJa: band.nameJa,
-        }))}
+        bands={bands}
         statusByEventId={statusByEventId}
+        setlistUpdatedAtByEventId={updatedAtByEventId}
         eventVisibilityRules={eventVisibilityRules}
+        initialFilters={initialFilters}
+        todayDate={getCurrentDateInShanghai()}
       />
     </main>
   );

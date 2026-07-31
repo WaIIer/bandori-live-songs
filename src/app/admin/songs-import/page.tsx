@@ -1,17 +1,61 @@
-import { updateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { and, asc, eq, ne } from "drizzle-orm";
 import { getDb } from "@/lib/db/core";
 import { songs } from "@/lib/db/schema";
 import { BAND_SEEDS } from "@/lib/constants/bands";
 import { getAdminAuthStatus } from "@/lib/admin/server-auth";
 import { canonicalizeSongTitle } from "@/lib/music/title-utils";
+import { isSongCategory } from "@/lib/music/song-category";
 import { SongsImportForm } from "./songs-import-form";
-import type { SongsImportActionState } from "./types";
+import type {
+  EditableSong,
+  SongEditActionState,
+  SongsImportActionState,
+} from "./types";
 
 function parseSongLines(input: string) {
   return input
     .split(/\r?\n/u)
     .map((line) => line.trim())
     .filter((line) => line.length > 0);
+}
+
+function isValidBandSlug(bandSlug: string) {
+  return BAND_SEEDS.some(
+    (band) => band.groupType === "band" && band.slug === bandSlug,
+  );
+}
+
+function validateSongFields({
+  categoryValue,
+  bandSlug,
+  releaseDate,
+}: {
+  categoryValue: string;
+  bandSlug: string;
+  releaseDate: string;
+}) {
+  if (!isSongCategory(categoryValue)) {
+    return "请选择有效的歌曲分类。";
+  }
+  if (categoryValue === "original" && !isValidBandSlug(bandSlug)) {
+    return "请选择有效的乐队。";
+  }
+  if (
+    (categoryValue === "original" && !releaseDate) ||
+    (releaseDate && !/^\d{4}-\d{2}-\d{2}$/.test(releaseDate))
+  ) {
+    return "日期格式不正确，请使用 YYYY-MM-DD。";
+  }
+  return null;
+}
+
+function refreshSongCaches({ includeSongEvents = false } = {}) {
+  updateTag("song-catalog");
+  updateTag("open-api-v1");
+  if (includeSongEvents) {
+    updateTag("song-events");
+  }
 }
 
 async function submitSongsImport(
@@ -29,22 +73,24 @@ async function submitSongsImport(
   }
 
   const bandSlug = String(formData.get("bandSlug") ?? "").trim();
+  const categoryValue = String(formData.get("category") ?? "").trim();
   const releaseDate = String(formData.get("releaseDate") ?? "").trim();
   const songText = String(formData.get("songText") ?? "");
 
-  if (!bandSlug || !BAND_SEEDS.some((b) => b.slug === bandSlug)) {
+  const validationError = validateSongFields({
+    categoryValue,
+    bandSlug,
+    releaseDate,
+  });
+  if (validationError) {
     return {
       status: "error",
-      message: "请选择有效的乐队。",
+      message: validationError,
     };
   }
-
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(releaseDate)) {
-    return {
-      status: "error",
-      message: "日期格式不正确，请使用 YYYY-MM-DD。",
-    };
-  }
+  const category = categoryValue as NonNullable<
+    EditableSong["category"]
+  >;
 
   const titles = parseSongLines(songText);
   if (titles.length === 0) {
@@ -61,7 +107,12 @@ async function submitSongsImport(
   const existingTitles = new Set(existingRows.map((r) => r.title));
 
   const duplicates: string[] = [];
-  const newSongs: { bandSlug: string; title: string; firstReleaseDate: string }[] = [];
+  const newSongs: Array<{
+    bandSlug: string | null;
+    category: typeof category;
+    title: string;
+    firstReleaseDate: string | null;
+  }> = [];
 
   for (const rawTitle of titles) {
     const canonical = canonicalizeSongTitle(rawTitle);
@@ -71,9 +122,10 @@ async function submitSongsImport(
       duplicates.push(canonical);
     } else {
       newSongs.push({
-        bandSlug,
+        bandSlug: category === "original" ? bandSlug : null,
+        category,
         title: canonical,
-        firstReleaseDate: releaseDate,
+        firstReleaseDate: releaseDate || null,
       });
       existingTitles.add(canonical); // prevent duplicates within the same batch
     }
@@ -87,7 +139,8 @@ async function submitSongsImport(
   }
 
   await db.insert(songs).values(newSongs);
-  updateTag("song-catalog");
+  refreshSongCaches();
+  revalidatePath("/admin/songs-import");
 
   const parts = [`已导入 ${newSongs.length} 首歌曲`];
   if (duplicates.length > 0) {
@@ -101,15 +154,133 @@ async function submitSongsImport(
   };
 }
 
-export default function SongsImportPage() {
-  const bandOptions = BAND_SEEDS.filter((b) => b.groupType === "band").map((b) => ({
-    slug: b.slug,
-    label: `${b.nameJa} (${b.nameEn})`,
-  }));
+async function submitSongEdit(
+  _: SongEditActionState,
+  formData: FormData,
+): Promise<SongEditActionState> {
+  "use server";
+
+  const authStatus = await getAdminAuthStatus();
+  if (!authStatus.authenticated) {
+    return {
+      status: "error",
+      message: authStatus.message,
+    };
+  }
+
+  const songId = Number(formData.get("songId"));
+  const rawTitle = String(formData.get("title") ?? "");
+  const categoryValue = String(formData.get("category") ?? "").trim();
+  const bandSlug = String(formData.get("bandSlug") ?? "").trim();
+  const releaseDate = String(formData.get("releaseDate") ?? "").trim();
+
+  if (!Number.isSafeInteger(songId) || songId <= 0) {
+    return {
+      status: "error",
+      message: "请选择要编辑的歌曲。",
+    };
+  }
+
+  const title = canonicalizeSongTitle(rawTitle);
+  if (!title) {
+    return {
+      status: "error",
+      message: "歌曲名不能为空。",
+    };
+  }
+
+  const validationError = validateSongFields({
+    categoryValue,
+    bandSlug,
+    releaseDate,
+  });
+  if (validationError) {
+    return {
+      status: "error",
+      message: validationError,
+    };
+  }
+  const category = categoryValue as EditableSong["category"];
+  const db = getDb();
+  const [existingSong] = await db
+    .select({ id: songs.id })
+    .from(songs)
+    .where(eq(songs.id, songId))
+    .limit(1);
+  if (!existingSong) {
+    return {
+      status: "error",
+      message: "歌曲不存在，可能已被其他管理员删除。",
+    };
+  }
+
+  const [duplicateSong] = await db
+    .select({ id: songs.id })
+    .from(songs)
+    .where(and(eq(songs.title, title), ne(songs.id, songId)))
+    .limit(1);
+  if (duplicateSong) {
+    return {
+      status: "error",
+      message: "该歌曲名已被其他歌曲使用。",
+    };
+  }
+
+  const updatedSong = {
+    id: songId,
+    title,
+    category,
+    bandSlug: category === "original" ? bandSlug : null,
+    firstReleaseDate: releaseDate || null,
+  } satisfies EditableSong;
+
+  await db
+    .update(songs)
+    .set({
+      title: updatedSong.title,
+      category: updatedSong.category,
+      bandSlug: updatedSong.bandSlug,
+      firstReleaseDate: updatedSong.firstReleaseDate,
+      updatedAt: new Date(),
+    })
+    .where(eq(songs.id, songId));
+
+  refreshSongCaches({ includeSongEvents: true });
+  revalidatePath("/admin/songs-import");
+  revalidatePath("/songs");
+
+  return {
+    status: "success",
+    message: "歌曲信息已更新。",
+  };
+}
+
+export default async function SongsImportPage() {
+  const bandOptions = BAND_SEEDS.filter((band) => band.groupType === "band").map(
+    (band) => ({
+      slug: band.slug,
+      label: `${band.nameJa} (${band.nameEn})`,
+    }),
+  );
+  const existingSongs = await getDb()
+    .select({
+      id: songs.id,
+      title: songs.title,
+      category: songs.category,
+      bandSlug: songs.bandSlug,
+      firstReleaseDate: songs.firstReleaseDate,
+    })
+    .from(songs)
+    .orderBy(asc(songs.title));
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
-      <SongsImportForm action={submitSongsImport} bandOptions={bandOptions} />
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
+      <SongsImportForm
+        action={submitSongsImport}
+        editAction={submitSongEdit}
+        bandOptions={bandOptions}
+        existingSongs={existingSongs}
+      />
     </main>
   );
 }

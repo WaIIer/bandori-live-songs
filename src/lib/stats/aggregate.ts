@@ -5,17 +5,59 @@ import {
   type EventVisibilityRules,
 } from "@/lib/events/event-visibility";
 import { getCurrentReleaseDate, isReleasedByDate } from "@/lib/music/release-date";
-import { compareSongsByBandThenReleaseDate, compareSongsByReleaseDate } from "@/lib/music/sort";
+import { compareSongsByReleaseDate } from "@/lib/music/sort";
+import type { SongCategory } from "@/lib/music/song-category";
 
 export type SongPoolItem = {
   id: number;
+  bandSlug: string | null;
+  bandNameJa: string | null;
+  bandDisplayOrder: number | null;
+  bandGroupType: "band" | "project-common" | null;
+  category: SongCategory;
+  title: string;
+  firstReleaseDate: string | null;
+  hasBeenPlayedLive: boolean;
+};
+
+export type OriginalSongPoolItem = SongPoolItem & {
+  category: "original";
   bandSlug: string;
   bandNameJa: string;
   bandDisplayOrder: number;
-  bandGroupType: "band" | "project-common";
-  title: string;
+  bandGroupType: "band";
   firstReleaseDate: string;
-  hasBeenPlayedLive: boolean;
+};
+
+export function isOriginalSong(
+  song: SongPoolItem,
+): song is OriginalSongPoolItem {
+  return (
+    song.category === "original" &&
+    song.bandSlug !== null &&
+    song.bandNameJa !== null &&
+    song.bandDisplayOrder !== null &&
+    song.bandGroupType === "band" &&
+    song.firstReleaseDate !== null
+  );
+}
+
+export type UnlockableSongPoolItem = SongPoolItem & {
+  category: "original" | "project-common";
+};
+
+function isUnlockableSong(
+  song: SongPoolItem,
+): song is UnlockableSongPoolItem {
+  return song.category === "original" || song.category === "project-common";
+}
+
+export type MatchedEventSetlistEntry = {
+  position: number;
+  title: string;
+  songId: number | null;
+  category: SongCategory | null;
+  bandSlug: string | null;
 };
 
 export type MatchedEventEntry = {
@@ -29,6 +71,7 @@ export type MatchedEventEntry = {
   setlistStatus: "missing" | "partial" | "complete" | null;
   sourceUrl: string;
   heardSongIds: number[];
+  setlistEntries?: MatchedEventSetlistEntry[];
 };
 
 export type SongEventReference = {
@@ -65,7 +108,7 @@ export type AggregatedStats = {
   matchedEvents: MatchedEventEntry[];
   collectedSetlistEvents: MatchedEventEntry[];
   missingSetlistEvents: MatchedEventEntry[];
-  newlyHeardSongsByEventId: Record<number, SongPoolItem[]>;
+  newlyHeardSongsByEventId: Record<number, UnlockableSongPoolItem[]>;
 };
 
 export function aggregateUserSongStats({
@@ -94,9 +137,8 @@ export function aggregateUserSongStats({
     }
   }
 
-  const visibleSongs = songs.filter(
+  const visibleSongs = songs.filter(isOriginalSong).filter(
     (song) =>
-      song.bandGroupType === "band" &&
       isReleasedByDate(song.firstReleaseDate, releasedThroughDate) &&
       (!hideVirtualBands || DEFAULT_VISIBLE_BAND_SLUGS.has(song.bandSlug)) &&
       (hideUnplayed ? song.hasBeenPlayedLive : true),
@@ -142,14 +184,14 @@ export function aggregateUserSongStats({
   const totalCount = visibleSongs.length;
   const collectedSetlistEvents: MatchedEventEntry[] = [];
   const missingSetlistEvents: MatchedEventEntry[] = [];
-  const unlockVisibleSongs = songs.filter(
+  const unlockVisibleSongs = songs.filter(isUnlockableSong).filter(
     (song) =>
-      song.bandGroupType === "band" &&
-      isReleasedByDate(song.firstReleaseDate, releasedThroughDate) &&
+      (song.firstReleaseDate === null ||
+        isReleasedByDate(song.firstReleaseDate, releasedThroughDate)) &&
       (hideUnplayed ? song.hasBeenPlayedLive : true),
   );
   const unlockVisibleSongById = new Map(unlockVisibleSongs.map((song) => [song.id, song]));
-  const newlyHeardSongsByEventId: Record<number, SongPoolItem[]> = {};
+  const newlyHeardSongsByEventId: Record<number, UnlockableSongPoolItem[]> = {};
   const seenSongIds = new Set<number>();
 
   const chronologicalMatchedEvents = [...visibleMatchedEvents].sort((left, right) => {
@@ -164,7 +206,7 @@ export function aggregateUserSongStats({
   for (let i = 0; i < chronologicalMatchedEvents.length; i += 1) {
     const event = chronologicalMatchedEvents[i];
     const eventSongIds = [...new Set(event.heardSongIds)];
-    const newlyHeardSongs: SongPoolItem[] = [];
+    const newlyHeardSongs: UnlockableSongPoolItem[] = [];
 
     for (let index = 0; index < eventSongIds.length; index += 1) {
       const songId = eventSongIds[index];
@@ -179,7 +221,7 @@ export function aggregateUserSongStats({
     }
 
     if (newlyHeardSongs.length > 0) {
-      newlyHeardSongsByEventId[event.eventernoteEventId] = newlyHeardSongs.sort(compareSongsByBandThenReleaseDate);
+      newlyHeardSongsByEventId[event.eventernoteEventId] = newlyHeardSongs;
     }
   }
 

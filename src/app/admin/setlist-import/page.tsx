@@ -1,11 +1,13 @@
-import { asc, eq, inArray } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { updateTag } from "next/cache";
 import { getAdminAuthStatus } from "@/lib/admin/server-auth";
+import { BAND_SEEDS } from "@/lib/constants/bands";
 import { getDb } from "@/lib/db/core";
-import { events, setlistEntries, songs } from "@/lib/db/schema";
+import { bands, events, setlistEntries, songs } from "@/lib/db/schema";
 import { fetchEventMetaFromEventernote, type EventernoteEventMeta } from "@/lib/eventernote/event-meta";
-import { findClosestSongTitle } from "@/lib/music/song-match-suggestions";
-import { stripTrackIndex } from "@/lib/music/title-utils";
+import { isSongCategory } from "@/lib/music/song-category";
+import { createSongResolver } from "@/lib/music/song-resolution";
+import { canonicalizeSongTitle, stripTrackIndex } from "@/lib/music/title-utils";
 import { refreshSongLiveState } from "@/lib/stats/refresh-song-live-state";
 import { SetlistImportForm } from "./setlist-import-form";
 import { formatSetlistEntriesText, type SetlistImportActionState } from "./types";
@@ -55,6 +57,71 @@ function parseSetlistLines(input: string) {
     .filter((line) => line.rawTitle.length > 0);
 }
 
+function parseQuickAddLineNumber(intent: string) {
+  const match = intent.match(/^quick-add:(\d+)$/u);
+  if (!match) {
+    return null;
+  }
+  const lineNumber = Number(match[1]);
+  return Number.isSafeInteger(lineNumber) && lineNumber > 0
+    ? lineNumber
+    : null;
+}
+
+async function addMissingSong(
+  line: ParsedSetlistLine,
+  formData: FormData,
+) {
+  const categoryValue = String(
+    formData.get(`quickAddCategory:${line.lineNumber}`) ?? "",
+  );
+  const bandSlug = String(
+    formData.get(`quickAddBandSlug:${line.lineNumber}`) ?? "",
+  ).trim();
+  const releaseDate = String(
+    formData.get(`quickAddReleaseDate:${line.lineNumber}`) ?? "",
+  ).trim();
+
+  if (!isSongCategory(categoryValue)) {
+    throw new Error("请选择有效的歌曲分类。");
+  }
+  if (
+    categoryValue === "original" &&
+    !BAND_SEEDS.some(
+      (band) => band.groupType === "band" && band.slug === bandSlug,
+    )
+  ) {
+    throw new Error("原创曲必须选择有效的乐队。");
+  }
+  if (
+    categoryValue === "original" &&
+    !/^\d{4}-\d{2}-\d{2}$/u.test(releaseDate)
+  ) {
+    throw new Error("原创曲必须填写有效的发行日期。");
+  }
+
+  const title = canonicalizeSongTitle(line.rawTitle);
+  if (!title) {
+    throw new Error("歌曲标题不能为空。");
+  }
+
+  const db = getDb();
+  await db
+    .insert(songs)
+    .values({
+      title,
+      category: categoryValue,
+      bandSlug: categoryValue === "original" ? bandSlug : null,
+      firstReleaseDate:
+        categoryValue === "original" ? releaseDate : null,
+    })
+    .onConflictDoNothing({ target: songs.title });
+  updateTag("song-catalog");
+  updateTag("open-api-v1");
+
+  return title;
+}
+
 async function findExistingEvent(eventernoteEventId: number) {
   const db = getDb();
   const [existing] = await db
@@ -85,35 +152,59 @@ async function loadExistingSetlistText(eventId: number) {
   return formatSetlistEntriesText(rows.map((row) => row.rawTitle));
 }
 
-async function findMismatchLines(lines: ParsedSetlistLine[]) {
+async function resolveSetlistLines(
+  lines: ParsedSetlistLine[],
+  formData: FormData,
+) {
   const db = getDb();
-  const distinctTitles = [...new Set(lines.map((line) => line.rawTitle))];
+  const songRows = await db
+    .select({
+      id: songs.id,
+      title: songs.title,
+      category: songs.category,
+      bandNameJa: bands.nameJa,
+    })
+    .from(songs)
+    .leftJoin(bands, eq(songs.bandSlug, bands.slug));
+  const resolveSong = createSongResolver(songRows);
+  const titleBySongId = new Map(
+    songRows.map((song) => [song.id, song.title]),
+  );
 
-  const [matchedRows, songRows] = await Promise.all([
-    distinctTitles.length > 0
-      ? db
-          .select({ title: songs.title })
-          .from(songs)
-          .where(inArray(songs.title, distinctTitles))
-      : Promise.resolve([]),
-    db.select({ title: songs.title }).from(songs),
-  ]);
+  const resolved: Array<ParsedSetlistLine & { songId: number }> = [];
+  const resolutionLines: NonNullable<
+    SetlistImportActionState["resolutionLines"]
+  > = [];
 
-  const matchedTitleSet = new Set(matchedRows.map((row) => row.title));
-  const allSongTitles = songRows.map((row) => row.title);
+  for (const line of lines) {
+    const selectedId = Number(
+      String(formData.get(`songResolution:${line.lineNumber}`) ?? ""),
+    );
+    const resolution = resolveSong(
+      line.rawTitle,
+      Number.isSafeInteger(selectedId) && selectedId > 0
+        ? selectedId
+        : undefined,
+    );
 
-  return lines
-    .filter((line) => !matchedTitleSet.has(line.rawTitle))
-    .map((line) => {
-      const suggestion = findClosestSongTitle(line.rawTitle, allSongTitles);
+    if (resolution.status === "resolved") {
+      resolved.push({
+        ...line,
+        rawTitle:
+          titleBySongId.get(resolution.songId) ?? line.rawTitle,
+        songId: resolution.songId,
+      });
+      continue;
+    }
 
-      return {
-        lineNumber: line.lineNumber,
-        value: line.rawTitle,
-        suggestedValue: suggestion?.title,
-        suggestionScore: suggestion ? Number(suggestion.score.toFixed(3)) : undefined,
-      };
+    resolutionLines.push({
+      lineNumber: line.lineNumber,
+      value: line.rawTitle,
+      candidates: resolution.candidates,
     });
+  }
+
+  return { resolved, resolutionLines };
 }
 
 async function submitSetlistImport(
@@ -133,6 +224,9 @@ async function submitSetlistImport(
   const eventInput = String(formData.get("eventInput") ?? "").trim();
   const setlistText = String(formData.get("setlistText") ?? "");
   const confirmOverwrite = String(formData.get("confirmOverwrite") ?? "") === "1";
+  const quickAddLineNumber = parseQuickAddLineNumber(
+    String(formData.get("intent") ?? ""),
+  );
   const eventernoteEventId = parseEventernoteEventId(eventInput);
 
   if (!eventernoteEventId) {
@@ -166,6 +260,32 @@ async function submitSetlistImport(
     };
   }
 
+  let quickAddedTitle: string | null = null;
+  if (quickAddLineNumber !== null) {
+    const line = parsedLines.find(
+      (item) => item.lineNumber === quickAddLineNumber,
+    );
+    if (!line) {
+      return {
+        status: "error",
+        eventernoteEventId,
+        existingRecord: Boolean(existingEvent),
+        message: "无法找到需要添加的歌单行，请重新提交。",
+      };
+    }
+    try {
+      quickAddedTitle = await addMissingSong(line, formData);
+    } catch (error) {
+      return {
+        status: "error",
+        eventernoteEventId,
+        existingRecord: Boolean(existingEvent),
+        message:
+          error instanceof Error ? error.message : "新增歌曲失败。",
+      };
+    }
+  }
+
   let eventMeta: EventMeta;
   try {
     eventMeta = await fetchEventMetaFromEventernote(eventernoteEventId);
@@ -178,17 +298,20 @@ async function submitSetlistImport(
     };
   }
 
-  const mismatchLines = await findMismatchLines(parsedLines);
-  if (mismatchLines.length > 0) {
+  const { resolved, resolutionLines } = await resolveSetlistLines(
+    parsedLines,
+    formData,
+  );
+  if (resolutionLines.length > 0) {
     return {
-      status: "mismatch",
+      status: "resolution-required",
       eventernoteEventId,
       eventTitle: eventMeta.title,
       eventDate: eventMeta.eventDate,
       venue: eventMeta.venue,
       existingRecord: Boolean(existingEvent),
-      message: `存在 ${mismatchLines.length} 行未匹配。可直接采用建议替换后重新提交。`,
-      mismatchLines,
+      message: `${quickAddedTitle ? `已新增“${quickAddedTitle}”；` : ""}存在 ${resolutionLines.length} 行需要选择曲库记录。请选择后重新提交。`,
+      resolutionLines,
     };
   }
 
@@ -209,10 +332,11 @@ async function submitSetlistImport(
       await tx.delete(setlistEntries).where(eq(setlistEntries.eventId, existingEvent.id));
 
       await tx.insert(setlistEntries).values(
-        parsedLines.map((line, index) => ({
+        resolved.map((line, index) => ({
           eventId: existingEvent.id,
           orderIndex: index + 1,
           rawTitle: line.rawTitle,
+          songId: line.songId,
         })),
       );
 
@@ -238,10 +362,11 @@ async function submitSetlistImport(
     }
 
     await tx.insert(setlistEntries).values(
-      parsedLines.map((line, index) => ({
+      resolved.map((line, index) => ({
         eventId: eventRecord.id,
         orderIndex: index + 1,
         rawTitle: line.rawTitle,
+        songId: line.songId,
       })),
     );
 
@@ -262,6 +387,7 @@ async function submitSetlistImport(
 
   await refreshSongLiveState(db);
   updateTag("song-catalog");
+  updateTag("open-api-v1");
   updateTag("song-events");
 
   return {
@@ -272,9 +398,11 @@ async function submitSetlistImport(
     venue: eventMeta.venue,
     submittedCount: parsedLines.length,
     existingRecord: saved.overwritten,
-    message: saved.overwritten
-      ? `已整场替换并写入 ${parsedLines.length} 首歌。`
-      : `校验通过并已导入 ${parsedLines.length} 首歌。`,
+    message: `${quickAddedTitle ? `已新增“${quickAddedTitle}”；` : ""}${
+      saved.overwritten
+        ? `已整场替换并写入 ${parsedLines.length} 首歌。`
+        : `校验通过并已导入 ${parsedLines.length} 首歌。`
+    }`,
   };
 }
 
@@ -294,6 +422,12 @@ export default async function SetlistImportPage({ searchParams }: SetlistImportP
   let defaultSetlistText = "";
   let existingRecord = false;
   let existingEventTitle: string | null = null;
+  const bandOptions = BAND_SEEDS.filter(
+    (band) => band.groupType === "band",
+  ).map((band) => ({
+    slug: band.slug,
+    label: `${band.nameJa} (${band.nameEn})`,
+  }));
 
   if (parsedEventId) {
     const existingEvent = await findExistingEvent(parsedEventId);
@@ -305,13 +439,14 @@ export default async function SetlistImportPage({ searchParams }: SetlistImportP
   }
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
       <SetlistImportForm
         action={submitSetlistImport}
         defaultEventInput={defaultEventInput}
         defaultSetlistText={defaultSetlistText}
         existingRecord={existingRecord}
         existingEventTitle={existingEventTitle}
+        bandOptions={bandOptions}
       />
     </main>
   );

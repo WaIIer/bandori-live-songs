@@ -19,6 +19,7 @@ type EventRankingClientProps = {
   events: ActorEventRankingEntry[];
   bands?: BandFilter[];
   statusByEventId: Record<number, AdminEventSetlistStatus>;
+  setlistUpdatedAtByEventId: Record<number, string | null>;
   eventVisibilityRules: EventVisibilityRules;
   enableHideCollectedActivities?: boolean;
 };
@@ -31,6 +32,7 @@ export function EventRankingClient({
   events,
   bands = [],
   statusByEventId,
+  setlistUpdatedAtByEventId,
   eventVisibilityRules,
   enableHideCollectedActivities = false,
 }: EventRankingClientProps) {
@@ -84,13 +86,13 @@ export function EventRankingClient({
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="rounded-[1.1rem] border border-border-soft bg-panel-strong px-4 py-3">
               <p className="text-xs text-ink-soft">当前已收录歌单</p>
-              <p className="mt-1 text-sm font-medium">
+              <p className="mt-1 whitespace-nowrap text-sm font-medium">
                 {collectedSetlistCount}/{visibleEvents.length}
               </p>
             </div>
             <div className="rounded-[1.1rem] border border-border-soft bg-panel-strong px-4 py-3">
               <p className="text-xs text-ink-soft">抓取时间</p>
-              <p className="mt-1 text-sm font-medium">{generatedAtLabel}</p>
+              <p className="mt-1 whitespace-nowrap text-sm font-medium">{generatedAtLabel}</p>
             </div>
           </div>
         </div>
@@ -157,6 +159,7 @@ export function EventRankingClient({
         <AdminEventTable
           events={visibleEvents}
           statusByEventId={statusByEventId}
+          setlistUpdatedAtByEventId={setlistUpdatedAtByEventId}
           variant="flat"
           rowKeyPrefix={`${activeBandSlug}-`}
         />

@@ -1,6 +1,6 @@
 import { updateTag } from "next/cache";
 import { setTimeout as sleep } from "node:timers/promises";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { BAND_SEEDS } from "@/lib/constants/bands";
 import { getDb } from "@/lib/db/core";
 import { songs } from "@/lib/db/schema";
@@ -330,9 +330,13 @@ export async function syncRecentMusicBrainzSongs(
   const db = getDb();
   const existingRows = await db
     .select({ title: songs.title, firstReleaseDate: songs.firstReleaseDate })
-    .from(songs);
+    .from(songs)
+    .where(eq(songs.category, "original"));
   const existingByNormalized = new Map<string, ExistingSongRef>();
   for (const row of existingRows) {
+    if (!row.firstReleaseDate) {
+      continue;
+    }
     existingByNormalized.set(normalizeSongTitle(row.title), {
       title: row.title,
       firstReleaseDate: row.firstReleaseDate,
@@ -431,6 +435,7 @@ export async function syncRecentMusicBrainzSongs(
     } else {
       const values = pendingInserts.map(({ bandSlug, title, firstReleaseDate }) => ({
         bandSlug,
+        category: "original" as const,
         title,
         firstReleaseDate,
       }));
@@ -468,7 +473,12 @@ export async function syncRecentMusicBrainzSongs(
               firstReleaseDate: song.firstReleaseDate,
               updatedAt: new Date(),
             })
-            .where(eq(songs.title, song.title));
+            .where(
+              and(
+                eq(songs.title, song.title),
+                eq(songs.category, "original"),
+              ),
+            );
           updated += 1;
           updatedTitles.push(`${song.title}:${song.previousDate}→${song.firstReleaseDate}`);
         } catch (error) {
@@ -483,6 +493,7 @@ export async function syncRecentMusicBrainzSongs(
 
   if (!dryRun && (inserted > 0 || updated > 0)) {
     updateTag("song-catalog");
+    updateTag("open-api-v1");
   }
 
   return {

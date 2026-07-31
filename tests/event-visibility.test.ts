@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  defaultEventTitleTagsToStrip,
   filterEventsByVisibilityRules,
   shouldHideEventByRulesWithRules,
   type EventVisibilityRules,
@@ -8,7 +9,9 @@ import {
 const rules: EventVisibilityRules = {
   version: 1,
   hiddenTitleKeywords: ["トークイベント", "舞台挨拶"],
+  allowedTitleKeywords: ["ミニライブ"],
   hiddenEventernoteEventIds: [12345],
+  titleTagsToStrip: [...defaultEventTitleTagsToStrip],
 };
 
 describe("event visibility rules", () => {
@@ -22,6 +25,32 @@ describe("event visibility rules", () => {
         rules,
       ),
     ).toBe(true);
+
+    expect(
+      shouldHideEventByRulesWithRules(
+        {
+          eventernoteEventId: 6,
+          title: "合同リリースイベント",
+        },
+        {
+          ...rules,
+          hiddenTitleKeywords: ["」リリースイベント"],
+        },
+      ),
+    ).toBe(false);
+
+    expect(
+      shouldHideEventByRulesWithRules(
+        {
+          eventernoteEventId: 7,
+          title: "リリース記念ライブ DAY1",
+        },
+        {
+          ...rules,
+          hiddenTitleKeywords: ["」リリースイベント"],
+        },
+      ),
+    ).toBe(false);
 
     expect(
       shouldHideEventByRulesWithRules(
@@ -42,6 +71,58 @@ describe("event visibility rules", () => {
         rules,
       ),
     ).toBe(false);
+
+    expect(
+      shouldHideEventByRulesWithRules(
+        {
+          eventernoteEventId: 3,
+          title: "発売記念 トーク＆ミニライブ",
+        },
+        {
+          ...rules,
+          hiddenTitleKeywords: ["発売記念", "トーク"],
+        },
+      ),
+    ).toBe(false);
+
+    expect(
+      shouldHideEventByRulesWithRules(
+        {
+          eventernoteEventId: 4,
+          title: "ガルパーティ！キャストと協力ライブ！",
+        },
+        {
+          ...rules,
+          hiddenTitleKeywords: ["協力ライブ"],
+        },
+      ),
+    ).toBe(true);
+
+    expect(
+      shouldHideEventByRulesWithRules(
+        {
+          eventernoteEventId: 5,
+          title: "発売記念 トーク＆ライブ",
+        },
+        {
+          ...rules,
+          hiddenTitleKeywords: ["発売記念", "トーク"],
+        },
+      ),
+    ).toBe(true);
+
+    expect(
+      shouldHideEventByRulesWithRules(
+        {
+          eventernoteEventId: 12345,
+          title: "発売記念 ミニライブ",
+        },
+        {
+          ...rules,
+          hiddenTitleKeywords: ["発売記念"],
+        },
+      ),
+    ).toBe(true);
   });
 
   it("filters only when the toggle is enabled", () => {
