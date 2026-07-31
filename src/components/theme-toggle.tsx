@@ -15,6 +15,12 @@ const options = [
 ] as const;
 
 type ThemePreference = (typeof options)[number]["value"];
+type ThemeToggleLabels = {
+  ariaLabel: string;
+  light: string;
+  system: string;
+  dark: string;
+};
 
 const mediaQuery = "(prefers-color-scheme: dark)";
 const fallbackTheme: ThemePreference = "system";
@@ -87,23 +93,35 @@ function subscribeThemePreference(listener: () => void) {
   };
 }
 
-export function ThemeToggle({ copy = cnCopy }: { copy?: CopyDefinition }) {
+export function ThemeToggle({
+  copy = cnCopy,
+  labels: customLabels,
+}: {
+  copy?: CopyDefinition;
+  labels?: ThemeToggleLabels;
+}) {
   const theme = useSyncExternalStore(
     subscribeThemePreference,
     getThemePreferenceSnapshot,
     () => fallbackTheme,
   );
-  const labels: Record<ThemePreference, string> = {
-    light: copy.themeLight,
-    system: copy.themeSystem,
-    dark: copy.themeDark,
-  };
+  const labels: Record<ThemePreference, string> = customLabels
+    ? {
+        light: customLabels.light,
+        system: customLabels.system,
+        dark: customLabels.dark,
+      }
+    : {
+        light: copy.themeLight,
+        system: copy.themeSystem,
+        dark: copy.themeDark,
+      };
 
   return (
     <div
       className={`${navPillOutline} p-0.5`}
       role="radiogroup"
-      aria-label={copy.themeToggleAria}
+      aria-label={customLabels?.ariaLabel || copy.themeToggleAria}
     >
       {options.map((option) => {
         const active = theme === option.value;

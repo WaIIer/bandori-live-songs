@@ -346,6 +346,9 @@ export function HomePageClient({
             <SongsStatsNavLink copy={localeCopy} />
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <Link href="/ranking" className={navPillLabel}>
+              Rankings
+            </Link>
             {isAdminAuthenticated ? (
               <Link href="/admin" className={navPillLabel}>
                 {localeCopy.adminNav}
